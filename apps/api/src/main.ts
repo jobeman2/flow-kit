@@ -21,9 +21,9 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Serve standalone Universal Client SDK at GET /sdk.js
+  // Serve standalone Universal Client SDK at GET /flow-kit.js and GET /sdk.js
   const server = app.getHttpAdapter().getInstance();
-  server.get('/sdk.js', (_req: Request, res: Response) => {
+  const serveSdk = (_req: Request, res: Response) => {
     const candidatePaths = [
       path.resolve(__dirname, '../../packages/sdk-web/dist/sdk.js'),
       path.resolve(__dirname, '../../../packages/sdk-web/dist/sdk.js'),
@@ -40,13 +40,17 @@ async function bootstrap() {
       }
     }
 
-    res.status(404).send('// sdk.js is not yet built');
-  });
+    res.status(404).send('// flow-kit.js is not yet built');
+  };
+
+  server.get('/flow-kit.js', serveSdk);
+  server.get('/sdk.js', serveSdk);
 
   const port = process.env.API_PORT || 4000;
   await app.listen(port);
-  logger.log(`[HTTP] GuideLayer API Server running on port ${port} (http://localhost:${port})`);
-  logger.log(`[CDN] Universal SDK script: http://localhost:${port}/sdk.js`);
+  logger.log(`[HTTP] Flow-Kit API Server running on port ${port} (http://localhost:${port})`);
+  logger.log(`[CDN] Universal SDK script: http://localhost:${port}/flow-kit.js`);
+  logger.log(`[CDN] Legacy alias script: http://localhost:${port}/sdk.js`);
   logger.log(`[ENGINE] Public Tour Resolution: http://localhost:${port}/v1/public/tours`);
 }
 

@@ -205,28 +205,30 @@
       document.getElementById('hero-subtext').innerText = t.heroSub;
       document.getElementById('services-title').innerText = t.servicesTitle;
 
-      // Update OnboardFlow SDK active locale dynamically!
-      if (window.onboardFlowInstance) {
-        window.onboardFlowInstance.setLocale(locale);
+      // Update FlowKit SDK active locale dynamically!
+      const sdk = window.flowKitInstance || window.onboardFlowInstance;
+      if (sdk) {
+        sdk.setLocale(locale);
       }
     }
 
     function restartTour() {
-      if (window.onboardFlowInstance) {
-        window.onboardFlowInstance.startTour('welcome-citizen-walkthrough');
+      const sdk = window.flowKitInstance || window.onboardFlowInstance;
+      if (sdk) {
+        sdk.startTour('welcome-citizen-walkthrough');
       } else {
-        alert('OnboardFlow SDK initializing... check API server.');
+        alert('Flow-Kit SDK initializing... check API server.');
       }
     }
   </script>
 
   <!-- 
     =======================================================
-    2-LINE ONBOARDFLOW UNIVERSAL CLIENT SDK INTEGRATION
+    2-LINE FLOW-KIT UNIVERSAL CLIENT SDK INTEGRATION
     =======================================================
   -->
   <script
-    src="http://localhost:4000/sdk.js"
+    src="http://localhost:4000/flow-kit.js"
     data-api-key="pk_live_demo_addis_79a2f1b4c6e8"
     data-api-url="http://localhost:4000"
     data-locale="en"

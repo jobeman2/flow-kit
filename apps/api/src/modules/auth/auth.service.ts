@@ -4,7 +4,7 @@ import { PrismaService } from '../../common/services/prisma.service';
 import { MailService } from '../../common/mail/mail.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { OrgRole, KeyType, Environment, KeyStatus } from '@onboardflow/database';
+import { OrgRole, KeyType, Environment, KeyStatus } from '@flow-kit/database';
 
 @Injectable()
 export class AuthService {

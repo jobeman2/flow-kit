@@ -1,4 +1,4 @@
-import { OnboardFlowConfig, TourData, TourStepData } from './types';
+import { FlowKitConfig, OnboardFlowConfig, TourData, TourStepData } from './types';
 import { TourOverlay } from './overlay';
 import { TelemetryService } from './telemetry';
 import { normalizeLocale } from './i18n';
@@ -7,9 +7,9 @@ export * from './types';
 export { TourOverlay } from './overlay';
 export { TelemetryService } from './telemetry';
 
-export class OnboardFlow {
-  private static instance: OnboardFlow | null = null;
-  private config: OnboardFlowConfig;
+export class FlowKit {
+  private static instance: FlowKit | null = null;
+  private config: FlowKitConfig;
   private tours: Map<string, TourData> = new Map();
   private activeTour: TourData | null = null;
   private currentStepIndex: number = 0;
@@ -17,7 +17,7 @@ export class OnboardFlow {
   private telemetry: TelemetryService;
   private activeLocale: string;
 
-  constructor(config: OnboardFlowConfig) {
+  constructor(config: FlowKitConfig) {
     this.config = {
       apiUrl: 'http://localhost:4000',
       autoStart: true,
@@ -32,16 +32,16 @@ export class OnboardFlow {
     });
   }
 
-  public static init(config: OnboardFlowConfig): OnboardFlow {
-    if (!OnboardFlow.instance) {
-      OnboardFlow.instance = new OnboardFlow(config);
-      OnboardFlow.instance.bootstrap();
+  public static init(config: FlowKitConfig): FlowKit {
+    if (!FlowKit.instance) {
+      FlowKit.instance = new FlowKit(config);
+      FlowKit.instance.bootstrap();
     }
-    return OnboardFlow.instance;
+    return FlowKit.instance;
   }
 
-  public static getInstance(): OnboardFlow | null {
-    return OnboardFlow.instance;
+  public static getInstance(): FlowKit | null {
+    return FlowKit.instance;
   }
 
   private async bootstrap() {
@@ -226,4 +226,6 @@ export class OnboardFlow {
   }
 }
 
-export default OnboardFlow;
+export const OnboardFlow = FlowKit;
+export type OnboardFlow = FlowKit;
+export default FlowKit;

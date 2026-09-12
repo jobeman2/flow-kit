@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
-import { TourStatus, AnalyticsEventType } from '@onboardflow/database';
+import { TourStatus, AnalyticsEventType } from '@flow-kit/database';
 
 @Injectable()
 export class PublicEngineService {

@@ -1,14 +1,17 @@
-import { OnboardFlow } from './index';
+import { FlowKit, OnboardFlow } from './index';
 
 declare global {
   interface Window {
+    FlowKit: typeof FlowKit;
+    flowKitInstance?: FlowKit;
     OnboardFlow: typeof OnboardFlow;
-    onboardFlowInstance?: OnboardFlow;
+    onboardFlowInstance?: FlowKit;
   }
 }
 
 if (typeof window !== 'undefined') {
-  window.OnboardFlow = OnboardFlow;
+  window.FlowKit = FlowKit;
+  window.OnboardFlow = FlowKit;
 
   // Auto-initialize if data-api-key attribute exists on the script tag
   const currentScript =
@@ -23,15 +26,17 @@ if (typeof window !== 'undefined') {
 
     if (apiKey) {
       window.addEventListener('DOMContentLoaded', () => {
-        window.onboardFlowInstance = OnboardFlow.init({
+        const instance = FlowKit.init({
           apiKey,
           apiUrl,
           locale,
           autoStart,
         });
+        window.flowKitInstance = instance;
+        window.onboardFlowInstance = instance;
       });
     }
   }
 }
 
-export default OnboardFlow;
+export default FlowKit;

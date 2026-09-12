@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
-import { OnboardFlow, TourData, TourStepData, OnboardFlowConfig } from '@onboardflow/web';
+import { FlowKit, FlowKitConfig, TourData, TourStepData } from '@flow-kit/web';
 
-export * from '@onboardflow/web';
+export * from '@flow-kit/web';
 
-interface OnboardingContextValue {
-  sdk: OnboardFlow | null;
+export interface FlowKitContextValue {
+  sdk: FlowKit | null;
   startTour: (slug: string) => boolean;
   nextStep: () => void;
   prevStep: () => void;
@@ -14,13 +14,17 @@ interface OnboardingContextValue {
   isReady: boolean;
 }
 
-const OnboardingContext = createContext<OnboardingContextValue | null>(null);
+export type OnboardingContextValue = FlowKitContextValue;
 
-export interface OnboardingProviderProps extends OnboardFlowConfig {
+const FlowKitContext = createContext<FlowKitContextValue | null>(null);
+
+export interface FlowKitProviderProps extends FlowKitConfig {
   children: ReactNode;
 }
 
-export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
+export type OnboardingProviderProps = FlowKitProviderProps;
+
+export const FlowKitProvider: React.FC<FlowKitProviderProps> = ({
   children,
   apiKey,
   apiUrl,
@@ -31,14 +35,14 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
   onTourComplete,
   onTourDismiss,
 }) => {
-  const [sdk, setSdk] = useState<OnboardFlow | null>(null);
+  const [sdk, setSdk] = useState<FlowKit | null>(null);
   const [currentLocale, setCurrentLocale] = useState<string>(locale);
   const [isReady, setIsReady] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !apiKey) return;
 
-    const instance = OnboardFlow.init({
+    const instance = FlowKit.init({
       apiKey,
       apiUrl,
       locale: currentLocale,
@@ -53,7 +57,7 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
     setIsReady(true);
   }, [apiKey, apiUrl]);
 
-  const value = useMemo<OnboardingContextValue>(() => {
+  const value = useMemo<FlowKitContextValue>(() => {
     return {
       sdk,
       isReady,
@@ -69,16 +73,20 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
     };
   }, [sdk, isReady, currentLocale]);
 
-  return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>;
+  return <FlowKitContext.Provider value={value}>{children}</FlowKitContext.Provider>;
 };
 
-export function useTour(): OnboardingContextValue {
-  const context = useContext(OnboardingContext);
+export const OnboardingProvider = FlowKitProvider;
+
+export function useFlowKit(): FlowKitContextValue {
+  const context = useContext(FlowKitContext);
   if (!context) {
-    throw new Error('useTour must be used within an <OnboardingProvider>');
+    throw new Error('useFlowKit must be used within a <FlowKitProvider>');
   }
   return context;
 }
+
+export const useTour = useFlowKit;
 
 export interface TourTriggerButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   tourSlug: string;
@@ -91,7 +99,7 @@ export const TourTriggerButton: React.FC<TourTriggerButtonProps> = ({
   onClick,
   ...props
 }) => {
-  const { startTour } = useTour();
+  const { startTour } = useFlowKit();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     startTour(tourSlug);

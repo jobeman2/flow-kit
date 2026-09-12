@@ -1,6 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
-import { KeyType, Environment, KeyStatus } from '@onboardflow/database';
+import {
+  KeyType,
+  Environment,
+  KeyStatus,
+  OrgRole,
+  TourStatus,
+  TriggerType,
+  StepPlacement,
+  StepAction,
+} from '@flow-kit/database';
 
 @Injectable()
 export class ProjectsService {
@@ -41,6 +50,100 @@ export class ProjectsService {
         });
       }
     }
+
+    // Auto-provision initial workspace & project if user has none
+    if (projects.length === 0) {
+      const workspaceName = user.name ? `${user.name}'s Workspace` : 'My Workspace';
+      const orgSlug = `org-${Math.random().toString(36).substring(2, 8)}`;
+
+      const org = await this.prisma.client.organization.create({
+        data: {
+          name: workspaceName,
+          slug: orgSlug,
+          members: {
+            create: {
+              userId: user.id,
+              role: OrgRole.OWNER,
+            },
+          },
+        },
+      });
+
+      const newProject = await this.createProject(org.id, 'Main Application');
+
+      // Seed starter multilingual walkthrough tour
+      await this.prisma.client.tour.create({
+        data: {
+          projectId: newProject.id,
+          title: 'Welcome Walkthrough',
+          slug: 'welcome-walkthrough',
+          status: TourStatus.PUBLISHED,
+          triggerType: TriggerType.AUTO_FIRST_VISIT,
+          targetUrlPattern: '*',
+          defaultLocale: 'en',
+          steps: {
+            create: [
+              {
+                stepIndex: 0,
+                targetSelector: '#global-search-bar',
+                placement: StepPlacement.BOTTOM,
+                requiredAction: StepAction.NONE,
+                i18n: {
+                  en: {
+                    title: 'Instant Global Search',
+                    content: 'Quickly find services, records, and documentation right from here.',
+                    nextBtn: 'Next',
+                  },
+                  am: {
+                    title: 'ፈጣን ዓለም አቀፍ ፍለጋ',
+                    content: 'አገልግሎቶችን፣ መዛግብቶችን እና መረጃዎችን በፍጥነት እዚህ ያግኙ።',
+                    nextBtn: 'ቀጣይ',
+                  },
+                  om: {
+                    title: 'Barbaacha Saffisaa',
+                    content: 'Tajaajiloota fi galmeewwan kallattiin asii barbaadaa.',
+                    nextBtn: 'Itti Fufi',
+                  },
+                },
+              },
+              {
+                stepIndex: 1,
+                targetSelector: '#language-switcher',
+                placement: StepPlacement.BOTTOM,
+                requiredAction: StepAction.NONE,
+                i18n: {
+                  en: {
+                    title: 'Multilingual Support',
+                    content: 'Switch languages anytime. The walkthrough adapts dynamically.',
+                    nextBtn: 'Got it!',
+                    backBtn: 'Back',
+                  },
+                  am: {
+                    title: 'የብዙ ቋንቋዎች ድጋፍ',
+                    content: 'ቋንቋዎችን በማንኛውም ጊዜ ይቀይሩ። የመመሪያው ይዘት ወዲያውኑ ይስተካከላል።',
+                    nextBtn: 'ገባኝ!',
+                    backBtn: 'ተመለስ',
+                  },
+                  om: {
+                    title: 'Deggersa Afaanii',
+                    content: 'Afaan kamiyyuu filadhaa. Tajaajilli kun battalumatti jijjiirama.',
+                    nextBtn: 'Hubadheera!',
+                    backBtn: 'Duubatti',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      projects.push({
+        ...newProject,
+        organizationName: org.name,
+        organizationRole: OrgRole.OWNER,
+      });
+    }
+
     return projects;
   }
 

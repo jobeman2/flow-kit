@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { prisma, PrismaClient } from '@onboardflow/database';
+import { prisma, PrismaClient } from '@flow-kit/database';
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {

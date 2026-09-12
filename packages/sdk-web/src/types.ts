@@ -45,7 +45,7 @@ export interface TourData {
   steps: TourStepData[];
 }
 
-export interface OnboardFlowConfig {
+export interface FlowKitConfig {
   apiKey: string;
   apiUrl?: string;
   locale?: string;
@@ -55,6 +55,8 @@ export interface OnboardFlowConfig {
   onTourComplete?: (tour: TourData) => void;
   onTourDismiss?: (tour: TourData) => void;
 }
+
+export type OnboardFlowConfig = FlowKitConfig;
 
 export type TelemetryEventType =
   | 'TOUR_STARTED'

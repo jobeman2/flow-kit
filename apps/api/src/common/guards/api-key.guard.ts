@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../services/prisma.service';
 import { CacheService } from '../services/cache.service';
-import { KeyStatus } from '@onboardflow/database';
+import { KeyStatus } from '@flow-kit/database';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {

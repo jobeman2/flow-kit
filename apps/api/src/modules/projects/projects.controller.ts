@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { KeyType, Environment } from '@onboardflow/database';
+import { KeyType, Environment } from '@flow-kit/database';
 
 @Controller('v1/projects')
 @UseGuards(JwtAuthGuard)

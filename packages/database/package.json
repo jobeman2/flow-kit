@@ -1,5 +1,5 @@
 {
-  "name": "@onboardflow/database",
+  "name": "@flow-kit/database",
   "version": "1.0.0",
   "private": true,
   "main": "./dist/index.js",

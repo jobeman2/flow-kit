@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
-import { AnalyticsEventType } from '@onboardflow/database';
+import { AnalyticsEventType } from '@flow-kit/database';
 
 @Injectable()
 export class AnalyticsService {

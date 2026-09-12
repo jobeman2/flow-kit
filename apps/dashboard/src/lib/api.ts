@@ -2,18 +2,31 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('onboardflow_token');
+  return localStorage.getItem('flowkit_token') || localStorage.getItem('onboardflow_token');
 }
 
 export function getRefreshToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('onboardflow_refresh_token');
+  return localStorage.getItem('flowkit_refresh_token') || localStorage.getItem('onboardflow_refresh_token');
+}
+
+export function getActiveProjectId(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('flowkit_active_project') || localStorage.getItem('onboardflow_active_project');
+}
+
+export function setActiveProjectId(id: string) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('flowkit_active_project', id);
+  localStorage.setItem('onboardflow_active_project', id);
 }
 
 export function setAuthTokens(accessToken: string, refreshToken?: string) {
   if (typeof window === 'undefined') return;
+  localStorage.setItem('flowkit_token', accessToken);
   localStorage.setItem('onboardflow_token', accessToken);
   if (refreshToken) {
+    localStorage.setItem('flowkit_refresh_token', refreshToken);
     localStorage.setItem('onboardflow_refresh_token', refreshToken);
   }
 }
@@ -24,6 +37,9 @@ export function setAuthToken(token: string) {
 
 export function removeAuthToken() {
   if (typeof window === 'undefined') return;
+  localStorage.removeItem('flowkit_token');
+  localStorage.removeItem('flowkit_refresh_token');
+  localStorage.removeItem('flowkit_active_project');
   localStorage.removeItem('onboardflow_token');
   localStorage.removeItem('onboardflow_refresh_token');
   localStorage.removeItem('onboardflow_active_project');

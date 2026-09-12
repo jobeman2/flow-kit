@@ -21,7 +21,7 @@ import {
   Sparkles,
   LifeBuoy,
 } from 'lucide-react';
-import { apiFetch, getAuthToken, setAuthTokens, removeAuthToken } from '@/lib/api';
+import { apiFetch, getAuthToken, setAuthTokens, removeAuthToken, getActiveProjectId, setActiveProjectId } from '@/lib/api';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -69,10 +69,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         .then((projs) => {
           if (projs && projs.length > 0) {
             setProjects(projs);
-            const savedProj = localStorage.getItem('onboardflow_active_project');
+            const savedProj = getActiveProjectId();
             const current = projs.find((p: any) => p.id === savedProj) || projs[0];
             setSelectedProjectId(current.id);
-            localStorage.setItem('onboardflow_active_project', current.id);
+            setActiveProjectId(current.id);
           }
         })
         .catch((err) => {
@@ -94,10 +94,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         .then((projs) => {
           if (projs && projs.length > 0) {
             setProjects(projs);
-            const savedProj = localStorage.getItem('onboardflow_active_project');
+            const savedProj = getActiveProjectId();
             const current = projs.find((p: any) => p.id === savedProj) || projs[0];
             setSelectedProjectId(current.id);
-            localStorage.setItem('onboardflow_active_project', current.id);
+            setActiveProjectId(current.id);
           }
         })
         .catch(() => {});
@@ -106,7 +106,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
-    localStorage.setItem('onboardflow_active_project', projectId);
+    setActiveProjectId(projectId);
     window.dispatchEvent(new Event('projectChanged'));
   };
 

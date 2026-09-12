@@ -1,5 +1,5 @@
 {
-  "name": "@onboardflow/dashboard",
+  "name": "@flow-kit/dashboard",
   "version": "1.0.0",
   "private": true,
   "scripts": {

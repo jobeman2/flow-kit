@@ -12,7 +12,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: 'GuideLayer | Developer-First Onboarding & Universal Walkthrough SDK',
+  title: 'Flow-Kit | Developer-First Onboarding & Universal Walkthrough SDK',
   description: 'Interactive spotlight walkthroughs, tooltips, and product guides with just 2 lines of code. Ultra-lightweight, multilingual-first, Cloud & Self-Hosted.',
 };
 

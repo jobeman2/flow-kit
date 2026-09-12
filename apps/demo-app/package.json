@@ -1,5 +1,5 @@
 {
-  "name": "@onboardflow/demo-app",
+  "name": "@flow-kit/demo-app",
   "version": "1.0.0",
   "private": true,
   "scripts": {

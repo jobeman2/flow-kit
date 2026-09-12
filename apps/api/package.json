@@ -1,5 +1,5 @@
 {
-  "name": "@onboardflow/api",
+  "name": "@flow-kit/api",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
-    "@onboardflow/database": "workspace:*",
+    "@flow-kit/database": "workspace:*",
     "@prisma/client": "^6.4.1",
     "@types/nodemailer": "^8.0.1",
     "bcrypt": "^5.1.1",

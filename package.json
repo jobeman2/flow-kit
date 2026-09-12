@@ -1,16 +1,16 @@
 {
-  "name": "onboardflow-monorepo",
+  "name": "flow-kit-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Onboarding-as-a-Service SaaS & Universal SDK Platform",
+  "description": "Flow-Kit: Universal Onboarding & Spotlight Walkthrough Platform",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "db:generate": "pnpm --filter @onboardflow/database db:generate",
-    "db:push": "pnpm --filter @onboardflow/database db:push",
-    "db:seed": "pnpm --filter @onboardflow/database db:seed"
+    "db:generate": "pnpm --filter @flow-kit/database db:generate",
+    "db:push": "pnpm --filter @flow-kit/database db:push",
+    "db:seed": "pnpm --filter @flow-kit/database db:seed"
   },
   "devDependencies": {
     "turbo": "^2.4.4",

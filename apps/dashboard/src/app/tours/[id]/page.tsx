@@ -18,6 +18,9 @@ import {
   Play,
   Copy,
   ExternalLink,
+  Crosshair,
+  MousePointerClick,
+  Check,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 
@@ -31,6 +34,8 @@ export default function TourStudioPage() {
   const [activeLocale, setActiveLocale] = useState<string>('en');
   const [saving, setSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showInspectorModal, setShowInspectorModal] = useState(false);
+  const [copiedInspector, setCopiedInspector] = useState(false);
 
   const loadTour = async () => {
     try {
@@ -45,6 +50,54 @@ export default function TourStudioPage() {
   useEffect(() => {
     loadTour();
   }, [tourId]);
+
+  const inspectorSnippet = `(() => {
+  if (window.__flowkit_inspector) return;
+  window.__flowkit_inspector = true;
+  const o = document.createElement('div');
+  o.style.cssText = 'position:fixed;pointer-events:none;z-index:999999;border:2px dashed #2563eb;background:rgba(37,99,235,0.12);transition:all 0.05s ease;display:none;';
+  const b = document.createElement('div');
+  b.style.cssText = 'position:fixed;z-index:1000000;background:#0f172a;color:#fff;font-family:monospace;font-size:11px;padding:3px 8px;border-radius:4px;box-shadow:0 4px 6px rgba(0,0,0,0.3);pointer-events:none;display:none;';
+  document.body.appendChild(o);
+  document.body.appendChild(b);
+  function getSel(el) {
+    if (el.id) return '#' + el.id;
+    for (const a of ['data-tour', 'data-testid', 'data-id', 'role']) {
+      if (el.getAttribute(a)) return '[' + a + '="' + el.getAttribute(a) + '"]';
+    }
+    let s = el.tagName.toLowerCase();
+    if (el.className && typeof el.className === 'string') {
+      const c = el.className.trim().split(/\\s+/).filter(x => !x.includes(':') && x.length < 20)[0];
+      if (c) s += '.' + c;
+    }
+    return s;
+  }
+  function onMove(e) {
+    const el = e.target;
+    if (el === o || el === b) return;
+    const r = el.getBoundingClientRect();
+    o.style.display = 'block'; o.style.top = r.top + 'px'; o.style.left = r.left + 'px';
+    o.style.width = r.width + 'px'; o.style.height = r.height + 'px';
+    const sel = getSel(el);
+    b.style.display = 'block'; b.style.top = Math.max(4, r.top - 26) + 'px'; b.style.left = Math.max(4, r.left) + 'px';
+    b.innerText = sel + ' (Click to copy)';
+  }
+  function onClick(e) {
+    e.preventDefault(); e.stopPropagation();
+    const sel = getSel(e.target);
+    navigator.clipboard.writeText(sel);
+    b.innerText = 'Copied: ' + sel;
+    setTimeout(() => {
+      o.remove(); b.remove();
+      window.__flowkit_inspector = false;
+      document.removeEventListener('mousemove', onMove, true);
+      document.removeEventListener('click', onClick, true);
+    }, 600);
+  }
+  document.addEventListener('mousemove', onMove, true);
+  document.addEventListener('click', onClick, true);
+  console.log('[Flow-Kit] Element Inspector active. Click any element on page.');
+})();`;
 
   if (!tour) {
     return (
@@ -305,24 +358,63 @@ export default function TourStudioPage() {
             
             {/* Step Target & Positioning */}
             <div className="bg-white rounded-sm border border-slate-200 shadow-xs p-5 space-y-3">
-              <div className="flex items-center space-x-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
-                <Sliders className="w-3.5 h-3.5 text-slate-500" />
-                <span>Target Element & Placement</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  <Sliders className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Target Element & Placement</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowInspectorModal(true)}
+                  className="px-2 py-0.5 rounded-sm bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium flex items-center space-x-1 transition-colors border border-slate-200 cursor-pointer"
+                  title="Open visual element inspector tool"
+                >
+                  <Crosshair className="w-3 h-3 text-slate-600" />
+                  <span>Point & Click Inspector</span>
+                </button>
               </div>
 
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">
                   DOM Query Selector
                 </label>
-                <input
-                  type="text"
-                  value={currentStep.targetSelector}
-                  onChange={(e) => handleUpdateStep('targetSelector', e.target.value)}
-                  placeholder="#global-search-bar or [data-tour='...']"
-                  className="w-full px-3 py-1.5 font-mono text-xs border border-slate-200 rounded-sm focus:outline-none focus:border-slate-800"
-                />
-                <p className="text-[10px] text-slate-400 mt-1">
-                  The client SDK highlights this DOM element with an interactive cutout mask.
+                <div className="flex items-center space-x-1.5">
+                  <input
+                    type="text"
+                    value={currentStep.targetSelector}
+                    onChange={(e) => handleUpdateStep('targetSelector', e.target.value)}
+                    placeholder="#global-search-bar or [data-tour='...']"
+                    className="w-full px-3 py-1.5 font-mono text-xs border border-slate-200 rounded-sm focus:outline-none focus:border-slate-800"
+                  />
+                </div>
+
+                {/* Quick Target Presets */}
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] text-slate-400 font-medium mr-0.5">Presets:</span>
+                  {[
+                    { label: 'Search Bar', sel: '#global-search-bar' },
+                    { label: 'Language Switcher', sel: '#language-switcher' },
+                    { label: 'Navigation', sel: 'nav, header' },
+                    { label: 'CTA Button', sel: 'button[type="submit"]' },
+                    { label: 'Profile', sel: '[data-tour="profile"]' },
+                  ].map((p) => (
+                    <button
+                      key={p.sel}
+                      type="button"
+                      onClick={() => handleUpdateStep('targetSelector', p.sel)}
+                      className={`text-[10px] px-1.5 py-0.5 rounded-sm border transition-colors cursor-pointer ${
+                        currentStep.targetSelector === p.sel
+                          ? 'bg-slate-900 text-white border-slate-900 font-medium'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+
+                <p className="text-[10px] text-slate-400 mt-1.5">
+                  Flow-Kit locates this element dynamically and renders an SVG spotlight cutout over it.
                 </p>
               </div>
 
@@ -518,6 +610,81 @@ export default function TourStudioPage() {
         </div>
 
       </div>
+
+      {/* Visual Inspector Tool Modal */}
+      {showInspectorModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm border border-slate-200 shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-2">
+                <Crosshair className="w-4 h-4 text-slate-700" />
+                <h3 className="font-bold text-sm text-slate-900">In-App Visual Element Inspector</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInspectorModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Activate Flow-Kit's live element inspector on your web application. Hover over any button, input, or container to highlight it, and click to automatically copy its optimal CSS selector.
+            </p>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-800">
+                <span>Inspector Console Snippet</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(inspectorSnippet);
+                    setCopiedInspector(true);
+                    setTimeout(() => setCopiedInspector(false), 2000);
+                  }}
+                  className="px-2 py-0.5 rounded-sm bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium flex items-center space-x-1 transition-colors border border-slate-200 cursor-pointer"
+                >
+                  {copiedInspector ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-600" />
+                      <span className="text-emerald-600">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Copy Snippet</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <pre className="bg-slate-950 p-3 rounded-sm text-[11px] font-mono text-slate-300 overflow-x-auto border border-slate-800 max-h-36">
+                {inspectorSnippet}
+              </pre>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-sm border border-slate-200 text-xs text-slate-600 space-y-1.5">
+              <div className="font-semibold text-slate-800">How to use:</div>
+              <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-500">
+                <li>Copy the snippet above.</li>
+                <li>Open your target web app (e.g. <code className="text-slate-700">http://localhost:5173</code>).</li>
+                <li>Open Browser DevTools Console (<kbd className="font-mono bg-white px-1 border border-slate-200 rounded">F12</kbd>) and paste it.</li>
+                <li>Click any element on the page to copy its selector, then paste it here into <strong>DOM Query Selector</strong>.</li>
+              </ol>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setShowInspectorModal(false)}
+                className="px-4 py-1.5 rounded-sm bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
