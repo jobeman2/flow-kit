@@ -14,11 +14,27 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS for dashboard, demo apps, and 3rd party websites
-  app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+  // Enable CORS for dashboard, demo apps, file:// protocol, and 3rd party websites
+  app.use((req: Request, res: Response, next: any) => {
+    const origin = req.headers.origin;
+    if (!origin || origin === 'null') {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, x-api-key, *');
+
+    // Chrome Private Network Access (PNA) support for local development
+    if (req.headers['access-control-request-private-network']) {
+      res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    }
+
+    if (req.method === 'OPTIONS') {
+      return res.status(204).end();
+    }
+    next();
   });
 
   // Serve standalone Universal Client SDK at GET /flow-kit.js and GET /sdk.js
@@ -35,7 +51,9 @@ async function bootstrap() {
     for (const p of candidatePaths) {
       if (fs.existsSync(p)) {
         res.setHeader('Content-Type', 'application/javascript');
-        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Private-Network', 'true');
         return res.sendFile(path.resolve(p));
       }
     }

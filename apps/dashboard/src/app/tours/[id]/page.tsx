@@ -22,7 +22,7 @@ import {
   MousePointerClick,
   Check,
 } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getActiveProjectId } from '@/lib/api';
 
 export default function TourStudioPage() {
   const params = useParams();
@@ -39,7 +39,8 @@ export default function TourStudioPage() {
 
   const loadTour = async () => {
     try {
-      const activeProjectId = localStorage.getItem('onboardflow_active_project');
+      const activeProjectId = getActiveProjectId();
+      if (!activeProjectId) return;
       const data = await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}`);
       setTour(data);
     } catch (e) {
@@ -182,7 +183,8 @@ export default function TourStudioPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const activeProjectId = localStorage.getItem('onboardflow_active_project');
+      const activeProjectId = getActiveProjectId();
+      if (!activeProjectId) return;
       await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}`, {
         method: 'PUT',
         body: JSON.stringify({
@@ -204,7 +206,8 @@ export default function TourStudioPage() {
   };
 
   const handlePublish = async () => {
-    const activeProjectId = localStorage.getItem('onboardflow_active_project');
+    const activeProjectId = getActiveProjectId();
+    if (!activeProjectId) return;
     await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}/publish`, {
       method: 'POST',
     });

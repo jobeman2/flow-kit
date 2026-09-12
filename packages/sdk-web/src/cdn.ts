@@ -25,16 +25,27 @@ if (typeof window !== 'undefined') {
     const autoStart = currentScript.getAttribute('data-auto-start') !== 'false';
 
     if (apiKey) {
-      window.addEventListener('DOMContentLoaded', () => {
-        const instance = FlowKit.init({
-          apiKey,
-          apiUrl,
-          locale,
-          autoStart,
-        });
-        window.flowKitInstance = instance;
-        window.onboardFlowInstance = instance;
-      });
+      const initSdk = () => {
+        try {
+          const instance = FlowKit.init({
+            apiKey,
+            apiUrl,
+            locale,
+            autoStart,
+          });
+          window.flowKitInstance = instance;
+          window.onboardFlowInstance = instance;
+        } catch (err) {
+          console.error('[FlowKit] Initialization error:', err);
+        }
+      };
+
+      if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', initSdk);
+      } else {
+        // DOM is already parsed (interactive or complete)
+        initSdk();
+      }
     }
   }
 }

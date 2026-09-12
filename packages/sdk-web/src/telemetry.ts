@@ -10,9 +10,9 @@ export class TelemetryService {
   private queue: TelemetryPayload[] = [];
   private flushTimer: any = null;
 
-  constructor(apiUrl: string, apiKey: string) {
-    this.apiUrl = apiUrl.replace(/\/$/, '');
-    this.apiKey = apiKey;
+  constructor(apiUrl?: string, apiKey?: string) {
+    this.apiUrl = (apiUrl || 'http://localhost:4000').replace(/\/$/, '');
+    this.apiKey = apiKey || '';
     this.anonymousUserId = this.getOrCreateAnonymousId();
   }
 
@@ -52,6 +52,14 @@ export class TelemetryService {
         list.push(tourSlug);
         localStorage.setItem(STORAGE_SEEN_TOURS, JSON.stringify(list));
       }
+    } catch {
+      // ignore
+    }
+  }
+
+  public resetSeenTours(): void {
+    try {
+      localStorage.removeItem(STORAGE_SEEN_TOURS);
     } catch {
       // ignore
     }

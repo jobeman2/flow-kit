@@ -14,7 +14,7 @@ import {
   Filter,
   SlidersHorizontal,
 } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getActiveProjectId } from '@/lib/api';
 
 export default function ToursListPage() {
   const [tours, setTours] = useState<any[]>([]);
@@ -27,12 +27,15 @@ export default function ToursListPage() {
   const [newUrlPattern, setNewUrlPattern] = useState('*');
 
   const loadTours = async () => {
-    const activeProjectId = localStorage.getItem('onboardflow_active_project');
-    if (!activeProjectId) return;
+    const activeProjectId = getActiveProjectId();
+    if (!activeProjectId) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const data = await apiFetch(`/v1/projects/${activeProjectId}/tours`);
-      setTours(data);
+      setTours(data || []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -42,11 +45,14 @@ export default function ToursListPage() {
 
   useEffect(() => {
     loadTours();
+    const onProjectChanged = () => loadTours();
+    window.addEventListener('projectChanged', onProjectChanged);
+    return () => window.removeEventListener('projectChanged', onProjectChanged);
   }, []);
 
   const handleCreateTour = async (e: React.FormEvent) => {
     e.preventDefault();
-    const activeProjectId = localStorage.getItem('onboardflow_active_project');
+    const activeProjectId = getActiveProjectId();
     if (!activeProjectId || !newTitle) return;
 
     try {
@@ -94,7 +100,8 @@ export default function ToursListPage() {
   };
 
   const handlePublish = async (tourId: string) => {
-    const activeProjectId = localStorage.getItem('onboardflow_active_project');
+    const activeProjectId = getActiveProjectId();
+    if (!activeProjectId) return;
     await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}/publish`, {
       method: 'POST',
     });
@@ -103,7 +110,8 @@ export default function ToursListPage() {
 
   const handleDelete = async (tourId: string) => {
     if (!confirm('Are you sure you want to delete this walkthrough?')) return;
-    const activeProjectId = localStorage.getItem('onboardflow_active_project');
+    const activeProjectId = getActiveProjectId();
+    if (!activeProjectId) return;
     await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}`, {
       method: 'DELETE',
     });
