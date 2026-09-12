@@ -1,0 +1,220 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum KeyType {
+  PUBLIC_CLIENT
+  SECRET_ADMIN
+}
+
+enum Environment {
+  TEST
+  PRODUCTION
+}
+
+enum KeyStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum TourStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TriggerType {
+  AUTO_FIRST_VISIT
+  URL_MATCH
+  ELEMENT_CLICK
+  PROGRAMMATIC
+}
+
+enum StepPlacement {
+  TOP
+  BOTTOM
+  LEFT
+  RIGHT
+  CENTER
+}
+
+enum StepAction {
+  NONE
+  CLICK_TARGET
+  INPUT_VALUE
+}
+
+enum AnalyticsEventType {
+  TOUR_STARTED
+  STEP_VIEWED
+  STEP_COMPLETED
+  TOUR_SKIPPED
+  TOUR_COMPLETED
+}
+
+model Organization {
+  id        String               @id @default(cuid())
+  name      String
+  slug      String               @unique
+  plan      String               @default("free") // free, pro, enterprise
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  members   OrganizationMember[]
+  projects  Project[]
+
+  @@map("organizations")
+}
+
+model User {
+  id                   String               @id @default(cuid())
+  email                String               @unique
+  passwordHash         String
+  name                 String?
+  isEmailVerified      Boolean              @default(false)
+  emailVerifyToken     String?              @unique
+  emailVerifyExpires   DateTime?
+  emailVerifyOtp       String?
+  emailVerifyOtpExpires DateTime?
+  passwordResetToken   String?              @unique
+  passwordResetExpires DateTime?
+  refreshTokenHash     String?
+  authProvider         String               @default("LOCAL") // LOCAL, GOOGLE, GITHUB
+  providerId           String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  memberships          OrganizationMember[]
+
+  @@map("users")
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrgRole      @default(MEMBER)
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+model Project {
+  id             String           @id @default(cuid())
+  organizationId String
+  name           String
+  slug           String
+  domains        String[]         @default([])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apiKeys        ApiKey[]
+  tours          Tour[]
+  events         AnalyticsEvent[]
+
+  @@unique([organizationId, slug])
+  @@map("projects")
+}
+
+model ApiKey {
+  id          String      @id @default(cuid())
+  projectId   String
+  name        String
+  key         String      @unique
+  type        KeyType     @default(PUBLIC_CLIENT)
+  environment Environment @default(TEST)
+  status      KeyStatus   @default(ACTIVE)
+  lastUsedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  revokedAt   DateTime?
+
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([key, status])
+  @@index([projectId, type])
+  @@map("api_keys")
+}
+
+model Tour {
+  id                 String           @id @default(cuid())
+  projectId          String
+  slug               String
+  title              String
+  description        String?
+  status             TourStatus       @default(DRAFT)
+  triggerType        TriggerType      @default(AUTO_FIRST_VISIT)
+  targetUrlPattern   String           @default("*")
+  defaultLocale      String           @default("en")
+  isDismissable      Boolean          @default(true)
+  allowBackdropClick Boolean          @default(false)
+  themeConfig        Json?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  project            Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  steps              TourStep[]
+  events             AnalyticsEvent[]
+
+  @@unique([projectId, slug])
+  @@index([projectId, status])
+  @@map("tours")
+}
+
+model TourStep {
+  id                     String           @id @default(cuid())
+  tourId                 String
+  stepIndex              Int
+  targetSelector         String
+  placement              StepPlacement    @default(BOTTOM)
+  i18n                   Json             // Localized content: { en: { title, content, nextBtn, backBtn, skipBtn }, am: {...} }
+  requiredAction         StepAction       @default(NONE)
+  backdropConfig         Json?            // { dimOpacity: 0.5, blur: 0, clickThrough: false }
+  advanceOnSelectorClick Boolean          @default(false)
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  tour                   Tour             @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  events                 AnalyticsEvent[]
+
+  @@unique([tourId, stepIndex])
+  @@index([tourId])
+  @@map("tour_steps")
+}
+
+model AnalyticsEvent {
+  id              String             @id @default(cuid())
+  projectId       String
+  tourId          String
+  tourStepId      String?
+  eventType       AnalyticsEventType
+  anonymousUserId String
+  locale          String             @default("en")
+  path            String             @default("/")
+  userMetadata    Json?
+  clientTimestamp DateTime           @default(now())
+  createdAt       DateTime           @default(now())
+
+  project         Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tour            Tour               @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  step            TourStep?          @relation(fields: [tourStepId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, eventType, createdAt])
+  @@index([tourId, eventType])
+  @@index([tourStepId])
+  @@map("analytics_events")
+}

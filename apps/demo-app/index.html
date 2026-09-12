@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citizen Digital Portal - Addis Ababa City</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'DM Sans', 'Noto Sans Ethiopic', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Municipality Logo -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-700 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-emerald-600/20">
+          AA
+        </div>
+        <div>
+          <h1 class="font-bold text-sm text-slate-900 leading-tight" id="portal-title">
+            Addis Ababa City Administration
+          </h1>
+          <p class="text-[11px] text-slate-500" id="portal-subtitle">
+            Citizen Digital Services & e-Governance Portal
+          </p>
+        </div>
+      </div>
+
+      <!-- Search Bar Target -->
+      <div class="hidden md:flex flex-1 max-w-md mx-8">
+        <div id="global-search-bar" class="w-full relative rounded-xl border border-slate-200 bg-slate-50 hover:border-slate-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+          <input
+            type="text"
+            placeholder="Search certificates, trade licenses, land registry..."
+            class="w-full py-2 pl-9 pr-4 text-xs bg-transparent focus:outline-none text-slate-800 placeholder-slate-400"
+          />
+          <div class="absolute left-3 top-2.5 text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Language Switcher Target -->
+      <div class="flex items-center space-x-3">
+        <!-- Language Switcher Target -->
+        <div id="language-switcher" class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button
+            onclick="switchLang('en')"
+            id="lang-btn-en"
+            class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-xs transition-all"
+          >
+            English
+          </button>
+          <button
+            onclick="switchLang('am')"
+            id="lang-btn-am"
+            class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
+          >
+            አማርኛ
+          </button>
+          <button
+            onclick="switchLang('om')"
+            id="lang-btn-om"
+            class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
+          >
+            Oromoo
+          </button>
+        </div>
+
+        <button
+          onclick="restartTour()"
+          class="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
+        >
+          <span>Restart Walkthrough</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Citizen Portal Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Municipal Hero Banner -->
+    <div class="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-lg">
+      <div class="max-w-2xl relative z-10">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-700/60 text-emerald-200 border border-emerald-500/30 mb-4">
+          Federal Republic of Ethiopia • City Government
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight" id="hero-headline">
+          Public e-Services, Accessible Anywhere
+        </h2>
+        <p class="text-emerald-100 text-sm mt-2 leading-relaxed" id="hero-subtext">
+          Apply for identity documents, register businesses, verify educational certificates, and settle taxes seamlessly online.
+        </p>
+      </div>
+      <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    </div>
+
+    <!-- Quick Actions Grid Target -->
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-slate-900" id="services-title">
+          Fast-Track Citizen e-Services
+        </h3>
+        <span class="text-xs text-slate-500">Verified & Authenticated</span>
+      </div>
+
+      <div id="quick-actions-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform font-mono text-xs font-bold">
+            DOC
+          </div>
+          <h4 class="font-bold text-sm text-slate-900">Vital Events & Certificates</h4>
+          <p class="text-xs text-slate-500 mt-1">Birth, marriage, and death certificates certified with QR seal.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform font-mono text-xs font-bold">
+            REG
+          </div>
+          <h4 class="font-bold text-sm text-slate-900">Commercial Registration</h4>
+          <p class="text-xs text-slate-500 mt-1">Instant trade name verification and commercial license renewal.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
+          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform font-mono text-xs font-bold">
+            TAX
+          </div>
+          <h4 class="font-bold text-sm text-slate-900">Unified Municipal Tax</h4>
+          <p class="text-xs text-slate-500 mt-1">Direct integration with Telebirr and local banking switches.</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform font-mono text-xs font-bold">
+            GEO
+          </div>
+          <h4 class="font-bold text-sm text-slate-900">Land & Title Registry</h4>
+          <p class="text-xs text-slate-500 mt-1">Verify real estate parcel boundary maps and cadastral rights.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 24/7 Citizen Support Floating Button Target -->
+  <div class="fixed bottom-6 right-6 z-20">
+    <button
+      id="support-help-button"
+      onclick="alert('24/7 Citizen Helpdesk: Call 994 or chat with municipal representatives.')"
+      class="flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-xl shadow-slate-900/20 border border-slate-700 transition-all hover:scale-105 cursor-pointer"
+    >
+      <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      <span class="text-xs font-bold">24/7 Support Desk</span>
+    </button>
+  </div>
+
+  <!-- Multilingual UI switcher helper script -->
+  <script>
+    const translations = {
+      en: {
+        title: 'Addis Ababa City Administration',
+        subtitle: 'Citizen Digital Services & e-Governance Portal',
+        heroTitle: 'Public e-Services, Accessible Anywhere',
+        heroSub: 'Apply for identity documents, register businesses, verify educational certificates, and settle taxes seamlessly online.',
+        servicesTitle: 'Fast-Track Citizen e-Services',
+      },
+      am: {
+        title: 'የአዲስ አበባ ከተማ አስተዳደር',
+        subtitle: 'የዜጎች ዲጂታል አገልግሎት እና ኢ-አስተዳደር ፖርታል',
+        heroTitle: 'የህዝብ አገልግሎቶች፣ ከየትኛውም ቦታ ተደራሽ',
+        heroSub: 'የመታወቂያ ሰነዶችን ያመልክቱ፣ ንግዶችን ይመዝግቡ፣ የትምህርት ማስረጃዎችን ያረጋግጡ እና ታክስን በመስመር ላይ በቀላሉ ይክፈሉ።',
+        servicesTitle: 'ፈጣን የዜጎች የኢንተርኔት አገልግሎቶች',
+      },
+      om: {
+        title: 'Bulchiinsa Magaalaa Finfinnee',
+        subtitle: 'Tajaajila Dijitaalaa Lammiilee fi Mooraa e-Bulchiinsaa',
+        heroTitle: 'Tajaajiloota Mootummaa, Bakka Kamittuu Argamu',
+        heroSub: 'Waraqaa eenyummaa iyyadhaa, daldala galmeessaa, ragaalee barnootaa mirkaneeffadhaa fi gibira toora interneetiin kaffalaa.',
+        servicesTitle: 'Tajaajiloota Dijitaalaa Ariifataa Lammiilee',
+      }
+    };
+
+    function switchLang(locale) {
+      ['en', 'am', 'om'].forEach(l => {
+        const btn = document.getElementById('lang-btn-' + l);
+        if (l === locale) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-xs transition-all';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all';
+        }
+      });
+
+      const t = translations[locale] || translations.en;
+      document.getElementById('portal-title').innerText = t.title;
+      document.getElementById('portal-subtitle').innerText = t.subtitle;
+      document.getElementById('hero-headline').innerText = t.heroTitle;
+      document.getElementById('hero-subtext').innerText = t.heroSub;
+      document.getElementById('services-title').innerText = t.servicesTitle;
+
+      // Update OnboardFlow SDK active locale dynamically!
+      if (window.onboardFlowInstance) {
+        window.onboardFlowInstance.setLocale(locale);
+      }
+    }
+
+    function restartTour() {
+      if (window.onboardFlowInstance) {
+        window.onboardFlowInstance.startTour('welcome-citizen-walkthrough');
+      } else {
+        alert('OnboardFlow SDK initializing... check API server.');
+      }
+    }
+  </script>
+
+  <!-- 
+    =======================================================
+    2-LINE ONBOARDFLOW UNIVERSAL CLIENT SDK INTEGRATION
+    =======================================================
+  -->
+  <script
+    src="http://localhost:4000/sdk.js"
+    data-api-key="pk_live_demo_addis_79a2f1b4c6e8"
+    data-api-url="http://localhost:4000"
+    data-locale="en"
+  ></script>
+
+</body>
+</html>
