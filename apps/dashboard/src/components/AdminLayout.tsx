@@ -20,8 +20,10 @@ import {
   ChevronDown,
   Sparkles,
   LifeBuoy,
+  Check,
 } from 'lucide-react';
 import { apiFetch, getAuthToken, setAuthTokens, removeAuthToken, getActiveProjectId, setActiveProjectId } from '@/lib/api';
+import CreateProjectModal from './CreateProjectModal';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -35,6 +37,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [user, setUser] = useState<any>(null);
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [projectSearch, setProjectSearch] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Sync Clerk authenticated user with backend session
   useEffect(() => {
@@ -122,6 +127,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     { href: '/console', label: 'Overview', icon: LayoutDashboard },
+    { href: '/projects', label: 'All Websites (Projects)', icon: FolderDot },
     { href: '/tours', label: 'Tours & Studio', icon: Layers },
     { href: '/analytics', label: 'Funnel Analytics', icon: BarChart3 },
     { href: '/keys', label: 'API Keys & Setup', icon: Key },
@@ -141,7 +147,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-sm tracking-tight text-slate-900 leading-none">
-                  GuideLayer
+                  Flow-Kit
                 </span>
                 <span className="text-[10px] text-slate-400 font-mono tracking-wider mt-0.5">
                   CONSOLE
@@ -154,34 +160,126 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </span>
           </div>
 
-          {/* Project Switcher Card */}
-          <div className="p-3.5 border-b border-slate-100">
-            <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 px-1">
-              Active Project
-            </label>
+          {/* Project Switcher Card with Instant Search & Creation */}
+          <div className="p-3.5 border-b border-slate-100 relative">
+            <div className="flex items-center justify-between mb-1.5 px-1">
+              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                Active Website / Project
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(true)}
+                className="text-[10px] text-slate-500 hover:text-slate-900 font-semibold flex items-center space-x-0.5 cursor-pointer"
+                title="Create new project"
+              >
+                <Plus className="w-3 h-3 text-slate-600" />
+                <span>New</span>
+              </button>
+            </div>
+
             <div className="relative">
-              <div className="flex items-center justify-between p-2 rounded-sm bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer">
+              <button
+                type="button"
+                onClick={() => setShowProjectDropdown(!showProjectDropdown)}
+                className="w-full flex items-center justify-between p-2 rounded-sm bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer text-left"
+              >
                 <div className="flex items-center space-x-2 truncate">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                   <span className="text-xs font-semibold text-slate-800 truncate">
                     {currentProject?.name || 'Default Project'}
                   </span>
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
-              </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 ml-1 transition-transform ${showProjectDropdown ? 'rotate-180' : ''}`} />
+              </button>
 
-              {projects.length > 1 && (
-                <select
-                  value={selectedProjectId}
-                  onChange={(e) => handleProjectChange(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+              {/* Searchable Dropdown Popover */}
+              {showProjectDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-20"
+                    onClick={() => {
+                      setShowProjectDropdown(false);
+                      setProjectSearch('');
+                    }}
+                  />
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-sm shadow-xl z-30 py-1 max-h-72 flex flex-col overflow-hidden animate-in fade-in duration-100">
+                    {/* Search Input */}
+                    <div className="p-1.5 border-b border-slate-100">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={projectSearch}
+                          onChange={(e) => setProjectSearch(e.target.value)}
+                          placeholder="Search websites..."
+                          className="w-full pl-7 pr-2 py-1 text-xs border border-slate-200 rounded-sm bg-slate-50 focus:outline-none focus:border-slate-800 font-sans"
+                          autoFocus
+                        />
+                        <Search className="w-3 h-3 text-slate-400 absolute left-2 top-2" />
+                      </div>
+                    </div>
+
+                    {/* Projects List */}
+                    <div className="overflow-y-auto flex-1 divide-y divide-slate-50 max-h-48">
+                      {projects
+                        .filter((p) => p.name.toLowerCase().includes(projectSearch.toLowerCase()))
+                        .map((p) => {
+                          const isSelected = p.id === selectedProjectId;
+                          const tourCount = p._count?.tours || p.tours?.length || 0;
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => {
+                                handleProjectChange(p.id);
+                                setShowProjectDropdown(false);
+                                setProjectSearch('');
+                              }}
+                              className={`w-full px-2.5 py-1.5 text-left text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                                isSelected ? 'bg-slate-100 font-semibold text-slate-900' : 'hover:bg-slate-50 text-slate-700'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2 truncate pr-1">
+                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSelected ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                                <span className="truncate">{p.name}</span>
+                              </div>
+                              <div className="flex items-center space-x-1 shrink-0 text-[10px] text-slate-400 font-mono">
+                                <span>{tourCount} tours</span>
+                                {isSelected && <Check className="w-3 h-3 text-emerald-600 ml-1 stroke-[2.5]" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+
+                      {projects.filter((p) => p.name.toLowerCase().includes(projectSearch.toLowerCase())).length === 0 && (
+                        <div className="p-3 text-center text-xs text-slate-400">
+                          No matching projects
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Dropdown Footer */}
+                    <div className="p-1.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowProjectDropdown(false);
+                          setShowCreateModal(true);
+                        }}
+                        className="px-2 py-0.5 text-slate-700 hover:text-slate-900 font-medium flex items-center space-x-1 cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3 text-slate-500" />
+                        <span>New Project</span>
+                      </button>
+                      <Link
+                        href="/projects"
+                        onClick={() => setShowProjectDropdown(false)}
+                        className="px-2 py-0.5 text-slate-500 hover:text-slate-900 font-medium"
+                      >
+                        All ({projects.length}) →
+                      </Link>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -263,6 +361,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {children}
         </main>
       </div>
+
+      <CreateProjectModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onProjectCreated={(newProj) => {
+          setProjects((prev) => [...prev, newProj]);
+          handleProjectChange(newProj.id);
+        }}
+      />
     </div>
   );
 }

@@ -19,7 +19,7 @@ import {
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getActiveProjectId } from '@/lib/api';
 
 export default function ConsoleOverview() {
   const [project, setProject] = useState<any>(null);
@@ -29,7 +29,7 @@ export default function ConsoleOverview() {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-    const activeProjectId = localStorage.getItem('onboardflow_active_project');
+    const activeProjectId = getActiveProjectId();
     if (!activeProjectId) return;
 
     try {
