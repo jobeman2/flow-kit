@@ -13,6 +13,7 @@ export class TourOverlay {
   private containerEl: HTMLDivElement | null = null;
   private svgMaskEl: SVGSVGElement | null = null;
   private cutoutRectEl: SVGRectElement | null = null;
+  private backdropRectEl: SVGRectElement | null = null;
   private tooltipEl: HTMLDivElement | null = null;
   private callbacks: OverlayCallbacks;
   private currentStep: TourStepData | null = null;
@@ -109,6 +110,7 @@ export class TourOverlay {
     });
 
     maskSvg.appendChild(backdropRect);
+    this.backdropRectEl = backdropRect;
     this.svgMaskEl = maskSvg;
     this.containerEl.appendChild(maskSvg);
 
@@ -129,7 +131,7 @@ export class TourOverlay {
       z-index: 1000000;
       opacity: 0;
       transform: scale(0.95);
-      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, top 0.25s cubic-bezier(0.4, 0, 0.2, 1), left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, top 0.25s cubic-bezier(0.4, 0, 0.2, 1), left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.2s ease;
     `;
     this.containerEl.appendChild(this.tooltipEl);
 
@@ -173,7 +175,57 @@ export class TourOverlay {
     const isLast = currentStepIndex >= totalSteps;
 
     const i18n = resolveStepI18n(step.i18n, locale, tour.defaultLocale);
-    const primaryColor = tour.themeConfig?.primaryColor || '#0F766E';
+    const primaryColor = tour.themeConfig?.primaryColor || '#2563eb';
+    const borderRadius = tour.themeConfig?.borderRadius || '12px';
+    const cardStyle = tour.themeConfig?.cardStyle || 'clean';
+    const normPlacement = (step.placement || 'bottom').toLowerCase();
+
+    // Dynamic Backdrop Dim
+    const dimOpacity = typeof step.backdropConfig?.dimOpacity === 'number'
+      ? step.backdropConfig.dimOpacity
+      : (tour.themeConfig?.backdropOpacity ?? 0.65);
+    if (this.backdropRectEl) {
+      this.backdropRectEl.setAttribute('fill', `rgba(15, 23, 42, ${dimOpacity})`);
+      this.backdropRectEl.style.display = dimOpacity === 0 ? 'none' : 'block';
+    }
+
+    // Dynamic Card Style & Sharpness
+    this.tooltipEl.style.borderRadius = borderRadius;
+    let isDark = false;
+    if (cardStyle === 'dark') {
+      isDark = true;
+      this.tooltipEl.style.background = '#0f172a';
+      this.tooltipEl.style.color = '#f8fafc';
+      this.tooltipEl.style.border = '1px solid #334155';
+      this.tooltipEl.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.7)';
+      this.tooltipEl.style.backdropFilter = 'none';
+    } else if (cardStyle === 'glass') {
+      this.tooltipEl.style.background = 'rgba(255, 255, 255, 0.88)';
+      this.tooltipEl.style.color = '#0f172a';
+      this.tooltipEl.style.border = '1px solid rgba(255, 255, 255, 0.6)';
+      this.tooltipEl.style.boxShadow = '0 20px 30px -10px rgba(0, 0, 0, 0.15)';
+      this.tooltipEl.style.backdropFilter = 'blur(16px)';
+    } else if (cardStyle === 'elevated') {
+      this.tooltipEl.style.background = '#ffffff';
+      this.tooltipEl.style.color = '#0f172a';
+      this.tooltipEl.style.border = `2px solid ${primaryColor}`;
+      this.tooltipEl.style.boxShadow = `0 20px 25px -5px ${primaryColor}25, 0 8px 10px -6px rgba(0, 0, 0, 0.1)`;
+      this.tooltipEl.style.backdropFilter = 'none';
+    } else {
+      // clean (default)
+      this.tooltipEl.style.background = '#ffffff';
+      this.tooltipEl.style.color = '#0f172a';
+      this.tooltipEl.style.border = '1px solid #e2e8f0';
+      this.tooltipEl.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)';
+      this.tooltipEl.style.backdropFilter = 'none';
+    }
+
+    const titleColor = isDark ? '#ffffff' : '#0f172a';
+    const bodyColor = isDark ? '#94a3b8' : '#475569';
+    const prevBtnBg = isDark ? '#1e293b' : '#f1f5f9';
+    const prevBtnColor = isDark ? '#cbd5e1' : '#475569';
+    const prevBtnBorder = isDark ? '#334155' : '#e2e8f0';
+    const btnRadius = Math.max(4, (parseInt(borderRadius) || 8) - 4);
 
     // Tooltip HTML content
     this.tooltipEl.innerHTML = `
@@ -192,17 +244,17 @@ export class TourOverlay {
             : ''
         }
       </div>
-      <h3 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 600; color: #0f172a; line-height: 1.35;">
+      <h3 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 600; color: ${titleColor}; line-height: 1.35;">
         ${escapeHtml(i18n.title)}
       </h3>
-      <p style="margin: 0 0 16px 0; font-size: 13px; color: #475569; line-height: 1.5;">
+      <p style="margin: 0 0 16px 0; font-size: 13px; color: ${bodyColor}; line-height: 1.5;">
         ${escapeHtml(i18n.content)}
       </p>
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
         <div>
           ${
             !isFirst
-              ? `<button id="obf-prev-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s;">
+              ? `<button id="obf-prev-btn" style="background: ${prevBtnBg}; color: ${prevBtnColor}; border: 1px solid ${prevBtnBorder}; border-radius: ${btnRadius}px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s;">
                   ${escapeHtml(i18n.backBtn || 'Back')}
                 </button>`
               : (tour.isDismissable
@@ -212,7 +264,7 @@ export class TourOverlay {
                   : '')
           }
         </div>
-        <button id="obf-next-btn" style="background: ${primaryColor}; color: #ffffff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: opacity 0.15s;">
+        <button id="obf-next-btn" style="background: ${primaryColor}; color: #ffffff; border: none; border-radius: ${btnRadius}px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: opacity 0.15s;">
           ${escapeHtml(isLast ? (i18n.nextBtn || 'Finish') : (i18n.nextBtn || 'Next'))}
         </button>
       </div>
@@ -242,21 +294,35 @@ export class TourOverlay {
   private updatePosition = () => {
     if (!this.tooltipEl || !this.currentStep || !this.cutoutRectEl) return;
 
+    const norm = (this.currentStep.placement || 'bottom').toLowerCase();
+
+    // Adjust width for full bottom banner vs tooltip card
+    if (norm === 'bottom-full' || norm === 'fullscreen') {
+      this.tooltipEl.style.width = 'calc(100vw - 32px)';
+      this.tooltipEl.style.maxWidth = '640px';
+    } else {
+      this.tooltipEl.style.width = '320px';
+      this.tooltipEl.style.maxWidth = 'calc(100vw - 32px)';
+    }
+
     const targetEl = findTargetElement(this.currentStep.targetSelector);
     const pos = calculatePosition(targetEl, this.tooltipEl, this.currentStep.placement);
 
     this.tooltipEl.style.top = `${pos.tooltipTop}px`;
     this.tooltipEl.style.left = `${pos.tooltipLeft}px`;
 
+    const borderRadius = this.currentTour?.themeConfig?.borderRadius || '12px';
+    const rx = Math.min(16, parseInt(borderRadius) || 8);
+
     // Update Spotlight Cutout
-    if (pos.targetRect) {
+    if (pos.targetRect && norm !== 'center') {
       const padding = 6;
       this.cutoutRectEl.setAttribute('x', `${Math.max(0, pos.targetRect.left - padding)}`);
       this.cutoutRectEl.setAttribute('y', `${Math.max(0, pos.targetRect.top - padding)}`);
       this.cutoutRectEl.setAttribute('width', `${pos.targetRect.width + padding * 2}`);
       this.cutoutRectEl.setAttribute('height', `${pos.targetRect.height + padding * 2}`);
-      this.cutoutRectEl.setAttribute('rx', '8');
-      this.cutoutRectEl.setAttribute('ry', '8');
+      this.cutoutRectEl.setAttribute('rx', `${rx}`);
+      this.cutoutRectEl.setAttribute('ry', `${rx}`);
     } else {
       // Center placement or no target: collapse spotlight cutout
       this.cutoutRectEl.setAttribute('x', '0');

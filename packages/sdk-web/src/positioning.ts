@@ -40,26 +40,40 @@ export function scrollElementIntoView(el: HTMLElement) {
 export function calculatePosition(
   targetEl: HTMLElement | null,
   tooltipEl: HTMLElement,
-  requestedPlacement: StepPlacement = 'bottom'
+  requestedPlacement: string = 'bottom'
 ): PositionResult {
   const vpWidth = window.innerWidth;
   const vpHeight = window.innerHeight;
   const tooltipRect = tooltipEl.getBoundingClientRect();
+  const norm = (requestedPlacement || 'bottom').toLowerCase();
 
-  // Center placement or no target element
-  if (!targetEl || requestedPlacement === 'center') {
+  // Bottom-full banner placement (full-width docked at bottom)
+  if (norm === 'bottom-full' || norm === 'fullscreen') {
+    const left = Math.max(PADDING, (vpWidth - tooltipRect.width) / 2);
+    const top = Math.max(PADDING, vpHeight - tooltipRect.height - 20);
+    return {
+      tooltipTop: top,
+      tooltipLeft: left,
+      arrowPlacement: 'bottom' as StepPlacement,
+      targetRect: targetEl ? targetEl.getBoundingClientRect() : null,
+    };
+  }
+
+  // Center placement (modal dialog) or when target element is not found
+  if (!targetEl || norm === 'center') {
     const left = Math.max(PADDING, (vpWidth - tooltipRect.width) / 2);
     const top = Math.max(PADDING, (vpHeight - tooltipRect.height) / 2);
     return {
       tooltipTop: top,
       tooltipLeft: left,
-      arrowPlacement: 'center',
+      arrowPlacement: 'center' as StepPlacement,
       targetRect: targetEl ? targetEl.getBoundingClientRect() : null,
     };
   }
 
   const targetRect = targetEl.getBoundingClientRect();
-  let placement = requestedPlacement;
+  let placement: 'top' | 'bottom' | 'left' | 'right' = 
+    (norm === 'top' || norm === 'bottom' || norm === 'left' || norm === 'right') ? norm : 'bottom';
 
   // Collision detection & auto-flipping
   if (placement === 'bottom' && targetRect.bottom + MARGIN + tooltipRect.height > vpHeight - PADDING) {
@@ -109,7 +123,7 @@ export function calculatePosition(
   return {
     tooltipTop: top,
     tooltipLeft: left,
-    arrowPlacement: placement,
+    arrowPlacement: placement as StepPlacement,
     targetRect,
   };
 }

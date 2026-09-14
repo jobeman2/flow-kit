@@ -39,7 +39,9 @@ export interface TourData {
   themeConfig?: {
     primaryColor?: string;
     borderRadius?: string;
+    cardStyle?: 'clean' | 'glass' | 'dark' | 'elevated';
     backdropOpacity?: number;
+    backdropBlur?: number;
     zIndex?: number;
   };
   steps: TourStepData[];
