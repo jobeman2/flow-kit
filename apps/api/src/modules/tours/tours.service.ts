@@ -75,16 +75,25 @@ export class ToursService {
 
       if (data.steps && data.steps.length > 0) {
         await tx.tourStep.createMany({
-          data: data.steps.map((s, idx) => ({
-            tourId: tour.id,
-            stepIndex: s.stepIndex ?? idx + 1,
-            targetSelector: s.targetSelector,
-            placement: s.placement || StepPlacement.BOTTOM,
-            requiredAction: s.requiredAction || StepAction.NONE,
-            backdropConfig: s.backdropConfig || { dimOpacity: 0.65 },
-            advanceOnSelectorClick: s.advanceOnSelectorClick ?? false,
-            i18n: s.i18n,
-          })),
+          data: data.steps.map((s, idx) => {
+            const raw = (s.placement || 'BOTTOM').toString().toUpperCase().replace('-', '_');
+            const dbPlacement = (['TOP', 'BOTTOM', 'LEFT', 'RIGHT', 'CENTER'].includes(raw)
+              ? (raw as StepPlacement)
+              : raw.startsWith('TOP') ? StepPlacement.TOP : StepPlacement.BOTTOM);
+            return {
+              tourId: tour.id,
+              stepIndex: s.stepIndex ?? idx + 1,
+              targetSelector: s.targetSelector,
+              placement: dbPlacement,
+              requiredAction: s.requiredAction || StepAction.NONE,
+              backdropConfig: {
+                ...(s.backdropConfig || { dimOpacity: 0.65 }),
+                placement: raw,
+              },
+              advanceOnSelectorClick: s.advanceOnSelectorClick ?? false,
+              i18n: s.i18n,
+            };
+          }),
         });
       }
 
@@ -108,7 +117,7 @@ export class ToursService {
     steps?: Array<{
       stepIndex: number;
       targetSelector: string;
-      placement?: StepPlacement;
+      placement?: any;
       requiredAction?: StepAction;
       backdropConfig?: any;
       advanceOnSelectorClick?: boolean;
@@ -136,16 +145,25 @@ export class ToursService {
         await tx.tourStep.deleteMany({ where: { tourId } });
         if (data.steps.length > 0) {
           await tx.tourStep.createMany({
-            data: data.steps.map((s, idx) => ({
-              tourId,
-              stepIndex: s.stepIndex ?? idx + 1,
-              targetSelector: s.targetSelector,
-              placement: s.placement || StepPlacement.BOTTOM,
-              requiredAction: s.requiredAction || StepAction.NONE,
-              backdropConfig: s.backdropConfig || { dimOpacity: 0.65 },
-              advanceOnSelectorClick: s.advanceOnSelectorClick ?? false,
-              i18n: s.i18n,
-            })),
+            data: data.steps.map((s, idx) => {
+              const raw = (s.placement || 'BOTTOM').toString().toUpperCase().replace('-', '_');
+              const dbPlacement = (['TOP', 'BOTTOM', 'LEFT', 'RIGHT', 'CENTER'].includes(raw)
+                ? (raw as StepPlacement)
+                : raw.startsWith('TOP') ? StepPlacement.TOP : StepPlacement.BOTTOM);
+              return {
+                tourId,
+                stepIndex: s.stepIndex ?? idx + 1,
+                targetSelector: s.targetSelector,
+                placement: dbPlacement,
+                requiredAction: s.requiredAction || StepAction.NONE,
+                backdropConfig: {
+                  ...(s.backdropConfig || { dimOpacity: 0.65 }),
+                  placement: raw,
+                },
+                advanceOnSelectorClick: s.advanceOnSelectorClick ?? false,
+                i18n: s.i18n,
+              };
+            }),
           });
         }
       }

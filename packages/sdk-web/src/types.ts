@@ -1,4 +1,15 @@
-export type StepPlacement = 'top' | 'bottom' | 'left' | 'right' | 'center';
+export type StepPlacement =
+  | 'top'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'left'
+  | 'right'
+  | 'center'
+  | 'bottom-full'
+  | string;
 
 export type StepAction = 'NONE' | 'CLICK_TARGET' | 'INPUT_VALUE';
 

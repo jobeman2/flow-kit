@@ -45,7 +45,7 @@ export function calculatePosition(
   const vpWidth = window.innerWidth;
   const vpHeight = window.innerHeight;
   const tooltipRect = tooltipEl.getBoundingClientRect();
-  const norm = (requestedPlacement || 'bottom').toLowerCase();
+  const norm = (requestedPlacement || 'bottom').toLowerCase().replace('_', '-');
 
   // Bottom-full banner placement (full-width docked at bottom)
   if (norm === 'bottom-full' || norm === 'fullscreen') {
@@ -59,32 +59,62 @@ export function calculatePosition(
     };
   }
 
-  // Center placement (modal dialog) or when target element is not found
+  // Screen-level placement when no target element is present
   if (!targetEl || norm === 'center') {
-    const left = Math.max(PADDING, (vpWidth - tooltipRect.width) / 2);
-    const top = Math.max(PADDING, (vpHeight - tooltipRect.height) / 2);
+    let top = (vpHeight - tooltipRect.height) / 2;
+    let left = (vpWidth - tooltipRect.width) / 2;
+
+    if (norm === 'top') {
+      top = PADDING + 20;
+      left = (vpWidth - tooltipRect.width) / 2;
+    } else if (norm === 'top-left') {
+      top = PADDING + 20;
+      left = PADDING + 20;
+    } else if (norm === 'top-right') {
+      top = PADDING + 20;
+      left = vpWidth - tooltipRect.width - PADDING - 20;
+    } else if (norm === 'bottom') {
+      top = vpHeight - tooltipRect.height - PADDING - 20;
+      left = (vpWidth - tooltipRect.width) / 2;
+    } else if (norm === 'bottom-left') {
+      top = vpHeight - tooltipRect.height - PADDING - 20;
+      left = PADDING + 20;
+    } else if (norm === 'bottom-right') {
+      top = vpHeight - tooltipRect.height - PADDING - 20;
+      left = vpWidth - tooltipRect.width - PADDING - 20;
+    } else if (norm === 'left') {
+      top = (vpHeight - tooltipRect.height) / 2;
+      left = PADDING + 20;
+    } else if (norm === 'right') {
+      top = (vpHeight - tooltipRect.height) / 2;
+      left = vpWidth - tooltipRect.width - PADDING - 20;
+    }
+
     return {
-      tooltipTop: top,
-      tooltipLeft: left,
+      tooltipTop: Math.max(PADDING, Math.min(top, vpHeight - tooltipRect.height - PADDING)),
+      tooltipLeft: Math.max(PADDING, Math.min(left, vpWidth - tooltipRect.width - PADDING)),
       arrowPlacement: 'center' as StepPlacement,
-      targetRect: targetEl ? targetEl.getBoundingClientRect() : null,
+      targetRect: null,
     };
   }
 
+  // Target element exists: compute relative placement
   const targetRect = targetEl.getBoundingClientRect();
-  let placement: 'top' | 'bottom' | 'left' | 'right' = 
-    (norm === 'top' || norm === 'bottom' || norm === 'left' || norm === 'right') ? norm : 'bottom';
+  let placement = norm;
 
-  // Collision detection & auto-flipping
-  if (placement === 'bottom' && targetRect.bottom + MARGIN + tooltipRect.height > vpHeight - PADDING) {
+  // Collision detection & auto-flipping for vertical positions
+  if (placement.startsWith('bottom') && targetRect.bottom + MARGIN + tooltipRect.height > vpHeight - PADDING) {
     if (targetRect.top - MARGIN - tooltipRect.height > PADDING) {
-      placement = 'top';
+      placement = placement.replace('bottom', 'top');
     }
-  } else if (placement === 'top' && targetRect.top - MARGIN - tooltipRect.height < PADDING) {
+  } else if (placement.startsWith('top') && targetRect.top - MARGIN - tooltipRect.height < PADDING) {
     if (targetRect.bottom + MARGIN + tooltipRect.height <= vpHeight - PADDING) {
-      placement = 'bottom';
+      placement = placement.replace('top', 'bottom');
     }
-  } else if (placement === 'right' && targetRect.right + MARGIN + tooltipRect.width > vpWidth - PADDING) {
+  }
+
+  // Auto-flipping for horizontal positions
+  if (placement === 'right' && targetRect.right + MARGIN + tooltipRect.width > vpWidth - PADDING) {
     if (targetRect.left - MARGIN - tooltipRect.width > PADDING) {
       placement = 'left';
     }
@@ -102,9 +132,25 @@ export function calculatePosition(
       top = targetRect.top - tooltipRect.height - MARGIN;
       left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
       break;
+    case 'top-left':
+      top = targetRect.top - tooltipRect.height - MARGIN;
+      left = targetRect.left;
+      break;
+    case 'top-right':
+      top = targetRect.top - tooltipRect.height - MARGIN;
+      left = targetRect.right - tooltipRect.width;
+      break;
     case 'bottom':
       top = targetRect.bottom + MARGIN;
       left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
+      break;
+    case 'bottom-left':
+      top = targetRect.bottom + MARGIN;
+      left = targetRect.left;
+      break;
+    case 'bottom-right':
+      top = targetRect.bottom + MARGIN;
+      left = targetRect.right - tooltipRect.width;
       break;
     case 'left':
       top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
@@ -113,6 +159,10 @@ export function calculatePosition(
     case 'right':
       top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
       left = targetRect.right + MARGIN;
+      break;
+    default:
+      top = targetRect.bottom + MARGIN;
+      left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
       break;
   }
 

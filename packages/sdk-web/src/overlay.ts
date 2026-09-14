@@ -294,7 +294,8 @@ export class TourOverlay {
   private updatePosition = () => {
     if (!this.tooltipEl || !this.currentStep || !this.cutoutRectEl) return;
 
-    const norm = (this.currentStep.placement || 'bottom').toLowerCase();
+    const rawPlacement = ((this.currentStep.backdropConfig as any)?.placement || this.currentStep.placement || 'bottom');
+    const norm = rawPlacement.toLowerCase().replace('_', '-');
 
     // Adjust width for full bottom banner vs tooltip card
     if (norm === 'bottom-full' || norm === 'fullscreen') {
@@ -306,7 +307,7 @@ export class TourOverlay {
     }
 
     const targetEl = findTargetElement(this.currentStep.targetSelector);
-    const pos = calculatePosition(targetEl, this.tooltipEl, this.currentStep.placement);
+    const pos = calculatePosition(targetEl, this.tooltipEl, rawPlacement);
 
     this.tooltipEl.style.top = `${pos.tooltipTop}px`;
     this.tooltipEl.style.left = `${pos.tooltipLeft}px`;
