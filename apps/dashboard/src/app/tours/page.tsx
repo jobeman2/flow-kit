@@ -15,6 +15,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { apiFetch, getActiveProjectId } from '@/lib/api';
+import DangerConfirmModal from '@/components/DangerConfirmModal';
 
 export default function ToursListPage() {
   const [tours, setTours] = useState<any[]>([]);
@@ -25,6 +26,7 @@ export default function ToursListPage() {
   const [newTitle, setNewTitle] = useState('');
   const [newSlug, setNewSlug] = useState('');
   const [newUrlPattern, setNewUrlPattern] = useState('*');
+  const [deletingTour, setDeletingTour] = useState<any | null>(null);
 
   const loadTours = async () => {
     const activeProjectId = getActiveProjectId();
@@ -115,13 +117,14 @@ export default function ToursListPage() {
     loadTours();
   };
 
-  const handleDelete = async (tourId: string) => {
-    if (!confirm('Are you sure you want to delete this walkthrough?')) return;
+  const handleDelete = async () => {
+    if (!deletingTour) return;
     const activeProjectId = getActiveProjectId();
     if (!activeProjectId) return;
-    await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}`, {
+    await apiFetch(`/v1/projects/${activeProjectId}/tours/${deletingTour.id}`, {
       method: 'DELETE',
     });
+    setDeletingTour(null);
     loadTours();
   };
 
@@ -242,9 +245,9 @@ export default function ToursListPage() {
                     </button>
                   )}
                   <button
-                    onClick={() => handleDelete(tour.id)}
+                    onClick={() => setDeletingTour(tour)}
                     className="p-1.5 rounded-sm text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                    title="Delete tour"
+                    title="Delete walkthrough"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -338,6 +341,22 @@ export default function ToursListPage() {
           </div>
         </div>
       )}
+      {/* ── Delete Walkthrough Danger Modal ── */}
+      <DangerConfirmModal
+        isOpen={!!deletingTour}
+        onClose={() => setDeletingTour(null)}
+        onConfirm={handleDelete}
+        confirmName={deletingTour?.title || ''}
+        title="Delete Walkthrough"
+        confirmLabel="I understand, delete this walkthrough"
+        resourceType="walkthrough"
+        description={
+          <>
+            This will permanently delete{' '}
+            <strong>&ldquo;{deletingTour?.title}&rdquo;</strong> including all its steps and analytics data.
+          </>
+        }
+      />
     </div>
   );
 }

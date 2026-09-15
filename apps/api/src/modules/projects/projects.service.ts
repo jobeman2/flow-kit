@@ -241,4 +241,31 @@ export class ProjectsService {
       },
     });
   }
+
+  async updateProject(projectId: string, data: { name?: string; domains?: string[] }) {
+    return this.prisma.client.project.update({
+      where: { id: projectId },
+      data: {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.domains !== undefined && { domains: data.domains }),
+      },
+      include: { apiKeys: true, _count: { select: { tours: true } } },
+    });
+  }
+
+  async deleteProject(projectId: string) {
+    // Delete in dependency order to satisfy FK constraints
+    // 1. Delete analytics events for this project
+    await this.prisma.client.analyticsEvent.deleteMany({ where: { projectId } });
+    // 2. Delete tour steps
+    await this.prisma.client.tourStep.deleteMany({
+      where: { tour: { projectId } },
+    });
+    // 3. Delete tours
+    await this.prisma.client.tour.deleteMany({ where: { projectId } });
+    // 4. Delete API keys
+    await this.prisma.client.apiKey.deleteMany({ where: { projectId } });
+    // 5. Delete the project itself
+    return this.prisma.client.project.delete({ where: { id: projectId } });
+  }
 }
