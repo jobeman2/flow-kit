@@ -47,6 +47,13 @@ export default function ToursListPage() {
     loadTours();
     const onProjectChanged = () => loadTours();
     window.addEventListener('projectChanged', onProjectChanged);
+
+    // Auto-open create modal if redirected from console empty state
+    if (sessionStorage.getItem('openCreateTour') === '1') {
+      sessionStorage.removeItem('openCreateTour');
+      setIsModalOpen(true);
+    }
+
     return () => window.removeEventListener('projectChanged', onProjectChanged);
   }, []);
 
