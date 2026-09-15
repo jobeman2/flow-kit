@@ -13,6 +13,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import CustomSelect from '@/components/CustomSelect';
 
 export default function AnalyticsPage() {
   const [tours, setTours] = useState<any[]>([]);
@@ -61,20 +62,15 @@ export default function AnalyticsPage() {
         </div>
 
         {tours.length > 0 && (
-          <div className="flex items-center space-x-2 bg-white border border-slate-200 rounded-sm px-3 py-1.5 shadow-xs">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-xs font-semibold text-slate-600">Walkthrough:</span>
-            <select
+          <div className="flex items-center space-x-2 bg-white border border-slate-200 rounded-sm px-3 py-1 shadow-xs">
+            <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">Walkthrough:</span>
+            <CustomSelect
               value={selectedTourId}
-              onChange={(e) => setSelectedTourId(e.target.value)}
-              className="text-xs font-semibold text-slate-900 focus:outline-none bg-transparent cursor-pointer"
-            >
-              {tours.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.title}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedTourId}
+              options={tours.map((t) => ({ value: t.id, label: t.title }))}
+              className="min-w-[160px]"
+            />
           </div>
         )}
       </div>
