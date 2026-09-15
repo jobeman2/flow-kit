@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Param,
   Body,
   UseGuards,
@@ -57,5 +58,18 @@ export class ProjectsController {
   @Delete(':id/keys/:keyId')
   async revokeApiKey(@Param('keyId') keyId: string) {
     return this.projectsService.revokeApiKey(keyId);
+  }
+
+  @Patch(':id')
+  async updateProject(
+    @Param('id') id: string,
+    @Body() body: { name?: string; domains?: string[] },
+  ) {
+    return this.projectsService.updateProject(id, body);
+  }
+
+  @Delete(':id')
+  async deleteProject(@Param('id') id: string) {
+    return this.projectsService.deleteProject(id);
   }
 }
