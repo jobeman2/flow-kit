@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { apiFetch, getActiveProjectId } from '@/lib/api';
 import { useToast } from '@/components/Toast';
+import CustomSelect from '@/components/CustomSelect';
 
 export default function TourStudioPage() {
   const params = useParams();
@@ -1238,35 +1239,35 @@ export default function TourStudioPage() {
                 <label className="block text-xs font-semibold text-slate-800 mb-1">
                   Default Language
                 </label>
-                <select
+                <CustomSelect
                   value={tour.defaultLocale || 'en'}
-                  onChange={(e) => {
-                    setTour({ ...tour, defaultLocale: e.target.value });
+                  onChange={(v) => {
+                    setTour({ ...tour, defaultLocale: v });
                     setHasUnsavedChanges(true);
                   }}
-                  className="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-sm focus:outline-none"
-                >
-                  <option value="en">English (Default)</option>
-                  <option value="am">Amharic (አማርኛ)</option>
-                  <option value="om">Afaan Oromoo (Oromoo)</option>
-                </select>
+                  options={[
+                    { value: 'en', label: 'English', description: 'Default' },
+                    { value: 'am', label: 'Amharic (አማርኛ)' },
+                    { value: 'om', label: 'Afaan Oromoo' },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-800 mb-1">
-                  Dismissable via Escape / Close
+                  Dismissable
                 </label>
-                <select
+                <CustomSelect
                   value={tour.isDismissable ? 'true' : 'false'}
-                  onChange={(e) => {
-                    setTour({ ...tour, isDismissable: e.target.value === 'true' });
+                  onChange={(v) => {
+                    setTour({ ...tour, isDismissable: v === 'true' });
                     setHasUnsavedChanges(true);
                   }}
-                  className="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-sm focus:outline-none"
-                >
-                  <option value="true">Yes (User can skip/dismiss anytime)</option>
-                  <option value="false">No (Must complete all steps)</option>
-                </select>
+                  options={[
+                    { value: 'true', label: 'Yes — user can skip', description: 'Escape / close button visible' },
+                    { value: 'false', label: 'No — must complete', description: 'All steps required' },
+                  ]}
+                />
               </div>
             </div>
 

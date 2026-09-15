@@ -14,6 +14,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { apiFetch, getAuthToken, removeAuthToken } from '@/lib/api';
+import CustomSelect from '@/components/CustomSelect';
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -87,19 +88,14 @@ export default function Navigation() {
 
             {/* Project Switcher */}
             {projects.length > 0 && (
-              <div className="flex items-center space-x-2 bg-slate-100/70 border border-slate-200/80 rounded-xl px-3 py-1.5 text-xs">
-                <FolderDot className="w-3.5 h-3.5 text-brand-600" />
-                <select
+              <div className="flex items-center space-x-2 bg-slate-100/70 border border-slate-200/80 rounded-xl px-3 py-1 text-xs">
+                <FolderDot className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+                <CustomSelect
                   value={selectedProjectId}
-                  onChange={(e) => handleProjectChange(e.target.value)}
-                  className="bg-transparent text-slate-800 font-semibold focus:outline-none cursor-pointer"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={handleProjectChange}
+                  options={projects.map((p) => ({ value: p.id, label: p.name }))}
+                  className="min-w-[120px]"
+                />
               </div>
             )}
 

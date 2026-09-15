@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react';
 import { apiFetch, getActiveProjectId } from '@/lib/api';
+import CustomSelect from '@/components/CustomSelect';
 
 type PlatformTab = 'cdn' | 'react' | 'wordpress' | 'php' | 'android';
 
@@ -614,26 +615,26 @@ data class FlowKitStep(
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Key Type</label>
-                  <select
+                  <CustomSelect
                     value={newKeyType}
-                    onChange={(e: any) => setNewKeyType(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-sm focus:outline-none focus:border-slate-900 bg-white"
-                  >
-                    <option value="PUBLIC_CLIENT">Public Client (pk_*)</option>
-                    <option value="SECRET_BACKEND">Secret Backend (sk_*)</option>
-                  </select>
+                    onChange={(v) => setNewKeyType(v as any)}
+                    options={[
+                      { value: 'PUBLIC_CLIENT', label: 'Public Client (pk_*)', description: 'Safe to embed in HTML' },
+                      { value: 'SECRET_BACKEND', label: 'Secret Backend (sk_*)', description: 'Server-side use only' },
+                    ]}
+                  />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Environment</label>
-                  <select
+                  <CustomSelect
                     value={newKeyEnv}
-                    onChange={(e: any) => setNewKeyEnv(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-sm focus:outline-none focus:border-slate-900 bg-white"
-                  >
-                    <option value="PRODUCTION">Production</option>
-                    <option value="TEST">Test / Dev</option>
-                  </select>
+                    onChange={(v) => setNewKeyEnv(v as any)}
+                    options={[
+                      { value: 'PRODUCTION', label: 'Production', description: 'Live traffic' },
+                      { value: 'TEST', label: 'Test / Dev', description: 'Local development' },
+                    ]}
+                  />
                 </div>
               </div>
 
