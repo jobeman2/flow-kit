@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flowkit-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-flowkit}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-FlowKitSecretPass2026!}
+      POSTGRES_DB: ${DB_NAME:-flowkit}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - flowkit_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-flowkit}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: flowkit-redis
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - flowkit_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: flowkit-api
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://${DB_USER:-flowkit}:${DB_PASSWORD:-FlowKitSecretPass2026!}@postgres:5432/${DB_NAME:-flowkit}?schema=public"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      API_PORT: 4000
+      JWT_SECRET: ${JWT_SECRET:-flowkit_jwt_super_secret_production_key_32chars}
+      NODE_ENV: production
+    ports:
+      - "4000:4000"
+
+volumes:
+  flowkit_pg_data:
+  flowkit_redis_data:
