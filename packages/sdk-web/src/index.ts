@@ -19,12 +19,12 @@ export class FlowKit {
 
   constructor(config: FlowKitConfig) {
     this.config = {
-      apiUrl: 'http://localhost:4000',
-      autoStart: true,
       ...config,
+      apiUrl: config.apiUrl || 'http://localhost:4000',
+      autoStart: config.autoStart !== false,
     };
     this.activeLocale = normalizeLocale(this.config.locale);
-    this.telemetry = new TelemetryService(this.config.apiUrl!, this.config.apiKey);
+    this.telemetry = new TelemetryService(this.config.apiUrl, this.config.apiKey);
     this.overlay = new TourOverlay({
       onNext: () => this.nextStep(),
       onPrev: () => this.prevStep(),
@@ -59,7 +59,8 @@ export class FlowKit {
 
   public async fetchTours(): Promise<TourData[]> {
     try {
-      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+      const currentPath =
+        typeof window !== 'undefined' && window.location ? window.location.pathname : '/';
       const url = `${this.config.apiUrl}/v1/public/tours?url=${encodeURIComponent(currentPath)}`;
       const res = await fetch(url, {
         headers: {
@@ -85,6 +86,7 @@ export class FlowKit {
 
       return toursList;
     } catch (e) {
+      console.warn('[FlowKit] Failed to fetch tours from API:', e);
       return [];
     }
   }
@@ -97,9 +99,15 @@ export class FlowKit {
         if (!hasSeen) {
           this.startTour(tour.slug);
           break;
+        } else {
+          console.info(`[FlowKit] Tour "${tour.slug}" was already seen. Use window.flowKitInstance.startTour("${tour.slug}") to replay it.`);
         }
       }
     }
+  }
+
+  public resetSeenTours(): void {
+    this.telemetry.resetSeenTours();
   }
 
   public startTour(slug: string): boolean {
