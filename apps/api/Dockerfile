@@ -6,6 +6,7 @@ FROM base AS builder
 COPY . .
 RUN pnpm install --no-frozen-lockfile
 RUN pnpm --filter @flow-kit/database db:generate
+RUN pnpm --filter @flow-kit/database build
 RUN pnpm --filter @flow-kit/web build
 RUN pnpm --filter @flow-kit/api build
 
