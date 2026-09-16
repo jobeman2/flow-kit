@@ -71,15 +71,19 @@ export default function ConsoleOverview() {
 
   useEffect(() => {
     loadData();
-    window.addEventListener('projectChanged', loadData);
-    return () => window.removeEventListener('projectChanged', loadData);
+    const handleProjectChanged = () => {
+      loadData();
+    };
+    window.addEventListener('projectChanged', handleProjectChanged);
+    return () => window.removeEventListener('projectChanged', handleProjectChanged);
   }, []);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   const clientKey =
     project?.apiKeys?.find((k: any) => k.type === 'PUBLIC_CLIENT' && k.status === 'ACTIVE')?.key ||
     'pk_live_' + (project?.id ? project.id.substring(0, 16) : 'default');
 
-  const cdnSnippet = `<script src="http://localhost:4000/sdk.js" data-api-key="${clientKey}"></script>`;
+  const cdnSnippet = `<script src="${apiUrl}/flow-kit.js" data-api-key="${clientKey}"></script>`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(cdnSnippet);
