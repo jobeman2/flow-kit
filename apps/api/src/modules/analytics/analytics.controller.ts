@@ -7,6 +7,11 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
+  @Get('overview')
+  async getOverview(@Param('projectId') projectId: string) {
+    return this.analyticsService.getProjectAnalyticsOverview(projectId);
+  }
+
   @Get('funnel')
   async getFunnel(
     @Param('projectId') projectId: string,

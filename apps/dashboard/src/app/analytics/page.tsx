@@ -140,46 +140,45 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="space-y-3 pt-2">
-          {(funnelData?.steps && funnelData.steps.length > 0
-            ? funnelData.steps
-            : [
-                { stepIndex: 1, title: 'Unified Search', viewed: 140, completed: 132, dropOffRate: 5 },
-                { stepIndex: 2, title: 'Switch Your Language', viewed: 132, completed: 124, dropOffRate: 6 },
-                { stepIndex: 3, title: 'Instant e-Services', viewed: 124, completed: 116, dropOffRate: 6 },
-                { stepIndex: 4, title: '24/7 Citizen Support', viewed: 116, completed: 110, dropOffRate: 5 },
-              ]
-          ).map((step: any, idx: number) => {
-            const retentionPct = Math.round(((step.completed || step.viewed || 1) / (funnelData?.totalStarted || 140)) * 100);
-            return (
-              <div key={idx} className="bg-slate-50 rounded-sm p-3 border border-slate-200">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-5 h-5 rounded-sm bg-slate-900 text-white text-[10px] font-mono font-bold flex items-center justify-center">
-                      {step.stepIndex}
-                    </span>
-                    <span className="font-semibold text-xs text-slate-900">{step.title}</span>
+          {!funnelData?.steps || funnelData.steps.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-400 bg-slate-50 border border-slate-200 rounded-sm">
+              No steps found or no traffic recorded for this walkthrough yet.
+            </div>
+          ) : (
+            funnelData.steps.map((step: any, idx: number) => {
+              const totalStarts = funnelData?.totalStarted || 1;
+              const retentionPct = Math.round(((step.completed || step.viewed || 0) / totalStarts) * 100);
+              return (
+                <div key={idx} className="bg-slate-50 rounded-sm p-3 border border-slate-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-5 h-5 rounded-sm bg-slate-900 text-white text-[10px] font-mono font-bold flex items-center justify-center">
+                        {step.stepIndex}
+                      </span>
+                      <span className="font-semibold text-xs text-slate-900">{step.title}</span>
+                    </div>
+
+                    <div className="flex items-center space-x-2.5 text-xs">
+                      <span className="text-slate-600 font-medium">
+                        {step.completed || 0} completed ({retentionPct}%)
+                      </span>
+                      <span className="text-slate-600 bg-slate-200/70 px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-medium">
+                        {step.dropOffRate || 0}% drop-off
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center space-x-2.5 text-xs">
-                    <span className="text-slate-600 font-medium">
-                      {step.completed || 0} completed ({retentionPct}%)
-                    </span>
-                    <span className="text-slate-600 bg-slate-200/70 px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-medium">
-                      {step.dropOffRate}% drop-off
-                    </span>
+                  {/* Progress Bar */}
+                  <div className="w-full bg-slate-200 rounded-sm h-2 overflow-hidden">
+                    <div
+                      className="bg-slate-800 h-2 rounded-sm transition-all duration-500"
+                      style={{ width: `${Math.min(100, Math.max(0, retentionPct))}%` }}
+                    />
                   </div>
                 </div>
-
-                {/* Progress Bar */}
-                <div className="w-full bg-slate-200 rounded-sm h-2 overflow-hidden">
-                  <div
-                    className="bg-slate-800 h-2 rounded-sm transition-all duration-500"
-                    style={{ width: `${Math.max(10, Math.min(100, retentionPct))}%` }}
-                  />
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
 

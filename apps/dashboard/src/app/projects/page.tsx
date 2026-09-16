@@ -16,6 +16,8 @@ import {
   Pencil,
   Trash2,
   X,
+  Activity,
+  BarChart2,
 } from 'lucide-react';
 import { apiFetch, getActiveProjectId, setActiveProjectId } from '@/lib/api';
 import { useToast } from '@/components/Toast';
@@ -336,9 +338,16 @@ export default function ProjectsHubPage() {
 
                 {/* Footer */}
                 <div className="px-5 py-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center space-x-1.5 text-xs text-slate-600 font-medium">
-                    <Layers className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{tourCount} {tourCount === 1 ? 'Walkthrough' : 'Walkthroughs'}</span>
+                  <div className="flex items-center space-x-3 text-xs text-slate-600 font-medium">
+                    <div className="flex items-center space-x-1.5" title="Total walkthroughs created for this site">
+                      <Layers className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{tourCount} {tourCount === 1 ? 'Tour' : 'Tours'}</span>
+                    </div>
+                    <span className="text-slate-300">•</span>
+                    <div className="flex items-center space-x-1 text-slate-500" title="Telemetry interactions recorded">
+                      <Activity className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>{p._count?.events || 0} Events</span>
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-1.5">
