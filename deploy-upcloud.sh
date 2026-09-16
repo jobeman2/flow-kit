@@ -22,7 +22,7 @@ sleep 8
 
 # 4. Push database schema via container
 echo "🔄 Ensuring database tables and migrations are up to date..."
-docker exec -it flowkit-api pnpm --filter @flow-kit/database db:push || true
+docker exec flowkit-api pnpm --filter @flow-kit/database db:push || true
 
 # 5. Check health
 SERVER_IP=$(curl -s ifconfig.me || hostname -I | awk '{print $1}')
