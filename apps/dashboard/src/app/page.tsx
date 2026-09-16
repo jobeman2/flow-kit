@@ -44,31 +44,33 @@ export default function LandingPage() {
   const [apiStatusCode, setApiStatusCode] = useState<number | null>(null);
   const [apiLatency, setApiLatency] = useState<number | null>(null);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
   const snippetContent = {
     cdn: `<!-- 2-Line Drop-In: Paste in any HTML / Web Application -->
 <script
-  src="http://localhost:4000/sdk.js"
+  src="${apiUrl}/flow-kit.js"
   data-api-key="pk_live_demo_addis_79a2f1b4c6e8"
   data-locale="en"
 ></script>`,
-    npm: `// Install: npm install @onboardflow/web
-import { OnboardFlow } from '@onboardflow/web';
+    npm: `// Install: npm install @flow-kit/web
+import { FlowKit } from '@flow-kit/web';
 
-const flow = OnboardFlow.init({
+const flow = FlowKit.init({
   apiKey: 'pk_live_demo_addis_79a2f1b4c6e8',
   locale: 'en', // 'am' (Amharic), 'om' (Oromo), 'en'
 });`,
-    react: `// Install: npm install @onboardflow/react
-import { OnboardingProvider, TourTriggerButton } from '@onboardflow/react';
+    react: `// Install: npm install @flow-kit/react
+import { FlowKitProvider, TourTriggerButton } from '@flow-kit/react';
 
 export default function App() {
   return (
-    <OnboardingProvider apiKey="pk_live_demo_addis_79a2f1b4c6e8">
+    <FlowKitProvider apiKey="pk_live_demo_addis_79a2f1b4c6e8">
       <YourAppComponents />
       <TourTriggerButton tourSlug="welcome-citizen-walkthrough">
         Take Tour
       </TourTriggerButton>
-    </OnboardingProvider>
+    </FlowKitProvider>
   );
 }`,
   };
