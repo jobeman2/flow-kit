@@ -41,7 +41,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -60,6 +59,7 @@ jobs:
       - name: Build Dashboard (Next.js)
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:4000"
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k"
         run: pnpm --filter @flow-kit/dashboard build
 
   # ─── JOB 2: DOCKER CONTAINER IMAGES VERIFICATION ───
