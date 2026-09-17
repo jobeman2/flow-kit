@@ -24,4 +24,4 @@ COPY --from=builder /app/packages/sdk-web ./packages/sdk-web
 COPY --from=builder /app/apps/api ./apps/api
 
 EXPOSE 4000
-CMD ["node", "apps/api/dist/main.js"]
+CMD ["sh", "-c", "pnpm --filter @flow-kit/database db:push --accept-data-loss || true && node apps/api/dist/main.js"]

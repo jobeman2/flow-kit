@@ -101,8 +101,8 @@ export async function apiFetch<T = any>(endpoint: string, options: RequestInit =
           isRefreshing = false;
           refreshQueue = [];
           removeAuthToken();
-          if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-            window.location.href = '/login';
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('flowkit_token_expired'));
           }
         }
       } else {
@@ -120,8 +120,8 @@ export async function apiFetch<T = any>(endpoint: string, options: RequestInit =
       }
     } else {
       removeAuthToken();
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('flowkit_token_expired'));
       }
     }
   }

@@ -39,14 +39,19 @@ export class ApiKeyGuard implements CanActivate {
     }
 
     // 2. Query DB
-    const keyRecord = await this.prisma.client.apiKey.findUnique({
-      where: { key: keyString },
-      include: {
-        project: {
-          include: { organization: true },
+    let keyRecord;
+    try {
+      keyRecord = await this.prisma.client.apiKey.findUnique({
+        where: { key: keyString },
+        include: {
+          project: {
+            include: { organization: true },
+          },
         },
-      },
-    });
+      });
+    } catch (dbErr: any) {
+      throw new UnauthorizedException('Database unavailable or invalid API Key.');
+    }
 
     if (!keyRecord || keyRecord.status !== KeyStatus.ACTIVE) {
       throw new UnauthorizedException('Invalid or revoked API Key.');

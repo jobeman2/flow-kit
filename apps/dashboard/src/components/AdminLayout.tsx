@@ -40,18 +40,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [projectSearch, setProjectSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(() => {
+    if (typeof window !== 'undefined') {
+      return !!getAuthToken();
+    }
+    return null;
+  });
 
   // Sync Clerk authenticated user with backend session
   useEffect(() => {
     if (!clerkLoaded) return;
 
-    if (clerkUser) {
-      setIsAuthorized(true);
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    const syncBackend = () => {
+      if (!clerkUser) return;
+
       const email = clerkUser.primaryEmailAddress?.emailAddress;
       const fullName = clerkUser.fullName || clerkUser.firstName || email?.split('@')[0] || 'User';
-      
-      // Auto-sync / provision user in database
+
       apiFetch('/v1/auth/oauth', {
         method: 'POST',
         body: JSON.stringify({
@@ -64,8 +72,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }),
       })
         .then((res) => {
-          if (res.accessToken) {
+          if (res?.accessToken) {
             setAuthTokens(res.accessToken, res.refreshToken);
+            window.dispatchEvent(new Event('flowkit_token_synced'));
           }
           return apiFetch('/v1/auth/me');
         })
@@ -83,10 +92,25 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           }
         })
         .catch((err) => {
-          console.error('Session sync error:', err);
+          console.warn('Session sync attempt failed (cold boot or network):', err?.message || err);
+          if (retryCount < maxRetries) {
+            retryCount++;
+            setTimeout(syncBackend, 2500);
+          }
         });
+    };
+
+    if (clerkUser) {
+      setIsAuthorized(true);
+      syncBackend();
+
+      const handleTokenExpired = () => {
+        syncBackend();
+      };
+      window.addEventListener('flowkit_token_expired', handleTokenExpired);
+      return () => window.removeEventListener('flowkit_token_expired', handleTokenExpired);
     } else {
-      // If no Clerk user and no local token, redirect to login
+      // If no Clerk user, check local token
       const token = getAuthToken();
       if (!token) {
         setIsAuthorized(false);

@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Request, Response } from 'express';
+import { PrismaService } from './common/services/prisma.service';
 
 // Load root .env
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
@@ -63,6 +64,48 @@ async function bootstrap() {
 
   server.get('/flow-kit.js', serveSdk);
   server.get('/sdk.js', serveSdk);
+
+  // System Diagnostics and Database Self-Healing Trigger
+  server.get('/v1/system/health', async (_req: Request, res: Response) => {
+    try {
+      const prismaService = app.get(PrismaService);
+      const tableRows: any[] = await prismaService.client.$queryRawUnsafe(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public';
+      `);
+      const tables = tableRows.map((r: any) => r.table_name || r.TABLE_NAME);
+      const dbUrl = process.env.DATABASE_URL || '';
+      const maskedDb = dbUrl.replace(/:([^:@]+)@/, ':****@');
+
+      res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        database: 'connected',
+        databaseTarget: maskedDb,
+        tables,
+        tablesReady: tables.includes('users') && tables.includes('projects'),
+      });
+    } catch (err: any) {
+      res.status(500).json({
+        status: 'database_error',
+        message: err?.message || String(err),
+      });
+    }
+  });
+
+  server.all('/v1/system/bootstrap', async (_req: Request, res: Response) => {
+    try {
+      const prismaService = app.get(PrismaService);
+      const result = await prismaService.bootstrapSchema();
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({
+        success: false,
+        message: err?.message || String(err),
+      });
+    }
+  });
 
   const port = process.env.API_PORT || 4000;
   await app.listen(port);

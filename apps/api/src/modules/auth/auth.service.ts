@@ -512,76 +512,148 @@ export class AuthService {
 
   // Social / OAuth Integration (Google / GitHub)
   async oauthLogin(provider: 'GOOGLE' | 'GITHUB', profile: { email: string; name?: string; providerId: string }) {
-    const normalizedEmail = profile.email.toLowerCase().trim();
+    try {
+      const normalizedEmail = profile.email.toLowerCase().trim();
 
-    let user = await this.prisma.client.user.findFirst({
-      where: {
-        OR: [
-          { email: normalizedEmail },
-          { authProvider: provider, providerId: profile.providerId },
-        ],
-      },
-      include: {
-        memberships: {
-          include: {
-            organization: {
-              include: {
-                projects: true,
+      let user = await this.prisma.client.user.findFirst({
+        where: {
+          OR: [
+            { email: normalizedEmail },
+            { authProvider: provider, providerId: profile.providerId },
+          ],
+        },
+        include: {
+          memberships: {
+            include: {
+              organization: {
+                include: {
+                  projects: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    if (!user) {
-      // Auto-provision user from verified social identity
-      const orgSlug = (profile.name || 'workspace')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+      if (!user) {
+        // Auto-provision user from verified social identity
+        const orgSlug = (profile.name || 'workspace')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
 
-      user = await this.prisma.client.$transaction(async (tx) => {
-        const newUser = await tx.user.create({
-          data: {
-            email: normalizedEmail,
-            name: profile.name || 'Developer',
-            passwordHash: 'oauth_managed_' + crypto.randomBytes(16).toString('hex'),
-            isEmailVerified: true, // Social OAuth providers guarantee verified email
-            authProvider: provider,
-            providerId: profile.providerId,
-          },
+        user = await this.prisma.client.$transaction(async (tx) => {
+          const newUser = await tx.user.create({
+            data: {
+              email: normalizedEmail,
+              name: profile.name || 'Developer',
+              passwordHash: 'oauth_managed_' + crypto.randomBytes(16).toString('hex'),
+              isEmailVerified: true, // Social OAuth providers guarantee verified email
+              authProvider: provider,
+              providerId: profile.providerId,
+            },
+          });
+
+          const org = await tx.organization.create({
+            data: {
+              name: `${profile.name || 'Developer'}'s Workspace`,
+              slug: orgSlug,
+              plan: 'free',
+            },
+          });
+
+          await tx.organizationMember.create({
+            data: {
+              organizationId: org.id,
+              userId: newUser.id,
+              role: OrgRole.OWNER,
+            },
+          });
+
+          const project = await tx.project.create({
+            data: {
+              organizationId: org.id,
+              name: 'Production Application',
+              slug: 'production-application',
+              domains: ['localhost:3000', 'localhost:5173'],
+            },
+          });
+
+          const liveKey = 'pk_live_' + crypto.randomBytes(12).toString('hex');
+          const secretKey = 'sk_live_' + crypto.randomBytes(12).toString('hex');
+
+          await tx.apiKey.createMany({
+            data: [
+              {
+                projectId: project.id,
+                name: 'Production Public Key',
+                key: liveKey,
+                type: KeyType.PUBLIC_CLIENT,
+                environment: Environment.PRODUCTION,
+                status: KeyStatus.ACTIVE,
+              },
+              {
+                projectId: project.id,
+                name: 'Secret Server Key',
+                key: secretKey,
+                type: KeyType.SECRET_ADMIN,
+                environment: Environment.PRODUCTION,
+                status: KeyStatus.ACTIVE,
+              },
+            ],
+          });
+
+          return tx.user.findUnique({
+            where: { id: newUser.id },
+            include: {
+              memberships: {
+                include: {
+                  organization: {
+                    include: {
+                      projects: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
         });
+      } else if (!user.memberships || user.memberships.length === 0) {
+        // User exists but has no workspace: auto-provision one
+        const orgSlug = (profile.name || user.name || 'workspace')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
 
-        const org = await tx.organization.create({
+        const org = await this.prisma.client.organization.create({
           data: {
-            name: `${profile.name || 'Developer'}'s Workspace`,
+            name: `${profile.name || user.name || 'Developer'}'s Workspace`,
             slug: orgSlug,
             plan: 'free',
           },
         });
 
-        await tx.organizationMember.create({
+        await this.prisma.client.organizationMember.create({
           data: {
             organizationId: org.id,
-            userId: newUser.id,
+            userId: user.id,
             role: OrgRole.OWNER,
           },
         });
 
-        const project = await tx.project.create({
+        const project = await this.prisma.client.project.create({
           data: {
             organizationId: org.id,
             name: 'Production Application',
             slug: 'production-application',
-            domains: ['localhost:3000'],
+            domains: ['localhost:3000', 'localhost:5173'],
           },
         });
 
         const liveKey = 'pk_live_' + crypto.randomBytes(12).toString('hex');
         const secretKey = 'sk_live_' + crypto.randomBytes(12).toString('hex');
 
-        await tx.apiKey.createMany({
+        await this.prisma.client.apiKey.createMany({
           data: [
             {
               projectId: project.id,
@@ -602,8 +674,8 @@ export class AuthService {
           ],
         });
 
-        return tx.user.findUnique({
-          where: { id: newUser.id },
+        user = await this.prisma.client.user.findUnique({
+          where: { id: user.id },
           include: {
             memberships: {
               include: {
@@ -616,10 +688,13 @@ export class AuthService {
             },
           },
         });
-      });
-    }
+      }
 
-    return this.login(user);
+      return this.login(user);
+    } catch (err: any) {
+      this.logger.error(`oauthLogin failed: ${err.message}`, err.stack);
+      throw new BadRequestException(`Authentication failed: ${err.message}`);
+    }
   }
 
   // Google OAuth URL Generator

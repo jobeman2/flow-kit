@@ -59,7 +59,16 @@ export default function ProjectsHubPage() {
     }
   };
 
-  useEffect(() => { loadProjects(); }, []);
+  useEffect(() => {
+    loadProjects();
+    const handleSync = () => loadProjects();
+    window.addEventListener('flowkit_token_synced', handleSync);
+    window.addEventListener('projectChanged', handleSync);
+    return () => {
+      window.removeEventListener('flowkit_token_synced', handleSync);
+      window.removeEventListener('projectChanged', handleSync);
+    };
+  }, []);
 
   const handleSelectProject = (id: string, targetPath?: string) => {
     setActiveProjectId(id);

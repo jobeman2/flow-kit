@@ -1,11 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { SignIn } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { SignIn, useUser } from '@clerk/nextjs';
 import { Compass, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
+  const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.replace('/console');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
   return (
     <div className="min-h-screen bg-slate-50 bg-grid-hairline flex flex-col justify-center items-center px-4 py-12 font-sans relative">
       
