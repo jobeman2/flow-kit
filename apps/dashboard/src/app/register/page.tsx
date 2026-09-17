@@ -12,21 +12,21 @@ export default function RegisterPage() {
       <div className="mb-6">
         <Link
           href="/"
-          className="inline-flex items-center space-x-1.5 text-xs font-mono text-slate-500 hover:text-column-navy transition-colors"
+          className="inline-flex items-center space-x-1.5 text-xs font-mono text-slate-500 hover:text-slate-900 transition-colors"
         >
           <span>&larr;</span>
-          <span>RETURN TO GUIDELAYER HOME</span>
+          <span>RETURN TO FLOW-KIT HOME</span>
         </Link>
       </div>
 
       <div className="w-full max-w-[440px] flex flex-col items-center">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-9 h-9 rounded-sm bg-column-navy flex items-center justify-center text-white font-mono text-xs font-bold mb-3 shadow-xs">
-            GL
+          <div className="w-9 h-9 rounded-sm bg-slate-900 flex items-center justify-center text-white font-mono text-xs font-bold mb-3 shadow-xs">
+            FK
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-column-navy">
-            Create your GuideLayer Workspace
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            Create your Flow-Kit Workspace
           </h1>
           <p className="text-xs font-mono text-slate-500 mt-1">
             // DEVELOPER ONBOARDING PLATFORM

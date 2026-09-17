@@ -40,12 +40,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [projectSearch, setProjectSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   // Sync Clerk authenticated user with backend session
   useEffect(() => {
     if (!clerkLoaded) return;
 
     if (clerkUser) {
+      setIsAuthorized(true);
       const email = clerkUser.primaryEmailAddress?.emailAddress;
       const fullName = clerkUser.fullName || clerkUser.firstName || email?.split('@')[0] || 'User';
       
@@ -87,9 +89,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       // If no Clerk user and no local token, redirect to login
       const token = getAuthToken();
       if (!token) {
-        router.push('/login');
+        setIsAuthorized(false);
+        router.replace('/login');
         return;
       }
+
+      setIsAuthorized(true);
 
       apiFetch('/v1/auth/me')
         .then((u) => setUser(u))
@@ -132,6 +137,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { href: '/analytics', label: 'Funnel Analytics', icon: BarChart3 },
     { href: '/keys', label: 'API Keys & Setup', icon: Key },
   ];
+
+  if (isAuthorized !== true) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-10 h-10 rounded-sm bg-slate-900 flex items-center justify-center text-white shadow-xs animate-pulse">
+            <Compass className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex items-center space-x-2 text-xs font-mono text-slate-500">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+            <span>Verifying authorization...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/50 flex flex-col md:flex-row text-slate-900 font-sans antialiased">

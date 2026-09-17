@@ -29,6 +29,8 @@ export function setAuthTokens(accessToken: string, refreshToken?: string) {
     localStorage.setItem('flowkit_refresh_token', refreshToken);
     localStorage.setItem('onboardflow_refresh_token', refreshToken);
   }
+  const isSecure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `flowkit_token=${accessToken}; path=/; max-age=604800; SameSite=Lax${isSecure}`;
 }
 
 export function setAuthToken(token: string) {
@@ -43,6 +45,7 @@ export function removeAuthToken() {
   localStorage.removeItem('onboardflow_token');
   localStorage.removeItem('onboardflow_refresh_token');
   localStorage.removeItem('onboardflow_active_project');
+  document.cookie = 'flowkit_token=; path=/; max-age=0; SameSite=Lax';
 }
 
 let isRefreshing = false;
