@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950">
+<html lang="en" class="h-full bg-slate-50">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Citizen Digital Portal • Addis Ababa City Cloud</title>
+  <title>Nexus Cloud - Developer Platform and Infrastructure</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans+Ethiopic:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['DM Sans', 'Noto Sans Ethiopic', 'sans-serif'],
+            sans: ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
           },
         }
@@ -22,61 +22,61 @@
   </script>
   <style>
     body {
-      font-family: 'DM Sans', 'Noto Sans Ethiopic', sans-serif;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    .bg-grid-slate {
+    .bg-grid-hairline {
       background-size: 32px 32px;
       background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950 antialiased">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans selection:bg-slate-900 selection:text-white antialiased">
 
   <!-- Top Navigation Header -->
-  <header class="bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-30 shadow-lg shadow-black/20">
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
-      <!-- Brand & Municipality Cloud Logo -->
+      <!-- Brand & Platform Logo -->
       <div class="flex items-center space-x-3.5">
-        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-700/80 flex items-center justify-center text-white font-bold text-sm shadow-inner relative group">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-sm relative group">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span class="absolute -top-1 -right-1 flex h-2 w-2">
+          <span class="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-white"></span>
           </span>
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <h1 class="font-bold text-sm text-white tracking-tight" id="portal-title">
-              Addis Ababa City Administration
+            <h1 class="font-bold text-sm text-slate-900 tracking-tight" id="portal-title">
+              Nexus Cloud
             </h1>
-            <span class="hidden lg:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              CITIZEN CLOUD
+            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              v3.4 PRODUCTION
             </span>
           </div>
-          <p class="text-[11px] text-slate-400 font-mono tracking-wide" id="portal-subtitle">
-            Citizen Digital Services & e-Governance Portal
+          <p class="text-[11px] text-slate-500 font-mono" id="portal-subtitle">
+            Developer Infrastructure and Global Edge Platform
           </p>
         </div>
       </div>
 
       <!-- Search Bar Target -->
       <div class="hidden md:flex flex-1 max-w-md mx-8">
-        <div id="global-search-bar" class="w-full relative rounded-xl border border-slate-800 bg-slate-900/90 hover:border-slate-700 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+        <div id="global-search-bar" class="w-full relative rounded-xl border border-slate-200 bg-white hover:border-slate-300 focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition-all shadow-xs">
           <input
             type="text"
-            placeholder="Search certificates, trade licenses, land registry, tax IDs..."
-            class="w-full py-2 pl-9 pr-14 text-xs bg-transparent focus:outline-none text-slate-100 placeholder-slate-500 font-sans"
+            placeholder="Search deployments, clusters, API keys, telemetry (Ctrl K)..."
+            class="w-full py-2 pl-9 pr-14 text-xs bg-transparent focus:outline-none text-slate-800 placeholder-slate-400 font-sans"
           />
-          <div class="absolute left-3 top-2.5 text-slate-500">
+          <div class="absolute left-3 top-2.5 text-slate-400">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
           <div class="absolute right-2.5 top-2">
-            <kbd class="px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 rounded border border-slate-700">Ctrl K</kbd>
+            <kbd class="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-slate-100 rounded border border-slate-200">Ctrl K</kbd>
           </div>
         </div>
       </div>
@@ -84,160 +84,159 @@
       <!-- Controls & Language Switcher Target -->
       <div class="flex items-center space-x-3">
         <!-- Language Switcher Target -->
-        <div id="language-switcher" class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <div id="language-switcher" class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             onclick="switchLang('en')"
             id="lang-btn-en"
-            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-white shadow-xs border border-slate-700/80 transition-all"
+            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-xs transition-all"
           >
             English
           </button>
           <button
             onclick="switchLang('am')"
             id="lang-btn-am"
-            class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all"
+            class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all"
           >
-            አማርኛ
+            Español
           </button>
           <button
             onclick="switchLang('om')"
             id="lang-btn-om"
-            class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all"
+            class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all"
           >
-            Oromoo
+            Deutsch
           </button>
         </div>
 
         <button
           onclick="restartTour()"
-          class="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white text-xs font-medium border border-slate-800 hover:border-slate-700 transition-all shadow-xs"
+          class="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition-all shadow-xs cursor-pointer"
         >
           <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <span>Take Walkthrough</span>
+          <span>Start Product Tour</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Citizen Portal Content -->
+  <!-- Main Platform Content -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-    <!-- Municipal Hero Banner with Flow-Kit Dark Theme -->
-    <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-slate-800 shadow-2xl bg-grid-slate">
+    <!-- Modern Clean White Hero Banner -->
+    <div class="bg-white rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-slate-200/80 shadow-sm bg-grid-hairline">
       <div class="max-w-2xl relative z-10 space-y-4">
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-800/90 text-emerald-400 border border-slate-700">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Federal Republic of Ethiopia • City Government</span>
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>ENTERPRISE DEVELOPER CLOUD - ALL SYSTEMS NOMINAL</span>
         </div>
-        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white" id="hero-headline">
-          Public e-Services, Accessible Anywhere
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900" id="hero-headline">
+          Deploy, Scale, and Orchestrate Anywhere
         </h2>
-        <p class="text-slate-300 text-sm leading-relaxed max-w-xl font-sans" id="hero-subtext">
-          Apply for verified identity documents, register businesses, renew professional licenses, and settle municipal taxes securely online.
+        <p class="text-slate-600 text-sm leading-relaxed max-w-xl font-sans" id="hero-subtext">
+          Instant serverless deployments, managed PostgreSQL clusters, global edge caching, and real-time observability in one unified workspace.
         </p>
 
         <!-- Stats row -->
-        <div class="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-800/80">
+        <div class="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-100">
           <div>
-            <div class="text-lg font-bold text-white font-mono">1.4M+</div>
-            <div class="text-[11px] text-slate-400">Verified Citizens</div>
+            <div class="text-xl font-bold text-slate-900 font-mono">99.99%</div>
+            <div class="text-[11px] text-slate-500 font-medium">SLA Uptime</div>
           </div>
           <div>
-            <div class="text-lg font-bold text-white font-mono">420+</div>
-            <div class="text-[11px] text-slate-400">City Woredas</div>
+            <div class="text-xl font-bold text-slate-900 font-mono">45 ms</div>
+            <div class="text-[11px] text-slate-500 font-medium">Global Latency</div>
           </div>
           <div>
-            <div class="text-lg font-bold text-emerald-400 font-mono">&lt; 3 min</div>
-            <div class="text-[11px] text-slate-400">Avg. Processing</div>
+            <div class="text-xl font-bold text-emerald-600 font-mono">250M+</div>
+            <div class="text-[11px] text-slate-500 font-medium">Daily API Calls</div>
           </div>
           <div>
-            <div class="text-lg font-bold text-white font-mono">100%</div>
-            <div class="text-[11px] text-slate-400">Paperless Cloud</div>
+            <div class="text-xl font-bold text-slate-900 font-mono">SOC-2</div>
+            <div class="text-[11px] text-slate-500 font-medium">Type II Certified</div>
           </div>
         </div>
       </div>
 
-      <!-- Ambient Glow Decor -->
-      <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute right-1/4 -top-20 w-64 h-64 bg-slate-800/30 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- Subtle Accent Glow -->
+      <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-slate-100 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
     <!-- Quick Actions Grid Target -->
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-bold text-white tracking-tight" id="services-title">
-            Fast-Track Citizen e-Services
+          <h3 class="text-lg font-bold text-slate-900 tracking-tight" id="services-title">
+            Core Cloud Infrastructure
           </h3>
-          <p class="text-xs text-slate-400 mt-0.5">
-            Instant digital applications authenticated via National ID & Telebirr
+          <p class="text-xs text-slate-500 mt-0.5">
+            Production-ready services configured with automatic zero-downtime scaling
           </p>
         </div>
-        <span class="inline-flex items-center space-x-1.5 text-xs text-slate-400 font-mono bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
+        <span class="inline-flex items-center space-x-1.5 text-xs text-slate-600 font-mono bg-white px-3 py-1 rounded-md border border-slate-200 shadow-xs">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>Verified & Secure</span>
+          <span>Automated Healthchecks Active</span>
         </span>
       </div>
 
       <div id="quick-actions-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         <!-- Service Card 1 -->
-        <div class="bg-slate-900/70 hover:bg-slate-900 p-5 rounded-2xl border border-slate-800 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:bg-slate-900 group-hover:text-white transition-all text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             </div>
-            <h4 class="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">Vital Events & Certificates</h4>
-            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Birth, marriage, and death records certified with verifiable cryptographic QR seals.</p>
+            <h4 class="font-bold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">Edge Deployments and CI/CD</h4>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Instant Git-push builds with automated canary rollouts, isolated preview URLs, and rollbacks.</p>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 group-hover:text-emerald-400">
-            <span class="font-medium">Request Certificate</span>
-            <span>&rarr;</span>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-slate-900">
+            <span>View Deployments</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </div>
         </div>
 
         <!-- Service Card 2 -->
-        <div class="bg-slate-900/70 hover:bg-slate-900 p-5 rounded-2xl border border-slate-800 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:bg-slate-900 group-hover:text-white transition-all text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
             </div>
-            <h4 class="font-bold text-sm text-white group-hover:text-blue-400 transition-colors">Commercial Registration</h4>
-            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Instant trade name reservation, business registration, and annual license renewals.</p>
+            <h4 class="font-bold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">Managed Database Clusters</h4>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">High-availability PostgreSQL and Redis with automated backups, point-in-time recovery, and pooling.</p>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 group-hover:text-blue-400">
-            <span class="font-medium">Register Business</span>
-            <span>&rarr;</span>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-slate-900">
+            <span>Manage Clusters</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </div>
         </div>
 
         <!-- Service Card 3 -->
-        <div class="bg-slate-900/70 hover:bg-slate-900 p-5 rounded-2xl border border-slate-800 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:bg-slate-900 group-hover:text-white transition-all text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             </div>
-            <h4 class="font-bold text-sm text-white group-hover:text-purple-400 transition-colors">Unified Municipal Tax</h4>
-            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Direct automated tax settlements via Telebirr, CBE Birr, and National Banking switch.</p>
+            <h4 class="font-bold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">API Gateways and Security</h4>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Global reverse proxies with automated TLS certificates, DDoS mitigation, and rate limiting rules.</p>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 group-hover:text-purple-400">
-            <span class="font-medium">Settle Tax Bill</span>
-            <span>&rarr;</span>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-slate-900">
+            <span>Configure Gateway</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </div>
         </div>
 
         <!-- Service Card 4 -->
-        <div class="bg-slate-900/70 hover:bg-slate-900 p-5 rounded-2xl border border-slate-800 hover:border-amber-500/50 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+            <div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:bg-slate-900 group-hover:text-white transition-all text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             </div>
-            <h4 class="font-bold text-sm text-white group-hover:text-amber-400 transition-colors">Land & Title Registry</h4>
-            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Verify real estate parcel boundary maps, cadastral rights, and ownership deeds.</p>
+            <h4 class="font-bold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">Real-Time Observability</h4>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Distributed request tracing, custom metrics dashboards, and automated incident alert routing.</p>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 group-hover:text-amber-400">
-            <span class="font-medium">Search Registry</span>
-            <span>&rarr;</span>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-slate-900">
+            <span>Live Metrics</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </div>
         </div>
 
@@ -245,19 +244,19 @@
     </div>
   </main>
 
-  <!-- 24/7 Citizen Support Floating Button Target -->
+  <!-- 24/7 Developer Support Floating Button Target -->
   <div class="fixed bottom-6 right-6 z-20">
     <button
       id="support-help-button"
-      onclick="alert('24/7 Citizen Helpdesk: Call toll-free 994 or chat with municipal representatives.')"
-      class="flex items-center space-x-2.5 bg-slate-900/90 hover:bg-slate-900 text-white px-4 py-3 rounded-full shadow-2xl shadow-black/40 border border-slate-700/80 transition-all hover:scale-105 cursor-pointer backdrop-blur-md group"
+      onclick="alert('Nexus Support: 24/7 Enterprise engineering support active.')"
+      class="flex items-center space-x-2.5 bg-slate-900 hover:bg-slate-800 text-white px-4 py-3 rounded-full shadow-xl border border-slate-800 transition-all hover:scale-105 cursor-pointer group"
     >
       <span class="relative flex h-2.5 w-2.5">
         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
       </span>
       <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-      <span class="text-xs font-semibold tracking-wide">24/7 Citizen Support</span>
+      <span class="text-xs font-semibold tracking-wide">24/7 Developer Support</span>
     </button>
   </div>
 
@@ -265,25 +264,25 @@
   <script>
     const translations = {
       en: {
-        title: 'Addis Ababa City Administration',
-        subtitle: 'Citizen Digital Services & e-Governance Portal',
-        heroTitle: 'Public e-Services, Accessible Anywhere',
-        heroSub: 'Apply for verified identity documents, register businesses, renew professional licenses, and settle municipal taxes securely online.',
-        servicesTitle: 'Fast-Track Citizen e-Services',
+        title: 'Nexus Cloud',
+        subtitle: 'Developer Infrastructure and Global Edge Platform',
+        heroTitle: 'Deploy, Scale, and Orchestrate Anywhere',
+        heroSub: 'Instant serverless deployments, managed PostgreSQL clusters, global edge caching, and real-time observability in one unified workspace.',
+        servicesTitle: 'Core Cloud Infrastructure',
       },
       am: {
-        title: 'የአዲስ አበባ ከተማ አስተዳደር',
-        subtitle: 'የዜጎች ዲጂታል አገልግሎት እና ኢ-አስተዳደር ፖርታል',
-        heroTitle: 'የህዝብ አገልግሎቶች፣ ከየትኛውም ቦታ ተደራሽ',
-        heroSub: 'የመታወቂያ ሰነዶችን ያመልክቱ፣ ንግዶችን ይመዝግቡ፣ የትምህርት ማስረጃዎችን ያረጋግጡ እና ታክስን በመስመር ላይ በቀላሉ ይክፈሉ።',
-        servicesTitle: 'ፈጣን የዜጎች የኢንተርኔት አገልግሎቶች',
+        title: 'Nexus Cloud (ES)',
+        subtitle: 'Infraestructura de Desarrollo y Plataforma Global',
+        heroTitle: 'Despliegue, Escale y Administre en Cualquier Lugar',
+        heroSub: 'Despliegues serverless instantaneos, clusters gestionados de PostgreSQL y observabilidad en tiempo real.',
+        servicesTitle: 'Infraestructura Cloud Principal',
       },
       om: {
-        title: 'Bulchiinsa Magaalaa Finfinnee',
-        subtitle: 'Tajaajila Dijitaalaa Lammiilee fi Mooraa e-Bulchiinsaa',
-        heroTitle: 'Tajaajiloota Mootummaa, Bakka Kamittuu Argamu',
-        heroSub: 'Waraqaa eenyummaa iyyadhaa, daldala galmeessaa, ragaalee barnootaa mirkaneeffadhaa fi gibira toora interneetiin kaffalaa.',
-        servicesTitle: 'Tajaajiloota Dijitaalaa Ariifataa Lammiilee',
+        title: 'Nexus Cloud (DE)',
+        subtitle: 'Entwickler-Infrastruktur und Globale Edge-Plattform',
+        heroTitle: 'Bereitstellen, Skalieren und Verwalten von Uberall',
+        heroSub: 'Sofortige serverlose Bereitstellungen, verwaltete PostgreSQL-Cluster und Echtzeit-Monitoring.',
+        servicesTitle: 'Kern-Cloud-Infrastruktur',
       }
     };
 
@@ -291,9 +290,9 @@
       ['en', 'am', 'om'].forEach(l => {
         const btn = document.getElementById('lang-btn-' + l);
         if (l === locale) {
-          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-white shadow-xs border border-slate-700/80 transition-all';
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-xs transition-all';
         } else {
-          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all';
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all';
         }
       });
 
@@ -304,7 +303,7 @@
       document.getElementById('hero-subtext').innerText = t.heroSub;
       document.getElementById('services-title').innerText = t.servicesTitle;
 
-      // Update FlowKit SDK active locale dynamically!
+      // Update FlowKit SDK active locale dynamically
       const sdk = window.flowKitInstance || window.onboardFlowInstance;
       if (sdk && typeof sdk.setLocale === 'function') {
         sdk.setLocale(locale);
@@ -335,4 +334,6 @@
 
 </body>
 </html>
+
+
 
