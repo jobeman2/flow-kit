@@ -49,6 +49,7 @@ export default function ToursListPage() {
     loadTours();
     const onProjectChanged = () => loadTours();
     window.addEventListener('projectChanged', onProjectChanged);
+    window.addEventListener('flowkit_token_synced', onProjectChanged);
 
     // Auto-open create modal if redirected from console empty state
     if (sessionStorage.getItem('openCreateTour') === '1') {
@@ -56,7 +57,10 @@ export default function ToursListPage() {
       setIsModalOpen(true);
     }
 
-    return () => window.removeEventListener('projectChanged', onProjectChanged);
+    return () => {
+      window.removeEventListener('projectChanged', onProjectChanged);
+      window.removeEventListener('flowkit_token_synced', onProjectChanged);
+    };
   }, []);
 
   const handleCreateTour = async (e: React.FormEvent) => {
@@ -129,10 +133,15 @@ export default function ToursListPage() {
   };
 
   const filteredTours = tours.filter((tour) => {
+    const title = tour?.title || '';
+    const slug = tour?.slug || '';
+    const pattern = tour?.targetUrlPattern || '';
+    const q = searchQuery.toLowerCase();
+
     const matchesSearch =
-      tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tour.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tour.targetUrlPattern.toLowerCase().includes(searchQuery.toLowerCase());
+      title.toLowerCase().includes(q) ||
+      slug.toLowerCase().includes(q) ||
+      pattern.toLowerCase().includes(q);
 
     const matchesStatus =
       statusFilter === 'ALL' || tour.status === statusFilter;
