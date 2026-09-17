@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
 import {
   KeyType,
@@ -14,6 +14,36 @@ import {
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async assertProjectAccess(userId: string, projectId: string) {
+    const project = await this.prisma.client.project.findFirst({
+      where: {
+        id: projectId,
+        organization: {
+          members: {
+            some: { userId },
+          },
+        },
+      },
+    });
+    if (!project) {
+      throw new ForbiddenException('Access denied: You do not have permission to access this project.');
+    }
+    return project;
+  }
+
+  async assertOrgAccess(userId: string, organizationId: string) {
+    const member = await this.prisma.client.organizationMember.findFirst({
+      where: {
+        organizationId,
+        userId,
+      },
+    });
+    if (!member) {
+      throw new ForbiddenException('Access denied: You are not a member of this organization.');
+    }
+    return member;
+  }
 
   async getProjectsForUser(userId: string) {
     const user = await this.prisma.client.user.findUnique({
@@ -232,7 +262,13 @@ export class ProjectsService {
     });
   }
 
-  async revokeApiKey(keyId: string) {
+  async revokeApiKey(projectId: string, keyId: string) {
+    const key = await this.prisma.client.apiKey.findFirst({
+      where: { id: keyId, projectId },
+    });
+    if (!key) {
+      throw new NotFoundException('API Key not found for this project.');
+    }
     return this.prisma.client.apiKey.update({
       where: { id: keyId },
       data: {

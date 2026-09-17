@@ -122,7 +122,7 @@ export class AuthController {
   @Post('oauth')
   @HttpCode(HttpStatus.OK)
   async oauth(
-    @Body() body: { provider: 'GOOGLE' | 'GITHUB'; profile: { email: string; name?: string; providerId: string } },
+    @Body() body: { provider: 'GOOGLE' | 'GITHUB' | 'CLERK'; profile: { email: string; name?: string; providerId: string } },
   ) {
     if (!body?.provider || !body?.profile?.email || !body?.profile?.providerId) {
       throw new BadRequestException('Valid provider and social profile data required.');

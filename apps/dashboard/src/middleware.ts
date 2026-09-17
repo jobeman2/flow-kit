@@ -12,9 +12,8 @@ const isProtectedRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
     const { userId } = await auth();
-    const token = req.cookies.get('flowkit_token')?.value;
 
-    if (!userId && !token) {
+    if (!userId) {
       const loginUrl = new URL('/login', req.url);
       loginUrl.searchParams.set('redirect_url', req.nextUrl.pathname);
       return NextResponse.redirect(loginUrl);

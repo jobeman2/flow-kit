@@ -1,10 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
 import { AnalyticsEventType } from '@flow-kit/database';
 
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async assertProjectAccess(userId: string, projectId: string) {
+    const project = await this.prisma.client.project.findFirst({
+      where: {
+        id: projectId,
+        organization: {
+          members: {
+            some: { userId },
+          },
+        },
+      },
+    });
+    if (!project) {
+      throw new ForbiddenException('Access denied: You do not have permission to access analytics for this project.');
+    }
+    return project;
+  }
 
   async getTourFunnel(projectId: string, tourId?: string) {
     // If no tourId specified, pick the most recent published tour or any tour

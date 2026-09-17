@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../common/services/prisma.service';
 import { MailService } from '../../common/mail/mail.service';
@@ -34,10 +34,8 @@ export class AuthService {
 
     if (!user) return null;
 
-    const isMatch =
-      user.passwordHash === pass ||
-      (await bcrypt.compare(pass, user.passwordHash).catch(() => false)) ||
-      pass === 'password123';
+    // Secure bcrypt verification only
+    const isMatch = await bcrypt.compare(pass, user.passwordHash).catch(() => false);
 
     if (isMatch) {
       const { passwordHash, refreshTokenHash, emailVerifyToken, passwordResetToken, ...result } = user;
@@ -510,16 +508,16 @@ export class AuthService {
     return { message: 'Password has been reset successfully. You may now sign in with your new credentials.' };
   }
 
-  // Social / OAuth Integration (Google / GitHub)
-  async oauthLogin(provider: 'GOOGLE' | 'GITHUB', profile: { email: string; name?: string; providerId: string }) {
+  // Social / OAuth / Clerk Integration (Google / GitHub / Clerk)
+  async oauthLogin(provider: 'GOOGLE' | 'GITHUB' | 'CLERK', profile: { email: string; name?: string; providerId: string }) {
     try {
       const normalizedEmail = profile.email.toLowerCase().trim();
 
       let user = await this.prisma.client.user.findFirst({
         where: {
           OR: [
-            { email: normalizedEmail },
             { authProvider: provider, providerId: profile.providerId },
+            { email: normalizedEmail },
           ],
         },
         include: {
@@ -534,6 +532,18 @@ export class AuthService {
           },
         },
       });
+
+      if (user) {
+        // Prevent Account Takeover: local password accounts cannot be overtaken by unverified OAuth claims
+        if (user.authProvider === 'LOCAL') {
+          throw new UnauthorizedException('An account already exists with this email using password authentication. Please sign in with your email and password.');
+        }
+
+        // Prevent Provider Impersonation: provider IDs must match if user exists
+        if (user.authProvider !== provider || (user.providerId && user.providerId !== profile.providerId)) {
+          throw new UnauthorizedException(`This email is already registered with ${user.authProvider}. Please sign in with the original provider.`);
+        }
+      }
 
       if (!user) {
         // Auto-provision user from verified social identity
@@ -692,6 +702,9 @@ export class AuthService {
 
       return this.login(user);
     } catch (err: any) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
       this.logger.error(`oauthLogin failed: ${err.message}`, err.stack);
       throw new BadRequestException(`Authentication failed: ${err.message}`);
     }

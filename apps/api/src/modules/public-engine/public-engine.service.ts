@@ -63,20 +63,41 @@ export class PublicEngineService {
     }>,
   ) {
     if (!events || !Array.isArray(events) || events.length === 0) {
-      return { success: true, count: 0 };
+      return { success: true, ingested: 0 };
     }
 
-    const records = events.map((ev) => ({
-      projectId,
-      tourId: ev.tourId,
-      tourStepId: ev.tourStepId || null,
-      eventType: ev.eventType,
-      anonymousUserId: ev.anonymousUserId || 'anon_unknown',
-      locale: ev.locale || 'en',
-      path: ev.path || '/',
-      userMetadata: ev.userMetadata || null,
-      clientTimestamp: ev.clientTimestamp ? new Date(ev.clientTimestamp) : new Date(),
-    }));
+    // Limit batch size to 50 events to prevent memory exhaustion & DoS
+    const batch = events.slice(0, 50);
+
+    const records = batch.map((ev) => {
+      let safeMetadata = null;
+      if (ev.userMetadata && typeof ev.userMetadata === 'object') {
+        try {
+          const str = JSON.stringify(ev.userMetadata);
+          if (str.length <= 4096) {
+            safeMetadata = ev.userMetadata;
+          }
+        } catch {}
+      }
+
+      let parsedDate = new Date();
+      if (ev.clientTimestamp) {
+        const d = new Date(ev.clientTimestamp);
+        if (!isNaN(d.getTime())) parsedDate = d;
+      }
+
+      return {
+        projectId,
+        tourId: String(ev.tourId || '').substring(0, 64),
+        tourStepId: ev.tourStepId ? String(ev.tourStepId).substring(0, 64) : null,
+        eventType: ev.eventType,
+        anonymousUserId: String(ev.anonymousUserId || 'anon_unknown').substring(0, 128),
+        locale: String(ev.locale || 'en').substring(0, 16),
+        path: String(ev.path || '/').substring(0, 512),
+        userMetadata: safeMetadata,
+        clientTimestamp: parsedDate,
+      };
+    });
 
     // Ingest events
     const result = await this.prisma.client.analyticsEvent.createMany({

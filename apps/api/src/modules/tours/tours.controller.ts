@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -17,43 +18,69 @@ export class ToursController {
   constructor(private readonly toursService: ToursService) {}
 
   @Get()
-  async getTours(@Param('projectId') projectId: string) {
+  async getTours(@Req() req: any, @Param('projectId') projectId: string) {
+    await this.toursService.assertProjectAccess(req.user.id, projectId);
     return this.toursService.getTours(projectId);
   }
 
   @Get(':id')
-  async getTour(@Param('id') tourId: string) {
+  async getTour(
+    @Req() req: any,
+    @Param('projectId') projectId: string,
+    @Param('id') tourId: string,
+  ) {
+    await this.toursService.assertTourAccess(req.user.id, tourId, projectId);
     return this.toursService.getTour(tourId);
   }
 
   @Post()
   async createTour(
+    @Req() req: any,
     @Param('projectId') projectId: string,
     @Body() body: any,
   ) {
+    await this.toursService.assertProjectAccess(req.user.id, projectId);
     return this.toursService.createTour(projectId, body);
   }
 
   @Put(':id')
   async updateTour(
+    @Req() req: any,
+    @Param('projectId') projectId: string,
     @Param('id') tourId: string,
     @Body() body: any,
   ) {
+    await this.toursService.assertTourAccess(req.user.id, tourId, projectId);
     return this.toursService.updateTour(tourId, body);
   }
 
   @Post(':id/publish')
-  async publishTour(@Param('id') tourId: string) {
+  async publishTour(
+    @Req() req: any,
+    @Param('projectId') projectId: string,
+    @Param('id') tourId: string,
+  ) {
+    await this.toursService.assertTourAccess(req.user.id, tourId, projectId);
     return this.toursService.publishTour(tourId);
   }
 
   @Post(':id/archive')
-  async archiveTour(@Param('id') tourId: string) {
+  async archiveTour(
+    @Req() req: any,
+    @Param('projectId') projectId: string,
+    @Param('id') tourId: string,
+  ) {
+    await this.toursService.assertTourAccess(req.user.id, tourId, projectId);
     return this.toursService.archiveTour(tourId);
   }
 
   @Delete(':id')
-  async deleteTour(@Param('id') tourId: string) {
+  async deleteTour(
+    @Req() req: any,
+    @Param('projectId') projectId: string,
+    @Param('id') tourId: string,
+  ) {
+    await this.toursService.assertTourAccess(req.user.id, tourId, projectId);
     return this.toursService.deleteTour(tourId);
   }
 }

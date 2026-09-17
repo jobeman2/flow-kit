@@ -1,10 +1,47 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../common/services/prisma.service';
 import { TourStatus, TriggerType, StepPlacement, StepAction } from '@flow-kit/database';
 
 @Injectable()
 export class ToursService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async assertProjectAccess(userId: string, projectId: string) {
+    const project = await this.prisma.client.project.findFirst({
+      where: {
+        id: projectId,
+        organization: {
+          members: {
+            some: { userId },
+          },
+        },
+      },
+    });
+    if (!project) {
+      throw new ForbiddenException('Access denied: You do not have permission to access tours for this project.');
+    }
+    return project;
+  }
+
+  async assertTourAccess(userId: string, tourId: string, projectId?: string) {
+    const tour = await this.prisma.client.tour.findFirst({
+      where: {
+        id: tourId,
+        ...(projectId ? { projectId } : {}),
+        project: {
+          organization: {
+            members: {
+              some: { userId },
+            },
+          },
+        },
+      },
+    });
+    if (!tour) {
+      throw new ForbiddenException('Access denied: You do not have permission to access or modify this tour.');
+    }
+    return tour;
+  }
 
   async getTours(projectId: string) {
     return this.prisma.client.tour.findMany({

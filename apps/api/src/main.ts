@@ -15,15 +15,47 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS for dashboard, demo apps, file:// protocol, and 3rd party websites
+  // Allowed origins for authenticated credential-bearing requests
+  const ALLOWED_CREDENTIAL_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5173',
+    'https://flow-kit-dashboard-three.vercel.app',
+    ...(process.env.DASHBOARD_URL ? [process.env.DASHBOARD_URL] : []),
+    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()) : []),
+  ];
+
+  // Secure CORS policy
   app.use((req: Request, res: Response, next: any) => {
     const origin = req.headers.origin;
-    if (!origin || origin === 'null') {
+    const isPublicRoute =
+      req.path.startsWith('/v1/public/') ||
+      req.path === '/flow-kit.js' ||
+      req.path === '/sdk.js';
+
+    if (isPublicRoute) {
+      // Public SDK endpoints are accessible from any origin without ambient credentials
       res.setHeader('Access-Control-Allow-Origin', '*');
-    } else {
+    } else if (
+      origin &&
+      ALLOWED_CREDENTIAL_ORIGINS.some(
+        (allowed) => origin.toLowerCase() === allowed.toLowerCase() || origin.endsWith('.vercel.app'),
+      )
+    ) {
+      // Verified origin allowed with credentials
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else if (!origin) {
+      // Same-origin or non-browser client
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    } else {
+      // Untrusted 3rd-party origin: do NOT allow credentials
+      res.setHeader('Access-Control-Allow-Origin', origin);
     }
+
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, x-api-key, *');
 
@@ -65,36 +97,36 @@ async function bootstrap() {
   server.get('/flow-kit.js', serveSdk);
   server.get('/sdk.js', serveSdk);
 
-  // System Diagnostics and Database Self-Healing Trigger
+  // Production Health Check (Sanitized - Zero Leakage)
   server.get('/v1/system/health', async (_req: Request, res: Response) => {
     try {
       const prismaService = app.get(PrismaService);
-      const tableRows: any[] = await prismaService.client.$queryRawUnsafe(`
-        SELECT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'public';
-      `);
-      const tables = tableRows.map((r: any) => r.table_name || r.TABLE_NAME);
-      const dbUrl = process.env.DATABASE_URL || '';
-      const maskedDb = dbUrl.replace(/:([^:@]+)@/, ':****@');
-
+      await prismaService.client.$queryRawUnsafe(`SELECT 1;`);
       res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
         database: 'connected',
-        databaseTarget: maskedDb,
-        tables,
-        tablesReady: tables.includes('users') && tables.includes('projects'),
       });
-    } catch (err: any) {
-      res.status(500).json({
-        status: 'database_error',
-        message: err?.message || String(err),
+    } catch {
+      res.status(503).json({
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        database: 'disconnected',
       });
     }
   });
 
-  server.all('/v1/system/bootstrap', async (_req: Request, res: Response) => {
+  // System Diagnostics and Database Schema Migration Trigger (Protected)
+  server.all('/v1/system/bootstrap', async (req: Request, res: Response) => {
+    const secret = req.headers['x-admin-secret'] || req.query?.secret;
+    const expectedSecret = process.env.INTERNAL_ADMIN_KEY || process.env.JWT_SECRET;
+    if (!expectedSecret || secret !== expectedSecret) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Administrative access required.',
+      });
+    }
+
     try {
       const prismaService = app.get(PrismaService);
       const result = await prismaService.bootstrapSchema();

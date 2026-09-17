@@ -63,7 +63,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       apiFetch('/v1/auth/oauth', {
         method: 'POST',
         body: JSON.stringify({
-          provider: 'GOOGLE',
+          provider: 'CLERK',
           profile: {
             email: email,
             name: fullName,
