@@ -67,3 +67,21 @@ body {
   background-image: radial-gradient(rgba(0, 212, 178, 0.25) 1px, transparent 1px);
   background-size: 16px 16px;
 }
+
+/* Hide Clerk Development Mode Badge, Watermarks, and Floating Indicators */
+.cl-internal-badge,
+.cl-internal-b3fm6y,
+.cl-internal-1x6kln6,
+[data-clerk-badge],
+div[class*="cl-internal-badge"],
+div[class*="development-mode"],
+div[class*="DevelopmentMode"],
+div[title*="Development mode"],
+div:has(> a[href*="clerk.com"][target="_blank"]),
+a[href*="clerk.com"][target="_blank"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
