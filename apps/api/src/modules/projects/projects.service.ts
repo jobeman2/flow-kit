@@ -45,6 +45,31 @@ export class ProjectsService {
     return member;
   }
 
+  async getOrCreateUserOrg(userId: string, userName?: string): Promise<string> {
+    const member = await this.prisma.client.organizationMember.findFirst({
+      where: { userId },
+      include: { organization: true },
+    });
+    if (member) return member.organizationId;
+
+    const workspaceName = userName ? `${userName}'s Workspace` : 'My Workspace';
+    const orgSlug = `org-${Math.random().toString(36).substring(2, 8)}`;
+
+    const org = await this.prisma.client.organization.create({
+      data: {
+        name: workspaceName,
+        slug: orgSlug,
+        members: {
+          create: {
+            userId,
+            role: OrgRole.OWNER,
+          },
+        },
+      },
+    });
+    return org.id;
+  }
+
   async getProjectsForUser(userId: string) {
     const user = await this.prisma.client.user.findUnique({
       where: { id: userId },

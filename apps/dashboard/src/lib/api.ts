@@ -99,7 +99,13 @@ export async function apiFetch<T = any>(endpoint: string, options: RequestInit =
           }
         } catch {
           isRefreshing = false;
+          const waiters = [...refreshQueue];
           refreshQueue = [];
+          waiters.forEach((cb) => {
+            try {
+              cb('');
+            } catch {}
+          });
           removeAuthToken();
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new Event('flowkit_token_expired'));

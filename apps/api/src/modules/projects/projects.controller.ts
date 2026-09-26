@@ -34,10 +34,10 @@ export class ProjectsController {
     @Req() req: any,
     @Body() body: { organizationId?: string; name: string; domains?: string[] },
   ) {
-    const orgId = body.organizationId || req.user.memberships?.[0]?.organizationId;
-    if (!orgId) {
-      throw new Error('Organization ID is required');
-    }
+    const orgId =
+      body.organizationId ||
+      req.user.memberships?.[0]?.organizationId ||
+      (await this.projectsService.getOrCreateUserOrg(req.user.id, req.user.name));
     await this.projectsService.assertOrgAccess(req.user.id, orgId);
     return this.projectsService.createProject(orgId, body.name, body.domains || []);
   }

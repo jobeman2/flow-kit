@@ -534,14 +534,33 @@ export class AuthService {
       });
 
       if (user) {
-        // Prevent Account Takeover: local password accounts cannot be overtaken by unverified OAuth claims
-        if (user.authProvider === 'LOCAL') {
+        // Prevent Account Takeover: local password accounts cannot be overtaken by unverified OAuth claims unless verified
+        if (user.authProvider === 'LOCAL' && !user.isEmailVerified) {
           throw new UnauthorizedException('An account already exists with this email using password authentication. Please sign in with your email and password.');
         }
 
-        // Prevent Provider Impersonation: provider IDs must match if user exists
-        if (user.authProvider !== provider || (user.providerId && user.providerId !== profile.providerId)) {
-          throw new UnauthorizedException(`This email is already registered with ${user.authProvider}. Please sign in with the original provider.`);
+        // Seamlessly update provider and link identity for Clerk and verified social auth
+        if (user.authProvider !== provider || (profile.providerId && user.providerId !== profile.providerId)) {
+          user = await this.prisma.client.user.update({
+            where: { id: user.id },
+            data: {
+              authProvider: provider,
+              providerId: profile.providerId,
+              isEmailVerified: true,
+              ...(profile.name && !user.name ? { name: profile.name } : {}),
+            },
+            include: {
+              memberships: {
+                include: {
+                  organization: {
+                    include: {
+                      projects: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
         }
       }
 
