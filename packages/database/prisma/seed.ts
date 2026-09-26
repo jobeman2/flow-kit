@@ -99,6 +99,19 @@ async function main() {
     },
   });
 
+  const renderKey = await prisma.apiKey.upsert({
+    where: { key: 'pk_live_1ef1da9d8bf5e2d424172009' },
+    update: {},
+    create: {
+      projectId: project.id,
+      name: 'Render Production Key',
+      key: 'pk_live_1ef1da9d8bf5e2d424172009',
+      type: KeyType.PUBLIC_CLIENT,
+      environment: Environment.PRODUCTION,
+      status: KeyStatus.ACTIVE,
+    },
+  });
+
   const secretKey = await prisma.apiKey.upsert({
     where: { key: 'sk_live_demo_addis_99c3a1b7e4d2' },
     update: {},
@@ -111,7 +124,7 @@ async function main() {
       status: KeyStatus.ACTIVE,
     },
   });
-  console.log(`✓ API Keys created:\n  - Public Test: ${testKey.key}\n  - Public Live: ${liveKey.key}\n  - Secret: ${secretKey.key}`);
+  console.log(`✓ API Keys created:\n  - Public Test: ${testKey.key}\n  - Public Live: ${liveKey.key}\n  - Render Live: ${renderKey.key}\n  - Secret: ${secretKey.key}`);
 
   // 6. Create Interactive Multilingual Tour
   const tour = await prisma.tour.upsert({

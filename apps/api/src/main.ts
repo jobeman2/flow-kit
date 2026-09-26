@@ -139,6 +139,24 @@ async function bootstrap() {
     }
   });
 
+  // Production Render Database Seed Trigger
+  server.all(['/v1/public/seed', '/v1/system/seed'], async (req: Request, res: Response) => {
+    try {
+      const prismaService = app.get(PrismaService);
+      const result = await prismaService.seedDefaults();
+      res.json({
+        success: true,
+        message: 'Database successfully seeded with default organization, project, API keys, and tours.',
+        result,
+      });
+    } catch (err: any) {
+      res.status(500).json({
+        success: false,
+        message: err?.message || String(err),
+      });
+    }
+  });
+
   const port = process.env.API_PORT || 4000;
   await app.listen(port);
   logger.log(`[HTTP] Flow-Kit API Server running on port ${port} (http://localhost:${port})`);

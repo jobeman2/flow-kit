@@ -1,66 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Compass, ArrowLeft, Lock, Mail, User, AlertCircle, ArrowRight, Building } from 'lucide-react';
-import { setAuthTokens } from '@/lib/api';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+import { SignUp } from '@clerk/nextjs';
+import { Compass, ArrowLeft } from 'lucide-react';
 
 export default function RegisterPage() {
-  const router = useRouter();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [orgName, setOrgName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password || !name) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch(`${API_URL}/v1/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          password,
-          organizationName: orgName.trim() || undefined,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Registration failed.');
-      }
-
-      if (data.accessToken) {
-        setAuthTokens(data.accessToken, data.refreshToken);
-        router.push('/console');
-      } else {
-        router.push('/login');
-      }
-    } catch (err: any) {
-      setError(err?.message || 'Failed to register account.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 bg-grid-hairline flex flex-col justify-center items-center px-4 py-12 font-sans relative">
+      
       {/* Return Home Pill */}
       <div className="mb-6 z-10">
         <Link
@@ -87,108 +35,37 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Card */}
-        <div className="w-full bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-900/5 p-6 sm:p-8">
-          {error && (
-            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start space-x-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="John Doe"
-                  className="w-full rounded-xl border border-slate-200 text-xs py-2.5 pl-9 pr-3.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-slate-900"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Organization / Company Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Building className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  value={orgName}
-                  onChange={(e) => setOrgName(e.target.value)}
-                  placeholder="Acme Inc."
-                  className="w-full rounded-xl border border-slate-200 text-xs py-2.5 pl-9 pr-3.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-slate-900"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Work Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john@example.com"
-                  className="w-full rounded-xl border border-slate-200 text-xs py-2.5 pl-9 pr-3.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-slate-900"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Minimum 6 characters"
-                  className="w-full rounded-xl border border-slate-200 text-xs py-2.5 pl-9 pr-3.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-slate-900"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-3 transition-all shadow-sm flex items-center justify-center space-x-2 disabled:opacity-50"
-            >
-              <span>{loading ? 'Creating workspace...' : 'Get Started Free'}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </form>
-
-          <div className="mt-5 text-center text-xs text-slate-500">
-            Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-slate-900 hover:underline">
-              Sign in
-            </Link>
-          </div>
+        {/* Clerk Sign-Up Component with clean container */}
+        <div className="w-full flex justify-center">
+          <SignUp
+            routing="hash"
+            signInUrl="/login"
+            fallbackRedirectUrl="/console"
+            appearance={{
+              variables: {
+                colorPrimary: '#0F172A',
+                colorBackground: '#FFFFFF',
+                borderRadius: '0.75rem',
+              },
+              elements: {
+                rootBox: 'w-full flex justify-center',
+                cardBox: 'w-full shadow-xl shadow-slate-900/5 rounded-2xl border border-slate-200/80 bg-white overflow-hidden',
+                card: 'shadow-none p-6 sm:p-8 border-0 bg-white w-full',
+                headerTitle: 'hidden',
+                headerSubtitle: 'hidden',
+                socialButtonsBlockButton: 'rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 h-10 transition-all shadow-xs',
+                socialButtonsBlockButtonText: 'font-medium text-xs text-slate-700',
+                dividerRow: 'my-5',
+                dividerText: 'text-[11px] font-mono text-slate-400 uppercase tracking-wider',
+                formFieldLabel: 'text-xs font-semibold text-slate-700 mb-1.5',
+                formFieldInput: 'rounded-xl border border-slate-200 text-xs py-2.5 px-3.5 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all shadow-none',
+                formButtonPrimary: 'w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2.5 h-10 transition-all shadow-sm cursor-pointer',
+                footer: 'bg-slate-50/60 border-t border-slate-100 p-4 rounded-b-2xl',
+                footerAction: 'text-xs text-slate-500',
+                footerActionLink: 'font-semibold text-slate-900 hover:underline text-xs',
+              },
+            }}
+          />
         </div>
       </div>
     </div>
