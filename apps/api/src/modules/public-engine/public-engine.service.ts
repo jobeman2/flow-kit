@@ -107,4 +107,79 @@ export class PublicEngineService {
 
     return { success: true, ingested: result.count };
   }
+
+  async getAllTours(projectId: string) {
+    return this.prisma.client.tour.findMany({
+      where: { projectId },
+      include: {
+        steps: {
+          orderBy: { stepIndex: 'asc' },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async addStepFromBuilder(
+    projectId: string,
+    tourId: string,
+    data: {
+      targetSelector: string;
+      placement?: string;
+      title: string;
+      content: string;
+      nextBtn?: string;
+      backBtn?: string;
+    },
+  ) {
+    const tour = await this.prisma.client.tour.findFirst({
+      where: { id: tourId, projectId },
+      include: { steps: true },
+    });
+    if (!tour) {
+      throw new Error('Tour not found or access denied for this project');
+    }
+
+    const nextIndex = tour.steps.length + 1;
+    const rawPlacement = (data.placement || 'BOTTOM').toUpperCase().replace('-', '_');
+    const dbPlacement = (['TOP', 'BOTTOM', 'LEFT', 'RIGHT', 'CENTER'].includes(rawPlacement)
+      ? (rawPlacement as any)
+      : rawPlacement.startsWith('TOP')
+      ? 'TOP'
+      : rawPlacement.startsWith('BOTTOM')
+      ? 'BOTTOM'
+      : rawPlacement.startsWith('LEFT')
+      ? 'LEFT'
+      : 'RIGHT');
+
+    await this.prisma.client.tourStep.create({
+      data: {
+        tourId: tour.id,
+        stepIndex: nextIndex,
+        targetSelector: data.targetSelector || 'body',
+        placement: dbPlacement as any,
+        requiredAction: 'NONE' as any,
+        backdropConfig: {
+          dimOpacity: 0.65,
+          placement: rawPlacement,
+        },
+        advanceOnSelectorClick: false,
+        i18n: {
+          [tour.defaultLocale || 'en']: {
+            title: data.title || `Step ${nextIndex}`,
+            content: data.content || '',
+            nextBtn: data.nextBtn || (nextIndex === 1 ? 'Start' : 'Next'),
+            backBtn: data.backBtn || 'Back',
+          },
+        },
+      },
+    });
+
+    return this.prisma.client.tour.findUnique({
+      where: { id: tour.id },
+      include: {
+        steps: { orderBy: { stepIndex: 'asc' } },
+      },
+    });
+  }
 }

@@ -47,6 +47,7 @@ export default function TourStudioPage() {
   const [activeTab, setActiveTab] = useState<'steps' | 'design' | 'settings'>('steps');
   const [selectedStepIdx, setSelectedStepIdx] = useState<number>(0);
   const [activeLocale, setActiveLocale] = useState<string>('en');
+  const [project, setProject] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [saveNotice, setSaveNotice] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -59,6 +60,8 @@ export default function TourStudioPage() {
       if (!activeProjectId) return;
       const data = await apiFetch(`/v1/projects/${activeProjectId}/tours/${tourId}`);
       setTour(data);
+      const proj = await apiFetch(`/v1/projects/${activeProjectId}`);
+      if (proj) setProject(proj);
     } catch (e) {
       console.error(e);
     }
@@ -338,6 +341,22 @@ export default function TourStudioPage() {
               <span>Saved successfully</span>
             </div>
           )}
+
+          <button
+            type="button"
+            onClick={() => {
+              const rawDomain = (project?.domains?.[0] || 'murn.196.190.216.193.nip.io').trim();
+              const baseDomain = rawDomain.replace(/^https?:\/\//, '').split('/')[0];
+              const fullUrl = `http://${baseDomain}`;
+              const target = `${fullUrl}/?flowkit_builder=true&tourId=${tourId}`;
+              window.open(target, '_blank');
+            }}
+            className="px-3 py-1.5 rounded-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer border border-indigo-200"
+            title="Open your website with the visual Point & Click builder"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Live Builder on Site</span>
+          </button>
 
           {tour.status !== 'PUBLISHED' && (
             <button

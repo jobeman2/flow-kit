@@ -22,6 +22,32 @@ export class PublicEngineController {
     return tours;
   }
 
+  @Get('builder/tours')
+  async getBuilderTours(@Req() req: any) {
+    const projectId = req.project.id;
+    return await this.engineService.getAllTours(projectId);
+  }
+
+  @Post('builder/add-step')
+  async addBuilderStep(
+    @Req() req: any,
+    @Body()
+    body: {
+      tourId: string;
+      step: {
+        targetSelector: string;
+        placement?: string;
+        title: string;
+        content: string;
+        nextBtn?: string;
+        backBtn?: string;
+      };
+    },
+  ) {
+    const projectId = req.project.id;
+    return await this.engineService.addStepFromBuilder(projectId, body.tourId, body.step);
+  }
+
   @Post('events')
   async ingestEvents(@Req() req: any, @Body() body: { events: any[] }) {
     const projectId = req.project.id;

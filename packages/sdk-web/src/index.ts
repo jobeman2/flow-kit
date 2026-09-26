@@ -2,10 +2,12 @@ import { FlowKitConfig, OnboardFlowConfig, TourData, TourStepData } from './type
 import { TourOverlay } from './overlay';
 import { TelemetryService } from './telemetry';
 import { normalizeLocale } from './i18n';
+import { LiveBuilder } from './builder';
 
 export * from './types';
 export { TourOverlay } from './overlay';
 export { TelemetryService } from './telemetry';
+export { LiveBuilder } from './builder';
 
 export class FlowKit {
   private static instance: FlowKit | null = null;
@@ -51,6 +53,27 @@ export class FlowKit {
         this.evaluateAutoStart();
       }
       this.attachNavigationListeners();
+
+      // Check if Live Builder mode requested via URL parameter or hash
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isBuilder =
+          urlParams.get('flowkit_builder') === 'true' ||
+          window.location.hash.includes('flowkit_builder');
+        const tourIdParam = urlParams.get('tourId') || undefined;
+
+        if (isBuilder) {
+          this.openLiveBuilder(tourIdParam);
+        }
+
+        // Global hotkey: Ctrl + Shift + F to toggle visual live builder
+        window.addEventListener('keydown', (e) => {
+          if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+            e.preventDefault();
+            this.openLiveBuilder();
+          }
+        });
+      }
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.warn('[OnboardFlow] Bootstrap notice:', err);
@@ -262,6 +285,18 @@ export class FlowKit {
 
   public getAvailableTours(): TourData[] {
     return Array.from(this.tours.values());
+  }
+
+  public openLiveBuilder(activeTourId?: string) {
+    const builder = LiveBuilder.getInstance({
+      apiKey: this.config.apiKey,
+      apiUrl: this.config.apiUrl,
+      activeTourId,
+      onTourUpdated: () => {
+        this.fetchTours();
+      },
+    });
+    builder.start();
   }
 }
 
