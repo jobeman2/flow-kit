@@ -20,6 +20,52 @@ export function findTargetElement(selector: string): HTMLElement | null {
   }
 }
 
+export async function waitForTargetElement(
+  selector: string,
+  timeoutMs: number = 2500
+): Promise<HTMLElement | null> {
+  const existing = findTargetElement(selector);
+  if (existing) return existing;
+  if (!selector || selector === 'body' || selector === 'window' || typeof document === 'undefined') {
+    return null;
+  }
+
+  return new Promise((resolve) => {
+    let resolved = false;
+
+    const observer = new MutationObserver(() => {
+      const el = findTargetElement(selector);
+      if (el) {
+        cleanup();
+        resolve(el);
+      }
+    });
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      resolve(findTargetElement(selector));
+    }, timeoutMs);
+
+    function cleanup() {
+      if (resolved) return;
+      resolved = true;
+      observer.disconnect();
+      clearTimeout(timeout);
+    }
+
+    try {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      });
+    } catch {
+      cleanup();
+      resolve(null);
+    }
+  });
+}
+
 export function scrollElementIntoView(el: HTMLElement) {
   const rect = el.getBoundingClientRect();
   const isInViewport =

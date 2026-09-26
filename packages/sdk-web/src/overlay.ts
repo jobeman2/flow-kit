@@ -1,5 +1,5 @@
 import { TourStepData, TourData, StepPlacement } from './types';
-import { calculatePosition, findTargetElement, scrollElementIntoView } from './positioning';
+import { calculatePosition, findTargetElement, waitForTargetElement, scrollElementIntoView } from './positioning';
 import { resolveStepI18n } from './i18n';
 
 export interface OverlayCallbacks {
@@ -21,6 +21,8 @@ export class TourOverlay {
   private currentLocale: string = 'en';
   private resizeObserver: ResizeObserver | null = null;
   private keydownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private targetClickListener: ((e: MouseEvent) => void) | null = null;
+  private targetClickElement: HTMLElement | null = null;
 
   constructor(callbacks: OverlayCallbacks) {
     this.callbacks = callbacks;
@@ -169,6 +171,21 @@ export class TourOverlay {
       scrollElementIntoView(targetEl);
     }
 
+    // Attach click listener if interactive action required
+    if (this.targetClickListener && this.targetClickElement) {
+      this.targetClickElement.removeEventListener('click', this.targetClickListener);
+      this.targetClickListener = null;
+      this.targetClickElement = null;
+    }
+
+    if (targetEl && (step.advanceOnSelectorClick || step.requiredAction === 'CLICK_TARGET')) {
+      this.targetClickListener = () => {
+        this.callbacks.onNext();
+      };
+      targetEl.addEventListener('click', this.targetClickListener, { once: true });
+      this.targetClickElement = targetEl;
+    }
+
     const totalSteps = tour.steps.length;
     const currentStepIndex = step.stepIndex;
     const isFirst = currentStepIndex <= 1;
@@ -200,6 +217,7 @@ export class TourOverlay {
       this.tooltipEl.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.7)';
       this.tooltipEl.style.backdropFilter = 'none';
     } else if (cardStyle === 'glass') {
+      isDark = true;
       this.tooltipEl.style.background = 'rgba(255, 255, 255, 0.88)';
       this.tooltipEl.style.color = '#0f172a';
       this.tooltipEl.style.border = '1px solid rgba(255, 255, 255, 0.6)';
@@ -247,9 +265,9 @@ export class TourOverlay {
       <h3 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 600; color: ${titleColor}; line-height: 1.35;">
         ${escapeHtml(i18n.title)}
       </h3>
-      <p style="margin: 0 0 16px 0; font-size: 13px; color: ${bodyColor}; line-height: 1.5;">
-        ${escapeHtml(i18n.content)}
-      </p>
+      <div style="margin: 0 0 16px 0; font-size: 13px; color: ${bodyColor}; line-height: 1.5;">
+        ${renderRichContent(i18n.content)}
+      </div>
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
         <div>
           ${
@@ -275,6 +293,11 @@ export class TourOverlay {
     const prevBtn = this.tooltipEl.querySelector('#obf-prev-btn');
     const skipBtn = this.tooltipEl.querySelector('#obf-skip-btn');
     const closeBtn = this.tooltipEl.querySelector('#obf-close-btn');
+
+    nextBtn?.addEventListener('click', () => this.callbacks.onNext());
+    prevBtn?.addEventListener('click', () => this.callbacks.onPrev());
+    skipBtn?.addEventListener('click', () => this.callbacks.onSkip());
+    closeBtn?.addEventListener('click', () => this.callbacks.onSkip());
 
     nextBtn?.addEventListener('click', () => this.callbacks.onNext());
     prevBtn?.addEventListener('click', () => this.callbacks.onPrev());
@@ -334,6 +357,11 @@ export class TourOverlay {
   };
 
   public unmount() {
+    if (this.targetClickListener && this.targetClickElement) {
+      this.targetClickElement.removeEventListener('click', this.targetClickListener);
+      this.targetClickListener = null;
+      this.targetClickElement = null;
+    }
     if (this.keydownHandler) {
       window.removeEventListener('keydown', this.keydownHandler);
       this.keydownHandler = null;
@@ -360,4 +388,20 @@ function escapeHtml(str: string = ''): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+function renderRichContent(str: string = ''): string {
+  if (!str) return '';
+  let safe = escapeHtml(str);
+  // **bold**
+  safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // *italic*
+  safe = safe.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // `code`
+  safe = safe.replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.06);padding:2px 4px;border-radius:4px;font-family:monospace;font-size:0.9em;">$1</code>');
+  // [text](url)
+  safe = safe.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:underline;">$1</a>');
+  // linebreaks
+  safe = safe.replace(/\n/g, '<br/>');
+  return safe;
 }

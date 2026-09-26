@@ -25,11 +25,15 @@ async function main() {
   // SHA-256 for 'password123': ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f
   const user = await prisma.user.upsert({
     where: { email: 'admin@onboardflow.com' },
-    update: {},
+    update: {
+      passwordHash: '$2b$10$8AolZh5flSSjykn9qSPlbeRDMworYZj2nLsh3yii9gZ.YYc3w1Fx2',
+      isEmailVerified: true,
+    },
     create: {
       email: 'admin@onboardflow.com',
-      passwordHash: '$2b$10$epRfZWvgw45wN0fH6oUG6.pU3zTq6e8a4q3rM5i1d6zW1n4f.k8k2', // pre-hashed demo pass
+      passwordHash: '$2b$10$8AolZh5flSSjykn9qSPlbeRDMworYZj2nLsh3yii9gZ.YYc3w1Fx2',
       name: 'Abebe Bikila',
+      isEmailVerified: true,
     },
   });
 

@@ -325,12 +325,17 @@
     2-LINE FLOW-KIT UNIVERSAL CLIENT SDK INTEGRATION
     =======================================================
   -->
-  <script
-    src="https://flow-kit.onrender.com/flow-kit.js"
-    data-api-key="pk_live_1ef1da9d8bf5e2d424172009"
-    data-api-url="https://flow-kit.onrender.com"
-    data-locale="en"
-  ></script>
+  <script>
+    (function () {
+      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      var script = document.createElement('script');
+      script.src = isLocal ? 'http://localhost:4000/flow-kit.js' : 'https://flow-kit.onrender.com/flow-kit.js';
+      script.setAttribute('data-api-key', isLocal ? 'pk_live_demo_addis_79a2f1b4c6e8' : 'pk_live_1ef1da9d8bf5e2d424172009');
+      script.setAttribute('data-api-url', isLocal ? 'http://localhost:4000' : 'https://flow-kit.onrender.com');
+      script.setAttribute('data-locale', 'en');
+      document.body.appendChild(script);
+    })();
+  </script>
 
 </body>
 </html>
