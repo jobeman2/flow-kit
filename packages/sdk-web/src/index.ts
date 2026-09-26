@@ -18,12 +18,14 @@ export class FlowKit {
   private overlay: TourOverlay;
   private telemetry: TelemetryService;
   private activeLocale: string;
+  private builder: LiveBuilder | null = null;
 
   constructor(config: FlowKitConfig) {
     this.config = {
       ...config,
       apiUrl: config.apiUrl || 'http://localhost:4000',
       autoStart: config.autoStart !== false,
+      isAdmin: config.isAdmin ?? false,
     };
     this.activeLocale = normalizeLocale(this.config.locale);
     this.telemetry = new TelemetryService(this.config.apiUrl, this.config.apiKey);
@@ -54,6 +56,11 @@ export class FlowKit {
       }
       this.attachNavigationListeners();
 
+      // If user is Admin (WordPress style), automatically show the Flow-Kit Builder bar
+      if (this.config.isAdmin) {
+        this.openLiveBuilder();
+      }
+
       // Check if Live Builder mode requested via URL parameter or hash
       if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
@@ -62,13 +69,14 @@ export class FlowKit {
           window.location.hash.includes('flowkit_builder');
         const tourIdParam = urlParams.get('tourId') || undefined;
 
-        if (isBuilder) {
+        if (isBuilder && this.config.isAdmin) {
           this.openLiveBuilder(tourIdParam);
         }
 
-        // Global hotkey: Ctrl + Shift + F to toggle visual live builder
+        // Global hotkey: Ctrl + Shift + F (Admin only) to toggle visual builder
         window.addEventListener('keydown', (e) => {
           if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+            if (!this.config.isAdmin) return;
             e.preventDefault();
             this.openLiveBuilder();
           }
@@ -287,16 +295,31 @@ export class FlowKit {
     return Array.from(this.tours.values());
   }
 
+  public setAdmin(isAdmin: boolean) {
+    this.config.isAdmin = isAdmin;
+    if (this.builder) {
+      this.builder.setAdmin(isAdmin);
+    } else if (isAdmin) {
+      this.openLiveBuilder();
+    }
+  }
+
   public openLiveBuilder(activeTourId?: string) {
-    const builder = LiveBuilder.getInstance({
+    if (!this.config.isAdmin) {
+      console.warn('[FlowKit] Builder mode is restricted to administrators.');
+      return;
+    }
+    this.builder = LiveBuilder.getInstance({
       apiKey: this.config.apiKey,
       apiUrl: this.config.apiUrl,
       activeTourId,
+      isAdmin: true,
       onTourUpdated: () => {
         this.fetchTours();
       },
     });
-    builder.start();
+    this.builder.setAdmin(true);
+    this.builder.start();
   }
 }
 

@@ -48,6 +48,26 @@ export class PublicEngineController {
     return await this.engineService.addStepFromBuilder(projectId, body.tourId, body.step);
   }
 
+  @Post('builder/add-steps')
+  async addBuilderSteps(
+    @Req() req: any,
+    @Body()
+    body: {
+      tourId: string;
+      steps: Array<{
+        targetSelector: string;
+        placement?: string;
+        title: string;
+        content: string;
+        nextBtn?: string;
+        backBtn?: string;
+      }>;
+    },
+  ) {
+    const projectId = req.project.id;
+    return await this.engineService.addStepsFromBuilder(projectId, body.tourId, body.steps);
+  }
+
   @Post('events')
   async ingestEvents(@Req() req: any, @Body() body: { events: any[] }) {
     const projectId = req.project.id;

@@ -63,6 +63,7 @@ export interface FlowKitConfig {
   apiUrl?: string;
   locale?: string;
   autoStart?: boolean;
+  isAdmin?: boolean;
   onTourStart?: (tour: TourData) => void;
   onStepChange?: (step: TourStepData, index: number) => void;
   onTourComplete?: (tour: TourData) => void;

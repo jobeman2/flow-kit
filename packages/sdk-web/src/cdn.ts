@@ -23,6 +23,7 @@ if (typeof window !== 'undefined') {
     const apiUrl = currentScript.getAttribute('data-api-url') || undefined;
     const locale = currentScript.getAttribute('data-locale') || undefined;
     const autoStart = currentScript.getAttribute('data-auto-start') !== 'false';
+    const isAdmin = currentScript.getAttribute('data-is-admin') === 'true';
 
     if (apiKey) {
       const initSdk = () => {
@@ -32,6 +33,7 @@ if (typeof window !== 'undefined') {
             apiUrl,
             locale,
             autoStart,
+            isAdmin,
           });
           window.flowKitInstance = instance;
           window.onboardFlowInstance = instance;

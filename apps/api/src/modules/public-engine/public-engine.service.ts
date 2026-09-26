@@ -182,4 +182,71 @@ export class PublicEngineService {
       },
     });
   }
+
+  async addStepsFromBuilder(
+    projectId: string,
+    tourId: string,
+    steps: Array<{
+      targetSelector: string;
+      placement?: string;
+      title: string;
+      content: string;
+      nextBtn?: string;
+      backBtn?: string;
+    }>,
+  ) {
+    const tour = await this.prisma.client.tour.findFirst({
+      where: { id: tourId, projectId },
+      include: { steps: true },
+    });
+    if (!tour) {
+      throw new Error('Tour not found or access denied for this project');
+    }
+
+    let currentIndex = tour.steps.length;
+    for (const stepData of steps) {
+      currentIndex += 1;
+      const rawPlacement = (stepData.placement || 'BOTTOM').toUpperCase().replace('-', '_');
+      const dbPlacement = (['TOP', 'BOTTOM', 'LEFT', 'RIGHT', 'CENTER'].includes(rawPlacement)
+        ? (rawPlacement as any)
+        : rawPlacement.startsWith('TOP')
+        ? 'TOP'
+        : rawPlacement.startsWith('BOTTOM')
+        ? 'BOTTOM'
+        : rawPlacement.startsWith('LEFT')
+        ? 'LEFT'
+        : 'RIGHT');
+
+      await this.prisma.client.tourStep.create({
+        data: {
+          tourId: tour.id,
+          stepIndex: currentIndex,
+          targetSelector: stepData.targetSelector || 'body',
+          placement: dbPlacement as any,
+          requiredAction: 'NONE' as any,
+          backdropConfig: {
+            dimOpacity: 0.65,
+            placement: rawPlacement,
+          },
+          advanceOnSelectorClick: false,
+          i18n: {
+            [tour.defaultLocale || 'en']: {
+              title: stepData.title || `Step ${currentIndex}`,
+              content: stepData.content || '',
+              nextBtn: stepData.nextBtn || (currentIndex === 1 ? 'Start' : 'Next'),
+              backBtn: stepData.backBtn || 'Back',
+            },
+          },
+        },
+      });
+    }
+
+    return this.prisma.client.tour.findUnique({
+      where: { id: tour.id },
+      include: {
+        steps: { orderBy: { stepIndex: 'asc' } },
+      },
+    });
+  }
 }
+
