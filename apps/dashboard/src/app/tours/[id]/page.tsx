@@ -126,29 +126,43 @@ export default function TourStudioPage() {
 
   const currentStep = tour.steps[selectedStepIdx] || null;
 
-  const handleUpdateStep = (key: string, value: any) => {
-    const updatedSteps = [...tour.steps];
-    updatedSteps[selectedStepIdx] = {
-      ...updatedSteps[selectedStepIdx],
-      [key]: value,
-    };
-    setTour({ ...tour, steps: updatedSteps });
+  const handleUpdateStep = (keyOrUpdates: string | Record<string, any>, value?: any) => {
+    setTour((prevTour: any) => {
+      const updatedSteps = [...prevTour.steps];
+      if (typeof keyOrUpdates === 'string') {
+        updatedSteps[selectedStepIdx] = {
+          ...updatedSteps[selectedStepIdx],
+          [keyOrUpdates]: value,
+        };
+      } else {
+        updatedSteps[selectedStepIdx] = {
+          ...updatedSteps[selectedStepIdx],
+          ...keyOrUpdates,
+        };
+      }
+      return { ...prevTour, steps: updatedSteps };
+    });
     setHasUnsavedChanges(true);
   };
 
   const handleUpdateI18n = (field: string, value: string) => {
-    const updatedSteps = [...tour.steps];
-    const currentI18n = updatedSteps[selectedStepIdx].i18n || {};
-    const localeI18n = currentI18n[activeLocale] || {};
+    setTour((prevTour: any) => {
+      const updatedSteps = [...prevTour.steps];
+      const currentI18n = updatedSteps[selectedStepIdx]?.i18n || {};
+      const localeI18n = currentI18n[activeLocale] || {};
 
-    updatedSteps[selectedStepIdx].i18n = {
-      ...currentI18n,
-      [activeLocale]: {
-        ...localeI18n,
-        [field]: value,
-      },
-    };
-    setTour({ ...tour, steps: updatedSteps });
+      updatedSteps[selectedStepIdx] = {
+        ...updatedSteps[selectedStepIdx],
+        i18n: {
+          ...currentI18n,
+          [activeLocale]: {
+            ...localeI18n,
+            [field]: value,
+          },
+        },
+      };
+      return { ...prevTour, steps: updatedSteps };
+    });
     setHasUnsavedChanges(true);
   };
 
@@ -556,10 +570,12 @@ export default function TourStudioPage() {
                           key={p.id}
                           type="button"
                           onClick={() => {
-                            handleUpdateStep('placement', p.id);
-                            handleUpdateStep('backdropConfig', {
-                              ...(currentStep.backdropConfig || {}),
+                            handleUpdateStep({
                               placement: p.id,
+                              backdropConfig: {
+                                ...(currentStep?.backdropConfig || {}),
+                                placement: p.id,
+                              },
                             });
                           }}
                           className={`flex flex-col items-center justify-center p-2 rounded-sm border text-[11px] font-medium transition-all cursor-pointer ${
@@ -580,10 +596,12 @@ export default function TourStudioPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        handleUpdateStep('placement', 'BOTTOM-FULL');
-                        handleUpdateStep('backdropConfig', {
-                          ...(currentStep.backdropConfig || {}),
+                        handleUpdateStep({
                           placement: 'BOTTOM-FULL',
+                          backdropConfig: {
+                            ...(currentStep?.backdropConfig || {}),
+                            placement: 'BOTTOM-FULL',
+                          },
                         });
                       }}
                       className={`w-full py-1.5 px-3 rounded-sm border text-[11px] font-medium transition-all cursor-pointer flex items-center justify-center space-x-2 ${

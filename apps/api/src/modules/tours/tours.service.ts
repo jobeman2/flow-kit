@@ -183,10 +183,16 @@ export class ToursService {
         if (data.steps.length > 0) {
           await tx.tourStep.createMany({
             data: data.steps.map((s, idx) => {
-              const raw = (s.placement || 'BOTTOM').toString().toUpperCase().replace('-', '_');
+              const raw = (s.backdropConfig?.placement || s.placement || 'BOTTOM').toString().toUpperCase().replace('-', '_');
               const dbPlacement = (['TOP', 'BOTTOM', 'LEFT', 'RIGHT', 'CENTER'].includes(raw)
                 ? (raw as StepPlacement)
-                : raw.startsWith('TOP') ? StepPlacement.TOP : StepPlacement.BOTTOM);
+                : raw.startsWith('TOP')
+                ? StepPlacement.TOP
+                : raw.startsWith('BOTTOM')
+                ? StepPlacement.BOTTOM
+                : raw.startsWith('LEFT')
+                ? StepPlacement.LEFT
+                : StepPlacement.RIGHT);
               return {
                 tourId,
                 stepIndex: s.stepIndex ?? idx + 1,
