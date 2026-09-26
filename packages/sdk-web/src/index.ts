@@ -50,11 +50,42 @@ export class FlowKit {
       if (this.config.autoStart !== false) {
         this.evaluateAutoStart();
       }
+      this.attachNavigationListeners();
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.warn('[OnboardFlow] Bootstrap notice:', err);
       }
     }
+  }
+
+  private attachNavigationListeners() {
+    if (typeof window === 'undefined' || (window as any).__flowkit_nav_attached) return;
+    (window as any).__flowkit_nav_attached = true;
+
+    const onNavigate = async () => {
+      if (this.activeTour) return;
+      await this.fetchTours();
+      if (this.config.autoStart !== false) {
+        this.evaluateAutoStart();
+      }
+    };
+
+    const origPushState = history.pushState;
+    const self = this;
+    history.pushState = function (...args) {
+      origPushState.apply(this, args);
+      setTimeout(() => onNavigate(), 60);
+    };
+
+    const origReplaceState = history.replaceState;
+    history.replaceState = function (...args) {
+      origReplaceState.apply(this, args);
+      setTimeout(() => onNavigate(), 60);
+    };
+
+    window.addEventListener('popstate', () => {
+      setTimeout(() => onNavigate(), 60);
+    });
   }
 
   public async fetchTours(): Promise<TourData[]> {
