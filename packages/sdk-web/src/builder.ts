@@ -458,7 +458,7 @@ export class LiveBuilder {
     previewBtn.addEventListener('click', () => {
       const activeTour = this.tours.find((t) => t.id === this.selectedTourId);
       if (activeTour && (window as any).flowKitInstance) {
-        (window as any).flowKitInstance.startTour(activeTour.slug);
+        (window as any).flowKitInstance.startTour(activeTour.slug, activeTour);
       }
     });
     dock.appendChild(previewBtn);
@@ -537,6 +537,23 @@ export class LiveBuilder {
     );
   }
 
+  private resolvePickingTarget(raw: HTMLElement): HTMLElement {
+    let el: HTMLElement = raw;
+    // If it's an SVG element or inside an SVG (e.g. rect, path, circle), bubble up to enclosing HTML container
+    if (el instanceof SVGElement || el.tagName.toLowerCase() === 'svg' || el.closest('svg')) {
+      const svg = el.closest('svg');
+      if (svg && svg.parentElement && !this.isBuilderElement(svg.parentElement)) {
+        el = svg.parentElement;
+      }
+    }
+    // If it's a small inline text/icon inside a button, bubble up to the button
+    const btn = el.closest('button');
+    if (btn && !this.isBuilderElement(btn)) {
+      return btn;
+    }
+    return el;
+  }
+
   private getOptimalSelector(el: HTMLElement): string {
     if (el.id) return `#${el.id}`;
     for (const attr of ['data-tour', 'data-testid', 'data-id', 'name']) {
@@ -544,10 +561,39 @@ export class LiveBuilder {
       if (val) return `[${attr}="${val}"]`;
     }
     const role = el.getAttribute('role');
-    if (role) return `[role="${role}"]`;
+    if (role && ['navigation', 'search', 'main', 'banner'].includes(role)) {
+      return `[role="${role}"]`;
+    }
+
+    const tag = el.tagName.toLowerCase();
+
+    // Specific input types
+    if (tag === 'input') {
+      const type = el.getAttribute('type');
+      if (type === 'search') return 'input[type="search"]';
+      const placeholder = el.getAttribute('placeholder');
+      if (placeholder) {
+        return `input[placeholder*="${placeholder.slice(0, 15)}"]`;
+      }
+      return 'input';
+    }
+
+    // Headings
+    if (tag === 'h1') return 'h1';
+    if (tag === 'h2') return 'h2';
+    if (tag === 'nav') return 'nav';
+    if (tag === 'aside') return 'aside';
+
+    // Grid items (e.g. dashboard cards)
+    if (el.parentElement) {
+      const parentClass = el.parentElement.className;
+      if (typeof parentClass === 'string' && parentClass.includes('grid')) {
+        const index = Array.from(el.parentElement.children).indexOf(el) + 1;
+        return `.grid > div:nth-child(${index})`;
+      }
+    }
 
     // Semantic tag with class
-    const tag = el.tagName.toLowerCase();
     if (el.className && typeof el.className === 'string') {
       const primaryClass = el.className
         .trim()
@@ -556,18 +602,15 @@ export class LiveBuilder {
       if (primaryClass) return `${tag}.${primaryClass}`;
     }
 
-    if (tag === 'h1' || tag === 'h2' || tag === 'input' || tag === 'header' || tag === 'nav' || tag === 'aside') {
-      return tag;
-    }
-
     return tag;
   }
 
   private onMouseMove = (e: MouseEvent) => {
     if (!this.isPicking) return;
-    const target = e.target as HTMLElement;
-    if (!target || this.isBuilderElement(target)) return;
+    const raw = e.target as HTMLElement;
+    if (!raw || this.isBuilderElement(raw)) return;
 
+    const target = this.resolvePickingTarget(raw);
     const r = target.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) return;
 
@@ -590,12 +633,13 @@ export class LiveBuilder {
 
   private onClick = (e: MouseEvent) => {
     if (!this.isPicking) return;
-    const target = e.target as HTMLElement;
-    if (!target || this.isBuilderElement(target)) return;
+    const raw = e.target as HTMLElement;
+    if (!raw || this.isBuilderElement(raw)) return;
 
     e.preventDefault();
     e.stopPropagation();
 
+    const target = this.resolvePickingTarget(raw);
     this.currentSelectedEl = target;
     this.currentSelector = this.getOptimalSelector(target);
     this.togglePickMode(false);
@@ -832,6 +876,11 @@ export class LiveBuilder {
         saveBtn.textContent = `✓ ${stepsToSave.length} Steps Saved!`;
         saveBtn.style.background = '#10b981';
 
+        // Immediately update flowKitInstance so preview & live tours have these steps
+        if ((window as any).flowKitInstance) {
+          (window as any).flowKitInstance.registerTour(updatedTour);
+        }
+
         setTimeout(() => {
           backdrop.remove();
           this.autoScanModalEl = null;
@@ -953,10 +1002,15 @@ export class LiveBuilder {
         saveBtn.textContent = '✓ Step Saved!';
         saveBtn.style.background = '#10b981';
 
+        // Immediately update flowKitInstance so preview & live tours have this step
+        if ((window as any).flowKitInstance) {
+          (window as any).flowKitInstance.registerTour(updatedTour);
+        }
+
         setTimeout(() => {
           this.popupEl?.remove();
           this.popupEl = null;
-          // Reload local tours
+          // Reload local tours and re-render dock with latest step count
           this.loadTours().then(() => this.renderFullDock());
           if (this.config.onTourUpdated) this.config.onTourUpdated(updatedTour);
         }, 600);

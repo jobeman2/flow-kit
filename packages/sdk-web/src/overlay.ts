@@ -21,8 +21,8 @@ export class TourOverlay {
   private currentLocale: string = 'en';
   private resizeObserver: ResizeObserver | null = null;
   private keydownHandler: ((e: KeyboardEvent) => void) | null = null;
-  private targetClickListener: ((e: MouseEvent) => void) | null = null;
-  private targetClickElement: HTMLElement | null = null;
+  private targetClickListener: ((e: any) => void) | null = null;
+  private targetClickElement: Element | null = null;
 
   constructor(callbacks: OverlayCallbacks) {
     this.callbacks = callbacks;

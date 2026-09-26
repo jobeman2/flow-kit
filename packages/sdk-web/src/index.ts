@@ -172,10 +172,22 @@ export class FlowKit {
     this.telemetry.resetSeenTours();
   }
 
-  public startTour(slug: string): boolean {
-    const tour = this.tours.get(slug);
+  public registerTour(tour: TourData) {
+    if (tour && tour.slug) {
+      if (tour.steps) {
+        tour.steps.sort((a, b) => a.stepIndex - b.stepIndex);
+      }
+      this.tours.set(tour.slug, tour);
+    }
+  }
+
+  public startTour(slug: string, tourOverride?: TourData): boolean {
+    if (tourOverride) {
+      this.registerTour(tourOverride);
+    }
+    const tour = this.tours.get(slug) || tourOverride;
     if (!tour || !tour.steps || tour.steps.length === 0) {
-      console.warn(`[OnboardFlow] Tour "${slug}" not found or has no steps.`);
+      console.warn(`[FlowKit] Tour "${slug}" not found or has no steps.`);
       return false;
     }
 

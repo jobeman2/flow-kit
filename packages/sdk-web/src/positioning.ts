@@ -10,12 +10,21 @@ export interface PositionResult {
 const MARGIN = 14; // margin between target and tooltip
 const PADDING = 12; // margin from viewport boundary
 
-export function findTargetElement(selector: string): HTMLElement | null {
-  if (!selector || selector === 'body' || selector === 'window') return null;
+export function findTargetElement(selector: string): Element | null {
+  if (!selector || selector === 'body' || selector === 'window' || selector === 'html') return null;
   try {
-    return document.querySelector<HTMLElement>(selector);
+    const list = document.querySelectorAll(selector);
+    for (let i = 0; i < list.length; i++) {
+      const el = list[i];
+      // Ignore elements belonging to Flow-Kit itself
+      if (el.closest('#onboardflow-root') || el.closest('#flowkit-builder-root')) {
+        continue;
+      }
+      return el;
+    }
+    return null;
   } catch (e) {
-    console.warn(`[OnboardFlow] Invalid selector: ${selector}`, e);
+    console.warn(`[FlowKit] Invalid selector: ${selector}`, e);
     return null;
   }
 }
@@ -23,10 +32,10 @@ export function findTargetElement(selector: string): HTMLElement | null {
 export async function waitForTargetElement(
   selector: string,
   timeoutMs: number = 2500
-): Promise<HTMLElement | null> {
+): Promise<Element | null> {
   const existing = findTargetElement(selector);
   if (existing) return existing;
-  if (!selector || selector === 'body' || selector === 'window' || typeof document === 'undefined') {
+  if (!selector || selector === 'body' || selector === 'window' || selector === 'html' || typeof document === 'undefined') {
     return null;
   }
 
@@ -66,7 +75,7 @@ export async function waitForTargetElement(
   });
 }
 
-export function scrollElementIntoView(el: HTMLElement) {
+export function scrollElementIntoView(el: Element) {
   const rect = el.getBoundingClientRect();
   const isInViewport =
     rect.top >= 50 &&
@@ -84,7 +93,7 @@ export function scrollElementIntoView(el: HTMLElement) {
 }
 
 export function calculatePosition(
-  targetEl: HTMLElement | null,
+  targetEl: Element | null,
   tooltipEl: HTMLElement,
   requestedPlacement: string = 'bottom'
 ): PositionResult {

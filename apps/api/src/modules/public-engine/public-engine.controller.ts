@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
+  Param,
   Query,
   Body,
   UseGuards,
@@ -66,6 +68,12 @@ export class PublicEngineController {
   ) {
     const projectId = req.project.id;
     return await this.engineService.addStepsFromBuilder(projectId, body.tourId, body.steps);
+  }
+
+  @Delete('builder/steps/:stepId')
+  async deleteBuilderStep(@Req() req: any, @Param('stepId') stepId: string) {
+    const projectId = req.project.id;
+    return await this.engineService.deleteStepFromBuilder(projectId, stepId);
   }
 
   @Post('events')

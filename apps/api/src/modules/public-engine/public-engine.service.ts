@@ -248,5 +248,41 @@ export class PublicEngineService {
       },
     });
   }
+
+  async deleteStepFromBuilder(projectId: string, stepId: string) {
+    const step = await this.prisma.client.tourStep.findUnique({
+      where: { id: stepId },
+      include: { tour: true },
+    });
+    if (!step || step.tour.projectId !== projectId) {
+      throw new Error('Step not found or access denied for this project');
+    }
+
+    await this.prisma.client.tourStep.delete({
+      where: { id: stepId },
+    });
+
+    // Re-index remaining steps to ensure clean sequence
+    const remainingSteps = await this.prisma.client.tourStep.findMany({
+      where: { tourId: step.tourId },
+      orderBy: { stepIndex: 'asc' },
+    });
+
+    for (let i = 0; i < remainingSteps.length; i++) {
+      if (remainingSteps[i].stepIndex !== i + 1) {
+        await this.prisma.client.tourStep.update({
+          where: { id: remainingSteps[i].id },
+          data: { stepIndex: i + 1 },
+        });
+      }
+    }
+
+    return this.prisma.client.tour.findUnique({
+      where: { id: step.tourId },
+      include: {
+        steps: { orderBy: { stepIndex: 'asc' } },
+      },
+    });
+  }
 }
 
