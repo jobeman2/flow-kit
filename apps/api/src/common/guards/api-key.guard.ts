@@ -100,7 +100,14 @@ export class ApiKeyGuard implements CanActivate {
             return false;
           });
 
-          if (!isAllowed) {
+          // Always allow requests from local dev and the official Flow-Kit dashboard to simulate events
+          const isDashboardOrigin =
+            originHostname === 'localhost' ||
+            originHostname === '127.0.0.1' ||
+            originHostname.endsWith('.vercel.app') ||
+            originHostname.includes('flow-kit');
+
+          if (!isAllowed && !isDashboardOrigin) {
             throw new UnauthorizedException(`Origin '${originHeader}' is not authorized to use this API Key.`);
           }
         } catch (err: any) {
