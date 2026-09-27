@@ -299,11 +299,6 @@ export class TourOverlay {
     skipBtn?.addEventListener('click', () => this.callbacks.onSkip());
     closeBtn?.addEventListener('click', () => this.callbacks.onSkip());
 
-    nextBtn?.addEventListener('click', () => this.callbacks.onNext());
-    prevBtn?.addEventListener('click', () => this.callbacks.onPrev());
-    skipBtn?.addEventListener('click', () => this.callbacks.onSkip());
-    closeBtn?.addEventListener('click', () => this.callbacks.onSkip());
-
     // Trigger position update and make visible
     requestAnimationFrame(() => {
       this.updatePosition();

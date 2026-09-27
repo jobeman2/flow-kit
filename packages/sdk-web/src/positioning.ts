@@ -17,7 +17,7 @@ export function findTargetElement(selector: string): Element | null {
     for (let i = 0; i < list.length; i++) {
       const el = list[i];
       // Ignore elements belonging to Flow-Kit itself
-      if (el.closest('#onboardflow-root') || el.closest('#flowkit-builder-root')) {
+      if (el.closest('#onboardflow-root') || el.closest('#flowkit-builder-root') || el.closest('#fk-checklist-root')) {
         continue;
       }
       return el;
