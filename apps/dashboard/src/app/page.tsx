@@ -421,7 +421,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* =========================================================
           HERO SECTION: COLUMN.COM BLUEPRINT SPLIT
       ========================================================= */}
-      <section className="relative border-b border-slate-200 overflow-hidden bg-grid-hairline">
+      <section className="relative border-b border-slate-200 overflow-hidden bg-white">
         
         {/* Top Architectural Spec Bar */}
         <div className="max-w-7xl mx-auto border-x border-slate-200">
@@ -1227,7 +1227,7 @@ export default function RootLayout({ children }) {
       {/* =========================================================
           SECTION 05: LIVE RUNNABLE API TERMINAL (COLUMN DARK PANE)
       ========================================================= */}
-      <section id="api-sandbox" className="bg-column-navy text-white py-16 border-b border-slate-900 bg-grid-hairline-dark">
+      <section id="api-sandbox" className="bg-column-navy text-white py-16 border-b border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">

@@ -7,7 +7,7 @@ import { Compass, ArrowLeft } from 'lucide-react';
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-slate-50 bg-grid-hairline flex flex-col justify-center items-center px-4 py-12 font-sans relative">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12 font-sans relative">
       
       {/* Return Home Pill */}
       <div className="mb-6 z-10">
