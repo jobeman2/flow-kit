@@ -33,6 +33,8 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import LiveDemoOverlay, { TourDemoStep } from '@/components/LiveDemoOverlay';
+import OnboardingChecklist, { ChecklistItem } from '@/components/OnboardingChecklist';
+import ContextualBeacon from '@/components/ContextualBeacon';
 
 export default function LandingPage() {
   const [copiedSnippet, setCopiedSnippet] = useState(false);
@@ -43,6 +45,36 @@ export default function LandingPage() {
   const [liveTourOpen, setLiveTourOpen] = useState(false);
   const [liveTourSteps, setLiveTourSteps] = useState<TourDemoStep[]>([]);
   const [liveTourTitle, setLiveTourTitle] = useState('Interactive Demo');
+
+  // Interactive Checklist Hub Items
+  const checklistItems: ChecklistItem[] = [
+    {
+      id: 'item-guided-tour',
+      title: 'Take the 30-Second Guided Tour',
+      duration: '30s',
+      action: () => triggerDemo('product-tour'),
+    },
+    {
+      id: 'item-spotlight',
+      title: 'Inspect SVG Spotlight Isolation',
+      duration: '15s',
+      action: () => triggerDemo('spotlight'),
+    },
+    {
+      id: 'item-multilingual',
+      title: 'Test Multilingual Amharic Walkthrough',
+      duration: '20s',
+      action: () => triggerDemo('multilingual'),
+    },
+    {
+      id: 'item-docs',
+      title: 'Explore Developer Documentation',
+      duration: '1m',
+      action: () => {
+        window.location.href = '/docs';
+      },
+    },
+  ];
 
   const triggerDemo = (type: 'product-tour' | 'spotlight' | 'multilingual' | 'beacon' | 'progress') => {
     if (type === 'product-tour') {
@@ -538,6 +570,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <div className="flex items-center space-x-2">
                     <span className="text-[10px] font-mono text-slate-400">// INTEGRATION</span>
                     <span className="text-xs font-bold text-column-navy uppercase tracking-wider">2 Lines of Code</span>
+                    <ContextualBeacon
+                      badge="Zero Iframes"
+                      title="Direct DOM Injection"
+                      description="Flow-Kit interacts directly with your DOM elements using mathematical SVG masking instead of slow, heavy iframes."
+                      actionLabel="Inspect Spotlight"
+                      onAction={() => triggerDemo('spotlight')}
+                      placement="bottom"
+                    />
                   </div>
                   <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-sm">
                     ZERO IFRAME
@@ -1552,6 +1592,9 @@ export default function RootLayout({ children }) {
         tourTitle={liveTourTitle}
         onClose={() => setLiveTourOpen(false)}
       />
+
+      {/* Userflow / Frigade Style Persistent Onboarding Checklist Widget */}
+      <OnboardingChecklist items={checklistItems} />
 
     </div>
   );

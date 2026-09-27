@@ -94,6 +94,8 @@ export default function DocsPage() {
       category: 'Core Features',
       items: [
         { label: 'Visual In-App Builder', href: '#visual-builder' },
+        { label: 'Onboarding Checklist', href: '#checklist-widget' },
+        { label: 'Contextual Hotspots', href: '#hotspot-beacons' },
         { label: 'Multilingual (i18n)', href: '#multilingual' },
         { label: 'Selectors & Target Engine', href: '#selectors' },
       ],
@@ -428,6 +430,55 @@ const flow = FlowKit.init({
                   Append <code>?flowkit_builder=true</code> to your URL to immediately load the visual selection dock and step editor.
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* Section: Onboarding Checklist Widget */}
+          <section id="checklist-widget" className="mb-12">
+            <h2 className="text-xl font-bold text-column-navy tracking-tight mb-2">
+              Onboarding Checklist Hub
+            </h2>
+            <p className="text-xs text-slate-600 mb-4">
+              Give users a persistent floating launcher in the corner of your app so they can start tours at their own pace and track completed tasks.
+            </p>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-xs text-slate-800 mb-4 overflow-x-auto">
+              <pre className="text-slate-800">
+                <code>{`// Universal Script / Vanilla JS
+const checklist = new ChecklistWidgetManager({
+  title: 'Welcome to our platform',
+  items: [
+    { id: 'step-1', title: 'Take product tour', action: () => flow.startTour('intro-tour') },
+    { id: 'step-2', title: 'Connect API key', action: () => flow.startTour('key-tour') },
+  ],
+});
+checklist.mount();`}</code>
+              </pre>
+            </div>
+          </section>
+
+          {/* Section: Contextual Hotspot Beacons */}
+          <section id="hotspot-beacons" className="mb-12">
+            <h2 className="text-xl font-bold text-column-navy tracking-tight mb-2">
+              Contextual Hotspot Beacons
+            </h2>
+            <p className="text-xs text-slate-600 mb-4">
+              Instead of full-screen tours, attach subtle pulsing beacons to specific UI elements for non-intrusive feature announcements and tips.
+            </p>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-xs text-slate-800 mb-4 overflow-x-auto">
+              <pre className="text-slate-800">
+                <code>{`// Attach non-blocking pulsing beacon
+const beaconManager = new HotspotBeaconManager();
+beaconManager.attachBeacon({
+  selector: '#new-feature-btn',
+  badge: 'NEW',
+  title: 'Export to CSV',
+  description: 'Download your analytics in 1 click.',
+  actionText: 'Try Export',
+  onAction: () => console.log('User clicked beacon action!'),
+});`}</code>
+              </pre>
             </div>
           </section>
 

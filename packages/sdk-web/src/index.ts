@@ -8,6 +8,8 @@ export * from './types';
 export { TourOverlay } from './overlay';
 export { TelemetryService } from './telemetry';
 export { LiveBuilder } from './builder';
+export { HotspotBeaconManager, type BeaconOptions } from './beacon';
+export { ChecklistWidgetManager, type ChecklistWidgetOptions, type SdkChecklistItem } from './checklist';
 
 export class FlowKit {
   private static instance: FlowKit | null = null;
