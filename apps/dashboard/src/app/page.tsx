@@ -27,12 +27,17 @@ import {
   Database,
   ArrowUpRight,
   Search,
+  BookOpen,
+  MousePointerClick,
+  Sliders,
+  HelpCircle,
 } from 'lucide-react';
 
 export default function LandingPage() {
   const [copiedSnippet, setCopiedSnippet] = useState(false);
   const [activeSnippetTab, setActiveSnippetTab] = useState<'cdn' | 'npm' | 'react'>('cdn');
-  
+  const [activeDocTab, setActiveDocTab] = useState<'quickstart' | 'builder' | 'sdk' | 'i18n'>('quickstart');
+
   // Interactive Simulator State
   const [simStep, setSimStep] = useState<number>(1);
   const [simLang, setSimLang] = useState<'en' | 'am' | 'om'>('en');
@@ -44,33 +49,38 @@ export default function LandingPage() {
   const [apiStatusCode, setApiStatusCode] = useState<number | null>(null);
   const [apiLatency, setApiLatency] = useState<number | null>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://flow-kit.onrender.com';
+  const liveDemoUrl = 'http://murn.196.190.216.193.nip.io';
 
   const snippetContent = {
-    cdn: `<!-- 2-Line Drop-In: Paste in any HTML / Web Application -->
+    cdn: `<!-- 1-Line Drop-In: Paste into any HTML, WordPress, or Web App -->
 <script
   src="${apiUrl}/flow-kit.js"
-  data-api-key="pk_live_demo_addis_79a2f1b4c6e8"
+  data-api-key="pk_live_sample_customer_key"
   data-locale="en"
 ></script>`,
     npm: `// Install: npm install @flow-kit/web
 import { FlowKit } from '@flow-kit/web';
 
 const flow = FlowKit.init({
-  apiKey: 'pk_live_demo_addis_79a2f1b4c6e8',
-  locale: 'en', // 'am' (Amharic), 'om' (Oromo), 'en'
+  apiKey: 'pk_live_sample_customer_key',
+  locale: 'en', // 'en', 'am' (Amharic), 'om' (Oromo)
 });`,
-    react: `// Install: npm install @flow-kit/react
-import { FlowKitProvider, TourTriggerButton } from '@flow-kit/react';
+    react: `// Next.js (App Router) / React
+import Script from 'next/script';
 
-export default function App() {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <FlowKitProvider apiKey="pk_live_demo_addis_79a2f1b4c6e8">
-      <YourAppComponents />
-      <TourTriggerButton tourSlug="welcome-citizen-walkthrough">
-        Take Tour
-      </TourTriggerButton>
-    </FlowKitProvider>
+    <html>
+      <body>
+        {children}
+        <Script
+          src="${apiUrl}/flow-kit.js"
+          strategy="afterInteractive"
+          data-api-key="pk_live_sample_customer_key"
+        />
+      </body>
+    </html>
   );
 }`,
   };
@@ -84,12 +94,12 @@ export default function App() {
   // Interactive Simulator Content across 3 languages (Zero emojis)
   const simData: Record<string, { title: string; desc: string; target: string; placement: string; btnNext: string; btnBack: string }> = {
     en: {
-      title: simStep === 1 ? 'Global Smart Search' : simStep === 2 ? 'Multilingual Engine' : 'Instant e-Governance Services',
+      title: simStep === 1 ? 'Global Smart Search' : simStep === 2 ? 'Multilingual Engine' : 'Instant Cloud Services',
       desc: simStep === 1 
-        ? 'Find municipal records, certificates, trade licenses, and tax filings in milliseconds.'
+        ? 'Find records, inspection reports, licenses, and filings in milliseconds.'
         : simStep === 2
         ? 'Seamlessly switch between English, Amharic, and Afaan Oromoo with zero page reload.'
-        : 'Access verified certificates and online government payments with 1 click.',
+        : 'Access verified records and digital workflows with a single click.',
       target: simStep === 1 ? '#search-bar' : simStep === 2 ? '#lang-switch' : '#quick-actions',
       placement: 'Bottom Center',
       btnNext: simStep === 3 ? 'Finish Walkthrough' : 'Next Step →',
@@ -123,7 +133,7 @@ export default function App() {
 
   const currentSim = simData[simLang];
 
-  // Execute Live API Call against local API backend
+  // Execute Live API Call
   const runApiCall = async () => {
     setApiLoading(true);
     setApiResponse(null);
@@ -133,8 +143,8 @@ export default function App() {
     const startTime = performance.now();
     try {
       if (apiEndpoint === 'tours') {
-        const res = await fetch('http://localhost:4000/v1/public/tours', {
-          headers: { 'x-api-key': 'pk_live_demo_addis_79a2f1b4c6e8' },
+        const res = await fetch(`${apiUrl}/v1/public/tours`, {
+          headers: { 'x-api-key': 'pk_test_6li08i12o35muichu8b' },
         });
         const data = await res.json();
         const duration = Math.round(performance.now() - startTime);
@@ -143,17 +153,17 @@ export default function App() {
         setApiResponse(JSON.stringify(data, null, 2));
       } else if (apiEndpoint === 'events') {
         const payload = {
-          tourId: 'cmtrnz9yr000dub7sxz7zfwuf',
+          tourId: 'sample-tour-id',
           stepIndex: 1,
-          eventType: 'STEP_SEEN',
+          eventType: 'STEP_VIEWED',
           locale: 'en',
           metadata: { browser: 'Chrome', viewport: '1920x1080' },
         };
-        const res = await fetch('http://localhost:4000/v1/public/events', {
+        const res = await fetch(`${apiUrl}/v1/public/events`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': 'pk_live_demo_addis_79a2f1b4c6e8',
+            'x-api-key': 'pk_test_6li08i12o35muichu8b',
           },
           body: JSON.stringify(payload),
         });
@@ -163,12 +173,12 @@ export default function App() {
         setApiLatency(duration);
         setApiResponse(JSON.stringify(data, null, 2));
       } else {
-        const res = await fetch('http://localhost:4000/sdk.js');
+        const res = await fetch(`${apiUrl}/flow-kit.js`);
         const text = await res.text();
         const duration = Math.round(performance.now() - startTime);
         setApiStatusCode(res.status);
         setApiLatency(duration);
-        setApiResponse(`// CDN Payload: ${text.length} bytes (HTTP 200 OK)\n` + text.slice(0, 450) + '\n\n// ... [remaining minified SDK bundle] ...');
+        setApiResponse(`// Flow-Kit CDN Bundle (${text.length} bytes, HTTP 200 OK)\n` + text.slice(0, 450) + '\n\n// ... [remaining minified SDK runtime bundle] ...');
       }
     } catch (err: any) {
       const duration = Math.round(performance.now() - startTime);
@@ -193,20 +203,26 @@ export default function App() {
           <div className="flex items-center space-x-6">
             <Link href="/" className="flex items-center space-x-2.5 group">
               <div className="w-7 h-7 bg-column-navy flex items-center justify-center text-white font-mono text-xs font-bold rounded-sm group-hover:bg-column-cyan group-hover:text-column-navy transition-colors">
-                GL
+                FK
               </div>
               <div className="flex items-baseline space-x-1.5">
                 <span className="font-bold text-sm tracking-tight text-column-navy">
-                  GuideLayer
+                  Flow-Kit
                 </span>
                 <span className="text-[10px] font-mono text-slate-400">
-                  // SYS.ONB
+                  Walkthroughs
                 </span>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center space-x-6 text-xs font-medium text-slate-600">
+              <a href="#how-it-works" className="hover:text-column-navy transition-colors">
+                How It Works
+              </a>
+              <a href="#docs" className="hover:text-column-navy transition-colors">
+                Documentation
+              </a>
               <a href="#architecture" className="hover:text-column-navy transition-colors">
                 Architecture
               </a>
@@ -225,12 +241,13 @@ export default function App() {
           {/* Action Hub */}
           <div className="flex items-center space-x-3">
             <a
-              href="http://localhost:5173"
+              href={liveDemoUrl}
               target="_blank"
               rel="noreferrer"
               className="hidden sm:inline-flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-column-navy transition-colors px-2 py-1"
+              title="Open real-world inspection app using Flow-Kit"
             >
-              <span>Citizen Demo</span>
+              <span>Live App Demo</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
             </a>
 
@@ -243,7 +260,7 @@ export default function App() {
 
               <SignUpButton mode="modal">
                 <button className="inline-flex items-center text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-3.5 py-1.5 rounded-sm transition-all shadow-xs cursor-pointer">
-                  Create Workspace
+                  Get Started Free
                 </button>
               </SignUpButton>
             </Show>
@@ -271,30 +288,29 @@ export default function App() {
           <div className="h-9 px-4 sm:px-6 lg:px-8 border-b border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500 bg-white/60">
             <div className="flex items-center space-x-3">
               <span className="inline-block w-2 h-2 rounded-full bg-column-cyan" />
-              <span>INFRASTRUCTURE PROTOCOL V1.0</span>
+              <span>PRODUCTION-READY SDK V1.0</span>
               <span className="hidden sm:inline text-slate-300">|</span>
-              <span className="hidden sm:inline">UNIVERSAL SPOTLIGHT ENGINE</span>
+              <span className="hidden sm:inline">DIRECT DOM INJECTION ENGINE</span>
             </div>
             <div className="flex items-center space-x-4">
               <span>LATENCY: &lt;12MS</span>
               <span className="text-slate-300">|</span>
-              <span>FOOTPRINT: 16.2KB</span>
+              <span>BUNDLE: 16.2KB</span>
             </div>
           </div>
 
           {/* Main Hero Header Area */}
           <div className="pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-4xl">
-            <div className="inline-flex items-center space-x-2 px-2 py-0.5 rounded-sm bg-slate-100 border border-slate-200 text-[11px] font-mono text-slate-700 mb-6">
-              <span>[ 00 ]</span>
-              <span className="font-semibold text-column-navy">DEVELOPER ONBOARDING INFRASTRUCTURE</span>
+            <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-sm bg-slate-100 border border-slate-200 text-[11px] font-mono text-slate-700 mb-6">
+              <span className="font-semibold text-column-navy">INTERACTIVE WALKTHROUGH PLATFORM</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-column-navy tracking-tight leading-[1.08] mb-6">
-              The product walkthrough infrastructure built for developers.
+              The product walkthrough infrastructure built for modern web apps.
             </h1>
 
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mb-8">
-              The first onboarding platform built with direct DOM spotlight injection, sub-16KB footprints, and air-gapped data sovereignty. No bloated iframes. No vendor lock-in.
+              Create interactive onboarding tours in minutes with a live point-and-click builder or 2 lines of code. Sub-16KB footprint, native multi-language support, and zero iframes.
             </p>
 
             {/* CTAs */}
@@ -303,26 +319,26 @@ export default function App() {
                 href="/register"
                 className="inline-flex items-center space-x-2 text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-5 py-2.5 rounded-sm transition-all"
               >
-                <span>Get Production API Key</span>
+                <span>Get Started Free</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
 
               <a
-                href="#api-sandbox"
+                href="#docs"
                 className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
               >
-                <Terminal className="w-3.5 h-3.5 text-slate-500" />
-                <span>Test Live API Sandbox</span>
+                <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                <span>Documentation</span>
               </a>
 
               <a
-                href="http://localhost:5173"
+                href={liveDemoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center space-x-1.5 text-xs font-mono text-column-cyan bg-column-navy px-3 py-2 rounded-sm hover:bg-slate-900 transition-colors"
+                className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-column-cyan" />
-                <span>TRY DEMO APP (PORT 5173)</span>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                <span>Explore Live Demo</span>
               </a>
             </div>
           </div>
@@ -351,7 +367,7 @@ export default function App() {
                     <button
                       key={tab}
                       onClick={() => setActiveSnippetTab(tab)}
-                      className={`flex-1 text-[11px] font-mono py-1 rounded-xs transition-colors ${
+                      className={`flex-1 text-[11px] font-mono py-1 rounded-xs transition-colors cursor-pointer ${
                         activeSnippetTab === tab
                           ? 'bg-column-navy text-white font-bold'
                           : 'text-slate-600 hover:text-column-navy'
@@ -366,7 +382,7 @@ export default function App() {
                 <div className="relative rounded-sm bg-column-dark border border-slate-800 p-4 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto shadow-inner">
                   <button
                     onClick={() => copyCode(snippetContent[activeSnippetTab])}
-                    className="absolute top-3 right-3 p-1.5 rounded-sm bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+                    className="absolute top-3 right-3 p-1.5 rounded-sm bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
                     title="Copy code"
                   >
                     {copiedSnippet ? <Check className="w-3.5 h-3.5 text-column-cyan" /> : <Copy className="w-3.5 h-3.5" />}
@@ -377,7 +393,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Technical Specifications Specs */}
+              {/* Technical Specifications */}
               <div className="mt-6 pt-4 border-t border-slate-200/80 grid grid-cols-3 gap-2 text-[11px] font-mono">
                 <div>
                   <span className="block text-slate-400 text-[10px]">WEIGHT</span>
@@ -413,7 +429,7 @@ export default function App() {
                     <button
                       key={lang}
                       onClick={() => setSimLang(lang)}
-                      className={`px-2 py-0.5 rounded-xs transition-colors ${
+                      className={`px-2 py-0.5 rounded-xs transition-colors cursor-pointer ${
                         simLang === lang
                           ? 'bg-column-navy text-white font-bold'
                           : 'text-slate-600 hover:text-column-navy'
@@ -430,8 +446,8 @@ export default function App() {
                 
                 {/* Simulated App Header */}
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 text-xs font-mono text-slate-500">
-                  <span className="font-bold text-column-navy">ADDIS MUNICIPAL PORTAL</span>
-                  <span>SESSION #4829</span>
+                  <span className="font-bold text-column-navy">WORKSPACE DASHBOARD</span>
+                  <span>ACTIVE DEMO</span>
                 </div>
 
                 {/* Target Element 1: Search */}
@@ -445,56 +461,54 @@ export default function App() {
                 >
                   <div className="flex items-center space-x-2 text-xs">
                     <Search className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Search citizen services, certificates, and trade filings...</span>
+                    <span>Search records, inspections, and project workflows...</span>
                   </div>
                 </div>
 
-                {/* Target Element 2: Language & Controls */}
+                {/* Target Element 2: Language & Settings */}
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   <div
                     id="lang-switch"
                     className={`p-2.5 rounded-sm border transition-all ${
                       simStep === 2
-                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20'
+                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
                         : 'border-slate-200 bg-white/70 text-slate-400'
                     }`}
                   >
-                    <span className="text-[10px] font-mono text-slate-400 block mb-1">LANGUAGE ENGINE</span>
-                    <span className="text-xs font-semibold text-column-navy">Native Ethiopic & Latin</span>
+                    <div className="flex items-center space-x-2 text-xs">
+                      <Globe2 className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Multilingual i18n Switcher</span>
+                    </div>
                   </div>
 
                   <div
                     id="quick-actions"
                     className={`p-2.5 rounded-sm border transition-all ${
                       simStep === 3
-                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20'
+                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
                         : 'border-slate-200 bg-white/70 text-slate-400'
                     }`}
                   >
-                    <span className="text-[10px] font-mono text-slate-400 block mb-1">E-SERVICES</span>
-                    <span className="text-xs font-semibold text-column-navy">Instant Digital Filings</span>
+                    <div className="flex items-center space-x-2 text-xs">
+                      <Zap className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Action Triggers & Telemetry</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* ACTIVE SPOTLIGHT TOOLTIP CALLOUT */}
-                <div className="mt-4 p-4 rounded-sm bg-white border border-column-navy shadow-lg relative">
+                {/* Simulated Tour Tooltip Overlay */}
+                <div className="bg-white border border-slate-300 rounded-sm shadow-xl p-4 max-w-sm mt-3 animate-in fade-in slide-in-from-bottom-2">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="px-1.5 py-0.5 rounded-xs text-[10px] font-mono bg-column-cyan/15 text-column-navy font-bold">
-                        STEP {simStep} / 3
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400">
-                        {currentSim.target}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-mono text-slate-400">
-                      AUTOPOSITION: {currentSim.placement}
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded-xs font-bold">
+                      STEP {simStep} OF 3
                     </span>
+                    <span className="text-[10px] font-mono text-slate-400">{currentSim.placement}</span>
                   </div>
 
-                  <h4 className="text-sm font-bold text-column-navy mb-1">
+                  <h4 className="font-bold text-xs text-column-navy mb-1.5">
                     {currentSim.title}
                   </h4>
+
                   <p className="text-xs text-slate-600 leading-relaxed mb-4">
                     {currentSim.desc}
                   </p>
@@ -521,7 +535,7 @@ export default function App() {
               {/* Simulator Action Footnote */}
               <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-2">
                 <span>CUTOUT: SVG 0.3s cubic-bezier</span>
-                <span>STATE: RUNTIME ACTIVE</span>
+                <span>STATUS: RUNTIME ACTIVE</span>
               </div>
             </div>
 
@@ -530,7 +544,270 @@ export default function App() {
       </section>
 
       {/* =========================================================
-          SECTION 01: FOUR ARCHITECTURAL PILLARS (HAIRLINE GRID)
+          SECTION: HOW IT WORKS (SIMPLE & CLEAR USER JOURNEY)
+      ========================================================= */}
+      <section id="how-it-works" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-[11px] font-mono text-slate-500 mb-1">
+                // 01 WORKFLOW
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+                How Flow-Kit Works
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 max-w-sm">
+              From zero to interactive live product walkthroughs in under 3 minutes.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+            
+            {/* Step 1 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
+              <div>
+                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                  01
+                </div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Embed 1 Line of Code
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Add our ultra-lightweight script to your HTML, React, Next.js, or Vue website. No complex build pipelines or backend configuration required.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+                <code>&lt;script src=&quot;flow-kit.js&quot;&gt;</code>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
+              <div>
+                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                  02
+                </div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Point & Click Visual Builder
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Log into your website and use the floating dock or press <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px]">Alt + B</kbd>. Click any button or card on your page to attach tour steps instantly.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+                1-CLICK AUTO-SCAN & SELECTOR PICKER
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
+              <div>
+                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                  03
+                </div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Track Funnels & Retention
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Publish with 1 click. Watch real-time visitor sessions, step-by-step drop-offs, and completion rates on your analytics dashboard to optimize user onboarding.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+                STEP-BY-STEP RETENTION ANALYTICS
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION: DOCUMENTATION & USER GUIDES
+      ========================================================= */}
+      <section id="docs" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-[11px] font-mono text-slate-500 mb-1">
+                // 02 DOCUMENTATION
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+                Developer & Creator Guide
+              </h2>
+            </div>
+            <div className="flex items-center space-x-1 bg-white border border-slate-200 p-1 rounded-sm text-xs font-medium">
+              {[
+                { id: 'quickstart', label: 'Quickstart' },
+                { id: 'builder', label: 'Live Builder' },
+                { id: 'sdk', label: 'JavaScript SDK' },
+                { id: 'i18n', label: 'Multi-Language' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveDocTab(tab.id as any)}
+                  className={`px-3 py-1 rounded-xs transition-colors cursor-pointer ${
+                    activeDocTab === tab.id
+                      ? 'bg-column-navy text-white font-semibold'
+                      : 'text-slate-600 hover:text-column-navy'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-6 sm:p-10 bg-white">
+            
+            {/* Quickstart Tab */}
+            {activeDocTab === 'quickstart' && (
+              <div className="space-y-6 max-w-4xl">
+                <div>
+                  <h3 className="text-lg font-bold text-column-navy mb-1">Installing Flow-Kit</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Flow-Kit works everywhere — in static HTML sites, Next.js, React, Vue, WordPress, and enterprise web portals.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm">
+                    <span className="text-xs font-bold text-column-navy block mb-2">Option A: HTML Script Tag (Universal)</span>
+                    <p className="text-xs text-slate-600 mb-2">Add this script to the <code>&lt;head&gt;</code> or bottom of the <code>&lt;body&gt;</code> of your application:</p>
+                    <pre className="p-3 bg-column-dark text-slate-200 rounded-sm text-xs font-mono overflow-x-auto">
+                      {`<script
+  src="${apiUrl}/flow-kit.js"
+  data-api-key="YOUR_API_KEY"
+></script>`}
+                    </pre>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm">
+                    <span className="text-xs font-bold text-column-navy block mb-2">Option B: Next.js (App Router)</span>
+                    <p className="text-xs text-slate-600 mb-2">Include in your root <code>app/layout.tsx</code> using Next.js Script:</p>
+                    <pre className="p-3 bg-column-dark text-slate-200 rounded-sm text-xs font-mono overflow-x-auto">
+                      {`import Script from 'next/script';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="${apiUrl}/flow-kit.js"
+          strategy="afterInteractive"
+          data-api-key="YOUR_API_KEY"
+        />
+      </body>
+    </html>
+  );
+}`}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Live Builder Tab */}
+            {activeDocTab === 'builder' && (
+              <div className="space-y-6 max-w-4xl">
+                <div>
+                  <h3 className="text-lg font-bold text-column-navy mb-1">Using the In-App Visual Builder</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    The visual builder runs directly inside your website so you can build walkthroughs by clicking on real page elements.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                    <div className="w-6 h-6 rounded bg-column-navy text-white text-xs font-bold flex items-center justify-center">1</div>
+                    <h4 className="text-xs font-bold text-column-navy">Open Builder</h4>
+                    <p className="text-xs text-slate-600">
+                      Visit your site with <code>?flowkit_builder=true</code> or press <kbd className="px-1 bg-white border border-slate-200 rounded font-mono text-[10px]">Alt + B</kbd>.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                    <div className="w-6 h-6 rounded bg-column-navy text-white text-xs font-bold flex items-center justify-center">2</div>
+                    <h4 className="text-xs font-bold text-column-navy">Pick or Auto-Scan</h4>
+                    <p className="text-xs text-slate-600">
+                      Click <strong>&quot;Auto-Scan&quot;</strong> to generate landmarks automatically, or click <strong>&quot;Pick Element&quot;</strong> to target any button or input.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                    <div className="w-6 h-6 rounded bg-column-navy text-white text-xs font-bold flex items-center justify-center">3</div>
+                    <h4 className="text-xs font-bold text-column-navy">Save & Deploy</h4>
+                    <p className="text-xs text-slate-600">
+                      Configure title, description, and card placement. Click <strong>Save Step</strong> and your visitors will see the update immediately.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SDK Reference Tab */}
+            {activeDocTab === 'sdk' && (
+              <div className="space-y-6 max-w-4xl">
+                <div>
+                  <h3 className="text-lg font-bold text-column-navy mb-1">JavaScript SDK Methods</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Trigger walkthroughs from buttons, react to user actions, or programmatically control step navigation.
+                  </p>
+                </div>
+
+                <div className="divide-y divide-slate-200 border border-slate-200 rounded-sm overflow-hidden text-xs">
+                  <div className="p-3 bg-slate-50 font-mono font-bold text-column-navy flex items-center justify-between">
+                    <span>window.flowKitInstance.startTour(&apos;welcome-tour&apos;)</span>
+                    <span className="text-[10px] text-slate-500 font-normal">Launch walkthrough by slug</span>
+                  </div>
+                  <div className="p-3 bg-white font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.nextStep()</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Advance to next step</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.prevStep()</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Return to previous step</span>
+                  </div>
+                  <div className="p-3 bg-white font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.endTour()</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Dismiss active tour</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.setLocale(&apos;am&apos;)</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Switch language on the fly</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Multi-Language Tab */}
+            {activeDocTab === 'i18n' && (
+              <div className="space-y-6 max-w-4xl">
+                <div>
+                  <h3 className="text-lg font-bold text-column-navy mb-1">Native Multilingual Support</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Flow-Kit includes built-in multilingual copy management for English, Amharic (አማርኛ), Afaan Oromoo, and custom locales.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-3">
+                  <span className="text-xs font-bold text-column-navy block">How Language Switching Works</span>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    When you translate a step in the Studio, Flow-Kit stores translations per step. When a user switches their application language, call <code>window.flowKitInstance.setLocale(&apos;am&apos;)</code> to hot-swap all walkthrough step titles and descriptions without reloading the page.
+                  </p>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 03: FOUR ARCHITECTURAL PILLARS (HAIRLINE GRID)
       ========================================================= */}
       <section id="architecture" className="border-b border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto border-x border-slate-200">
@@ -539,10 +816,10 @@ export default function App() {
           <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-[11px] font-mono text-slate-500 mb-1">
-                // 01 ARCHITECTURE
+                // 03 ARCHITECTURE
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
-                Designed for speed, data sovereignty, and universal DOM execution.
+                Designed for speed, data privacy, and universal DOM execution.
               </h2>
             </div>
             <span className="text-xs font-mono text-slate-400 shrink-0">
@@ -561,7 +838,7 @@ export default function App() {
                   Zero-Iframe Cutout Mask
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Traditional onboarding wraps tooltips in heavy, opaque iframes that break responsive layouts. GuideLayer uses a pure mathematical SVG spotlight mask directly over the parent DOM.
+                  Traditional onboarding wraps tooltips in heavy, opaque iframes that break responsive layouts. Flow-Kit uses a pure mathematical SVG spotlight mask directly over the parent DOM.
                 </p>
               </div>
               <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
@@ -578,7 +855,7 @@ export default function App() {
                   Native Multilingual Runtime
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Built from the ground up with Ethiopic and non-Latin typography. Dynamic language switching (`setLocale(&apos;am&apos;)`) hot-swaps copy across Amharic, Afaan Oromoo, and English without reload.
+                  Built from the ground up with Ethiopic and non-Latin typography. Dynamic language switching hot-swaps copy across Amharic, Afaan Oromoo, and English without reload.
                 </p>
               </div>
               <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
@@ -609,10 +886,10 @@ export default function App() {
               <div>
                 <div className="text-xs font-mono text-slate-400 mb-4">[ 04 ]</div>
                 <h3 className="text-base font-bold text-column-navy mb-2">
-                  Air-Gapped Sovereignty
+                  Data Privacy & Self-Hosting
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Enterprise banking, government portals, and defense apps cannot stream user data to foreign SaaS providers. GuideLayer can run 100% self-hosted on your own PostgreSQL cluster.
+                  Enterprise banking, government portals, and internal apps cannot stream customer data to foreign providers. Flow-Kit can run 100% self-hosted on your own PostgreSQL cluster.
                 </p>
               </div>
               <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
@@ -626,17 +903,17 @@ export default function App() {
       </section>
 
       {/* =========================================================
-          SECTION 02: DIRECT VS LEGACY COMPARISON (COLUMN STYLE)
+          SECTION 04: DIRECT VS LEGACY COMPARISON (COLUMN STYLE)
       ========================================================= */}
       <section id="comparison" className="border-b border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto border-x border-slate-200">
           
           <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40">
             <div className="text-[11px] font-mono text-slate-500 mb-1">
-              // 02 COMPARISON
+              // 04 COMPARISON
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
-              Why leading developers choose GuideLayer over legacy SaaS.
+              Why leading developers choose Flow-Kit over legacy SaaS.
             </h2>
           </div>
 
@@ -660,15 +937,15 @@ export default function App() {
                 <li className="flex items-start space-x-3">
                   <span className="font-mono text-rose-500 font-bold mt-0.5">02</span>
                   <div>
-                    <span className="font-bold text-slate-800 block">Exorbitant Pricing Tax</span>
-                    Starts at $400 - $1,200/month with strict tier gates on Monthly Active Users and custom domains.
+                    <span className="font-bold text-slate-800 block">Expensive Subscription Lock-in</span>
+                    Heavy annual contracts with strict gates on Monthly Active Users and custom domains.
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="font-mono text-rose-500 font-bold mt-0.5">03</span>
                   <div>
                     <span className="font-bold text-slate-800 block">Zero Data Sovereignty</span>
-                    Every click, user ID, and municipal interaction is sent to external US-based cloud databases.
+                    Every click, user ID, and customer interaction is sent to external US-based cloud databases.
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
@@ -681,11 +958,11 @@ export default function App() {
               </ul>
             </div>
 
-            {/* The GuideLayer Platform Infrastructure Way */}
+            {/* The Flow-Kit Platform Infrastructure Way */}
             <div className="p-6 sm:p-8 bg-white">
               <div className="flex items-center space-x-2 text-xs font-mono text-emerald-600 font-bold mb-6">
                 <span>[ DIRECT PLATFORM ]</span>
-                <span>GUIDELAYER ARCHITECTURE</span>
+                <span>FLOW-KIT PLATFORM</span>
               </div>
 
               <ul className="space-y-4 text-xs text-slate-700">
@@ -700,14 +977,14 @@ export default function App() {
                   <span className="font-mono text-emerald-600 font-bold mt-0.5">02</span>
                   <div>
                     <span className="font-bold text-column-navy block">Affordable & Developer-First</span>
-                    Free tier for startups, and simple $49/mo flat growth pricing. No predatory MAU billing penalties.
+                    Free tier for startups and open access for growing teams. No predatory MAU billing penalties.
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="font-mono text-emerald-600 font-bold mt-0.5">03</span>
                   <div>
                     <span className="font-bold text-column-navy block">Air-Gapped Self-Hosting Available</span>
-                    Deploy to your own local infrastructure or government data centers with PostgreSQL and Redis.
+                    Deploy to your own local infrastructure or private data centers with PostgreSQL and Redis.
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
@@ -725,7 +1002,7 @@ export default function App() {
       </section>
 
       {/* =========================================================
-          SECTION 03: LIVE RUNNABLE API TERMINAL (COLUMN DARK PANE)
+          SECTION 05: LIVE RUNNABLE API TERMINAL (COLUMN DARK PANE)
       ========================================================= */}
       <section id="api-sandbox" className="bg-column-navy text-white py-16 border-b border-slate-900 bg-grid-hairline-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -733,14 +1010,14 @@ export default function App() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
               <div className="text-[11px] font-mono text-column-cyan mb-1">
-                // 03 RUNNABLE REST API SANDBOX
+                // 05 RUNNABLE REST API SANDBOX
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                 Live Developer Engine & Telemetry Pipeline
               </h2>
             </div>
             <div className="text-xs font-mono text-slate-400">
-              CONNECTED TO LOCAL BACKEND: <span className="text-column-cyan">PORT 4000</span>
+              CONNECTED TO LIVE ENGINE: <span className="text-column-cyan">FLOW-KIT CLOUD</span>
             </div>
           </div>
 
@@ -753,7 +1030,7 @@ export default function App() {
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block" />
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-600 inline-block" />
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block" />
-                <span className="text-xs font-mono text-slate-400 ml-2">REST Console // cURL Simulator</span>
+                <span className="text-xs font-mono text-slate-400 ml-2">REST Console // Live API</span>
               </div>
 
               {/* Endpoint Selector Tabs */}
@@ -780,7 +1057,7 @@ export default function App() {
                     apiEndpoint === 'sdk' ? 'bg-column-cyan text-column-navy font-bold' : 'text-slate-300 hover:text-white'
                   }`}
                 >
-                  GET /sdk.js
+                  GET /flow-kit.js
                 </button>
               </div>
             </div>
@@ -791,15 +1068,15 @@ export default function App() {
               {/* Request Details */}
               <div className="lg:col-span-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pr-0 lg:pr-6">
                 <div>
-                  <span className="text-[10px] font-mono text-slate-400 block mb-2">REQUEST HEADERS & TARGET</span>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-2">REQUEST TARGET</span>
                   
                   <div className="p-3 bg-column-deep border border-slate-800 rounded-sm font-mono text-xs text-slate-300 space-y-1.5 mb-4">
                     <p className="text-column-cyan font-bold">
-                      {apiEndpoint === 'events' ? 'POST' : 'GET'} http://localhost:4000/{apiEndpoint === 'sdk' ? 'sdk.js' : `v1/public/${apiEndpoint}`}
+                      {apiEndpoint === 'events' ? 'POST' : 'GET'} {apiUrl}/{apiEndpoint === 'sdk' ? 'flow-kit.js' : `v1/public/${apiEndpoint}`}
                     </p>
                     {apiEndpoint !== 'sdk' && (
                       <p className="text-slate-400">
-                        x-api-key: <span className="text-slate-200">pk_live_demo_addis_79a2f1b4c6e8</span>
+                        x-api-key: <span className="text-slate-200">pk_test_sample_client_key</span>
                       </p>
                     )}
                     {apiEndpoint === 'events' && (
@@ -809,10 +1086,10 @@ export default function App() {
 
                   <p className="text-xs text-slate-400 leading-relaxed mb-6">
                     {apiEndpoint === 'tours'
-                      ? 'Queries all published walkthroughs and multilingual copy for the authorized project key with local caching.'
+                      ? 'Queries all published walkthroughs and multilingual copy for the authorized project key.'
                       : apiEndpoint === 'events'
                       ? 'Streams real-time step telemetry directly into the analytics aggregation engine.'
-                      : 'Delivers the compiled, standalone universal client SDK (<16.2KB minified).'}
+                      : 'Delivers the compiled, standalone universal client SDK (16.2KB minified).'}
                   </p>
                 </div>
 
@@ -824,7 +1101,7 @@ export default function App() {
                   {apiLoading ? (
                     <>
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>EXECUTING QUERY...</span>
+                      <span>EXECUTING REQUEST...</span>
                     </>
                   ) : (
                     <>
@@ -860,14 +1137,14 @@ export default function App() {
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center text-slate-500 text-center">
                         <Terminal className="w-8 h-8 mb-2 stroke-1 text-slate-600" />
-                        <span>Click &quot;EXECUTE LIVE REQUEST&quot; to fetch live data from the local NestJS backend.</span>
+                        <span>Click &quot;EXECUTE LIVE REQUEST&quot; to test the live Flow-Kit API engine.</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-3">
-                  <span>SECURITY: TLS 1.3 / HMAC KEY AUTH</span>
+                  <span>SECURITY: TLS 1.3 / API KEY AUTH</span>
                   <span>CACHE: LRU IN-MEMORY + REDIS</span>
                 </div>
               </div>
@@ -878,7 +1155,7 @@ export default function App() {
       </section>
 
       {/* =========================================================
-          SECTION 04: ARCHITECTURAL PRICING GRID
+          SECTION 06: PRICING SPECIFICATION (NO DOLLAR SIGNS)
       ========================================================= */}
       <section id="pricing" className="border-b border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto border-x border-slate-200">
@@ -886,14 +1163,14 @@ export default function App() {
           <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-[11px] font-mono text-slate-500 mb-1">
-                // 04 PRICING SPECIFICATION
+                // 06 PRICING SPECIFICATION
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
-                Transparent infrastructure pricing. No surprise MAU penalties.
+                Simple, developer-first access. No surprise penalties.
               </h2>
             </div>
             <span className="text-xs font-mono text-slate-400 shrink-0">
-              BILLED MONTHLY OR ANNUALLY
+              FREE FOREVER &amp; EXPANDABLE
             </span>
           </div>
 
@@ -902,31 +1179,31 @@ export default function App() {
             {/* Developer Tier */}
             <div className="p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <div className="text-xs font-mono text-slate-400 mb-2">[ TIER 01 ]</div>
-                <h3 className="text-lg font-bold text-column-navy mb-1">Developer</h3>
-                <p className="text-xs text-slate-500 mb-6">For indie hackers and early proof-of-concept prototypes.</p>
+                <div className="text-xs font-mono text-slate-400 mb-2">[ COMMUNITY TIER ]</div>
+                <h3 className="text-lg font-bold text-column-navy mb-1">Starter Community</h3>
+                <p className="text-xs text-slate-500 mb-6">For indie hackers, early startups, and personal projects.</p>
 
                 <div className="mb-6">
-                  <span className="text-3xl font-extrabold text-column-navy">$0</span>
-                  <span className="text-xs text-slate-400 ml-1">/ month</span>
+                  <span className="text-3xl font-extrabold text-column-navy">Free Forever</span>
+                  <p className="text-xs text-slate-400 mt-1">No credit card required</p>
                 </div>
 
                 <ul className="space-y-3 text-xs text-slate-600 mb-8 font-mono">
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Up to 1,000 Monthly Active Users</span>
+                    <span>Up to 5,000 Monthly Active Users</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>2 Active Walkthroughs</span>
+                    <span>5 Active Walkthrough Tours</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Public CDN SDK Script</span>
+                    <span>Universal CDN SDK Script</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Community GitHub Support</span>
+                    <span>Point &amp; Click In-App Builder</span>
                   </li>
                 </ul>
               </div>
@@ -935,30 +1212,30 @@ export default function App() {
                 href="/register"
                 className="w-full text-center text-xs font-semibold text-column-navy bg-slate-100 hover:bg-slate-200 border border-slate-200 py-2.5 rounded-sm transition-colors"
               >
-                Start Free
+                Get Started Free
               </Link>
             </div>
 
             {/* Growth Scale Tier (Featured) */}
             <div className="p-6 sm:p-8 flex flex-col justify-between bg-slate-50/70 relative">
               <div className="absolute top-0 right-0 bg-column-navy text-white text-[10px] font-mono px-2 py-0.5">
-                RECOMMENDED
+                POPULAR
               </div>
 
               <div>
-                <div className="text-xs font-mono text-slate-400 mb-2">[ TIER 02 ]</div>
-                <h3 className="text-lg font-bold text-column-navy mb-1">Production Scale</h3>
-                <p className="text-xs text-slate-500 mb-6">For scaling SaaS businesses, startups, and product teams.</p>
+                <div className="text-xs font-mono text-slate-400 mb-2">[ TEAM TIER ]</div>
+                <h3 className="text-lg font-bold text-column-navy mb-1">Growth &amp; Teams</h3>
+                <p className="text-xs text-slate-500 mb-6">For growing SaaS businesses, product teams, and platforms.</p>
 
                 <div className="mb-6">
-                  <span className="text-3xl font-extrabold text-column-navy">$49</span>
-                  <span className="text-xs text-slate-400 ml-1">/ month</span>
+                  <span className="text-3xl font-extrabold text-column-navy">Public Beta</span>
+                  <p className="text-xs text-slate-400 mt-1">Full features unlocked during preview</p>
                 </div>
 
                 <ul className="space-y-3 text-xs text-slate-700 mb-8 font-mono">
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span className="font-bold">25,000 Monthly Active Users</span>
+                    <span className="font-bold">Unlimited Monthly Active Users</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
@@ -966,15 +1243,15 @@ export default function App() {
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Full Multilingual Studio (Amharic, Oromo, EN)</span>
+                    <span>Multilingual Studio (Amharic, Oromo, EN)</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Funnel Drop-Off Analytics & Export</span>
+                    <span>Drop-Off Funnel Analytics</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Custom Brand Themes & Styles</span>
+                    <span>Custom Brand Styling &amp; Themes</span>
                   </li>
                 </ul>
               </div>
@@ -983,38 +1260,38 @@ export default function App() {
                 href="/register"
                 className="w-full text-center text-xs font-bold text-white bg-column-navy hover:bg-slate-800 py-2.5 rounded-sm transition-colors shadow-xs"
               >
-                Launch Scale Console
+                Start Free with Team Features
               </Link>
             </div>
 
             {/* Enterprise Air-Gapped Tier */}
             <div className="p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <div className="text-xs font-mono text-slate-400 mb-2">[ TIER 03 ]</div>
+                <div className="text-xs font-mono text-slate-400 mb-2">[ ENTERPRISE TIER ]</div>
                 <h3 className="text-lg font-bold text-column-navy mb-1">Self-Hosted Enterprise</h3>
-                <p className="text-xs text-slate-500 mb-6">For government agencies, municipal portals, and defense.</p>
+                <p className="text-xs text-slate-500 mb-6">For government portals, defense, and privacy-sensitive apps.</p>
 
                 <div className="mb-6">
-                  <span className="text-3xl font-extrabold text-column-navy">$499</span>
-                  <span className="text-xs text-slate-400 ml-1">/ month or custom</span>
+                  <span className="text-3xl font-extrabold text-column-navy">Self-Hosted</span>
+                  <p className="text-xs text-slate-400 mt-1">Docker &amp; private data center</p>
                 </div>
 
                 <ul className="space-y-3 text-xs text-slate-600 mb-8 font-mono">
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Unlimited MAUs & Workspaces</span>
+                    <span>Unlimited Workspaces &amp; Domains</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>100% Air-Gapped Docker / Binary Deployment</span>
+                    <span>100% Air-Gapped Deployment</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Private PostgreSQL & Redis Sovereignty</span>
+                    <span>Private PostgreSQL &amp; Redis Sovereignty</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Check className="w-3.5 h-3.5 text-column-cyan" />
-                    <span>Dedicated SLA & 24/7 Engineer Support</span>
+                    <span>Dedicated Engineering Support</span>
                   </li>
                 </ul>
               </div>
@@ -1023,7 +1300,7 @@ export default function App() {
                 href="/register"
                 className="w-full text-center text-xs font-semibold text-column-navy bg-slate-100 hover:bg-slate-200 border border-slate-200 py-2.5 rounded-sm transition-colors"
               >
-                Contact Architecture Team
+                Access Self-Hosted Stack
               </Link>
             </div>
 
@@ -1046,9 +1323,9 @@ export default function App() {
               <span>API UPTIME: 99.99%</span>
             </div>
             <div className="flex items-center space-x-3">
-              <span>LOCAL REST: PORT 4000</span>
+              <span>CLOUD ENGINE: ONLINE</span>
               <span className="text-slate-300">|</span>
-              <span>DASHBOARD: PORT 3001</span>
+              <span>LATENCY: &lt;12MS</span>
             </div>
           </div>
 
@@ -1056,10 +1333,10 @@ export default function App() {
           <div className="p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center space-x-3">
               <div className="w-6 h-6 bg-column-navy flex items-center justify-center text-white font-mono text-[10px] font-bold rounded-xs">
-                GL
+                FK
               </div>
               <span className="text-xs font-bold text-column-navy">
-                GuideLayer Architecture
+                Flow-Kit Platform
               </span>
               <span className="text-xs text-slate-400">
                 © {new Date().getFullYear()} All rights reserved.
@@ -1070,16 +1347,19 @@ export default function App() {
               <Link href="/console" className="hover:text-column-navy transition-colors">
                 Console
               </Link>
+              <a href="#docs" className="hover:text-column-navy transition-colors">
+                Documentation
+              </a>
               <Link href="/keys" className="hover:text-column-navy transition-colors">
                 API Keys
               </Link>
               <a
-                href="http://localhost:5173"
+                href={liveDemoUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-column-navy transition-colors"
               >
-                Citizen Portal
+                Live Demo
               </a>
               <Link href="/login" className="hover:text-column-navy transition-colors">
                 Sign In
