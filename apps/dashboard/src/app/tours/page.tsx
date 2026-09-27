@@ -222,7 +222,7 @@ const TOUR_TEMPLATES: TourTemplate[] = [
           en: {
             title: 'Launch Live Tour',
             content: 'Publish your walkthrough and watch real-time user retention climb.',
-            nextBtn: 'All Milestones Complete! 🚀',
+            nextBtn: 'All Milestones Complete!',
           },
         },
       },

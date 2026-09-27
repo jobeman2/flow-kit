@@ -500,7 +500,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   onClick={() => triggerDemo('product-tour')}
                   className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <span>🚀</span>
+                  <Play className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
                   <span>Animated Tour</span>
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
                     3 steps
@@ -512,7 +512,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   onClick={() => triggerDemo('spotlight')}
                   className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <span>🎯</span>
+                  <Sparkles className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
                   <span>Feature Spotlight</span>
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
                     SVG cutout
@@ -524,7 +524,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   onClick={() => triggerDemo('multilingual')}
                   className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <span>🌍</span>
+                  <Globe2 className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
                   <span>Multilingual</span>
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     አማርኛ / EN
@@ -536,7 +536,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   onClick={() => triggerDemo('beacon')}
                   className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <span>💡</span>
+                  <Zap className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
                   <span>Contextual Hint</span>
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
                     guide beacon
@@ -548,7 +548,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   onClick={() => triggerDemo('progress')}
                   className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <span>📊</span>
+                  <BarChart3 className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
                   <span>With Progress Dots</span>
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
                     4 steps
