@@ -393,11 +393,35 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <header className="h-14 px-6 sm:px-8 bg-white border-b border-slate-200 flex items-center justify-between shrink-0 sticky top-0 z-30">
           {/* Breadcrumbs */}
           <div className="flex items-center space-x-2 text-xs">
-            <span className="text-slate-400 font-medium">Console</span>
-            <span className="text-slate-300 font-mono">/</span>
-            <span className="font-semibold text-slate-800 capitalize">
-              {pathname === '/console' ? 'Overview' : pathname.replace('/', '').replace(/-/g, ' ')}
-            </span>
+            <Link href="/console" className="text-slate-400 hover:text-slate-600 font-medium transition-colors">
+              Console
+            </Link>
+            {pathname.startsWith('/tours') ? (
+              <>
+                <span className="text-slate-300 font-mono">/</span>
+                <Link href="/tours" className="text-slate-400 hover:text-slate-600 font-medium transition-colors">
+                  Tours
+                </Link>
+                {pathname !== '/tours' && (
+                  <>
+                    <span className="text-slate-300 font-mono">/</span>
+                    <span className="font-semibold text-slate-800">Studio</span>
+                  </>
+                )}
+              </>
+            ) : pathname === '/console' ? (
+              <>
+                <span className="text-slate-300 font-mono">/</span>
+                <span className="font-semibold text-slate-800">Overview</span>
+              </>
+            ) : (
+              <>
+                <span className="text-slate-300 font-mono">/</span>
+                <span className="font-semibold text-slate-800 capitalize">
+                  {pathname.replace(/^\//, '').split('/')[0].replace(/-/g, ' ')}
+                </span>
+              </>
+            )}
           </div>
         </header>
 

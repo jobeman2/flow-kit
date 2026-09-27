@@ -347,14 +347,15 @@ export class LiveBuilder {
       /* Tour Dropdown Menu */
       .fk-tour-menu {
         position: absolute;
-        bottom: 56px;
-        left: 120px;
-        background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        bottom: 58px;
+        left: 0;
+        background: #ffffff;
+        color: #0f172a;
+        border: 1px solid #e2e8f0;
         border-radius: 12px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
-        min-width: 260px;
-        max-height: 300px;
+        box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.04);
+        width: 300px;
+        max-height: 340px;
         overflow-y: auto;
         padding: 6px;
         display: flex;
@@ -363,35 +364,50 @@ export class LiveBuilder {
         z-index: 2147483648;
       }
       .fk-tour-menu-header {
-        padding: 6px 10px 4px;
-        font-size: 10px;
-        font-weight: 700;
-        color: #94a3b8;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
+        padding: 8px 10px 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .fk-tour-create-btn {
         padding: 8px 10px;
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.08);
-        color: #ffffff;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 8px;
-        transition: background 0.1s ease;
+        gap: 10px;
+        transition: all 0.15s ease;
         margin-bottom: 4px;
-        border: 1px dashed rgba(255, 255, 255, 0.2);
       }
       .fk-tour-create-btn:hover {
-        background: rgba(255, 255, 255, 0.16);
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+      .fk-tour-create-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0f172a;
+        flex-shrink: 0;
       }
       .fk-tour-item {
         padding: 8px 10px;
         border-radius: 8px;
-        color: #ffffff;
+        color: #1e293b;
         font-size: 12px;
         font-weight: 500;
         cursor: pointer;
@@ -400,13 +416,44 @@ export class LiveBuilder {
         justify-content: space-between;
         gap: 8px;
         transition: background 0.1s ease;
+        border: 1px solid transparent;
       }
       .fk-tour-item:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: #f8fafc;
       }
       .fk-tour-item.selected {
-        background: rgba(255, 255, 255, 0.14);
+        background: #f1f5f9;
+        color: #0f172a;
         font-weight: 600;
+        border-color: #e2e8f0;
+      }
+      .fk-tour-item-route {
+        font-size: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 1px 5px;
+        border-radius: 4px;
+        display: inline-block;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .fk-tour-item.selected .fk-tour-item-route {
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .fk-tour-item-steps {
+        font-size: 11px;
+        font-weight: 500;
+        color: #64748b;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 2px 7px;
+        border-radius: 9999px;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       /* Dock Buttons */
@@ -839,12 +886,22 @@ export class LiveBuilder {
     }
 
     if (!this.rootEl) return;
+    const dockEl = this.rootEl.querySelector('.fk-builder-dock') as HTMLElement;
+    const triggerEl = document.getElementById('fk-tour-trigger');
+    if (!dockEl || !triggerEl) return;
+
     this.isDropdownOpen = true;
 
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
     const suggestedTitle = this.getSuggestedTourTitleForCurrentPage();
     const menu = document.createElement('div');
     menu.className = 'fk-tour-menu';
+
+    // Position menu directly above the tour trigger button
+    const triggerRect = triggerEl.getBoundingClientRect();
+    const dockRect = dockEl.getBoundingClientRect();
+    const leftOffset = Math.max(6, Math.min(dockRect.width - 306, triggerRect.left - dockRect.left));
+    menu.style.left = `${leftOffset}px`;
 
     // 1. Context-Aware Quick Create Button
     const hasExactTourForPage = this.tours.some(
@@ -855,13 +912,15 @@ export class LiveBuilder {
       const createBtn = document.createElement('div');
       createBtn.className = 'fk-tour-create-btn';
       createBtn.innerHTML = `
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        <div style="display:flex;flex-direction:column;line-height:1.2;">
-          <span>New Tour for this page</span>
-          <span style="font-size:10px;color:#94a3b8;font-weight:normal;">Create "${suggestedTitle}" (${currentPath})</span>
+        <div class="fk-tour-create-icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div style="display:flex;flex-direction:column;line-height:1.25;overflow:hidden;">
+          <span style="font-weight:600;font-size:12px;color:#0f172a;">New Tour for this page</span>
+          <span style="font-size:11px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">"${suggestedTitle}" (${currentPath})</span>
         </div>
       `;
       createBtn.addEventListener('click', async (e) => {
@@ -876,7 +935,10 @@ export class LiveBuilder {
     // 2. Header
     const header = document.createElement('div');
     header.className = 'fk-tour-menu-header';
-    header.textContent = `All Tours (${this.tours.length})`;
+    header.innerHTML = `
+      <span>Tours</span>
+      <span style="font-size:10px;font-weight:600;color:#94a3b8;background:#f1f5f9;padding:1px 6px;border-radius:9999px;">${this.tours.length}</span>
+    `;
     menu.appendChild(header);
 
     // 3. Tours List
@@ -886,20 +948,20 @@ export class LiveBuilder {
       const item = document.createElement('div');
       item.className = `fk-tour-item ${isSelected ? 'selected' : ''}`;
       item.innerHTML = `
-        <div style="display:flex;align-items:center;gap:8px;overflow:hidden;">
-          ${isSelected ? `
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          ` : `
-            <span style="width:13px;"></span>
-          `}
-          <div style="display:flex;flex-direction:column;overflow:hidden;">
-            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">${tour.title}</span>
-            <span style="font-size:10px;color:${isMatchingPage ? '#38bdf8' : '#64748b'};">${tour.targetUrlPattern || '/'}</span>
+        <div style="display:flex;align-items:center;gap:8px;overflow:hidden;flex:1;">
+          <span style="width:14px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            ${isSelected ? `
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            ` : ''}
+          </span>
+          <div style="display:flex;flex-direction:column;overflow:hidden;gap:2px;">
+            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:145px;color:#0f172a;font-weight:${isSelected ? '600' : '500'};">${tour.title}</span>
+            <span class="fk-tour-item-route">${tour.targetUrlPattern || '/'}</span>
           </div>
         </div>
-        <span class="fk-tour-count">${tour.steps?.length || 0} steps</span>
+        <span class="fk-tour-item-steps">${tour.steps?.length || 0} steps</span>
       `;
 
       item.addEventListener('click', (e) => {
@@ -913,11 +975,11 @@ export class LiveBuilder {
       menu.appendChild(item);
     });
 
-    this.rootEl.appendChild(menu);
+    dockEl.appendChild(menu);
 
     // Close when clicking outside
     const onDocClick = (e: MouseEvent) => {
-      if (!menu.contains(e.target as Node)) {
+      if (!menu.contains(e.target as Node) && e.target !== triggerEl && !triggerEl.contains(e.target as Node)) {
         menu.remove();
         this.isDropdownOpen = false;
         document.removeEventListener('click', onDocClick);

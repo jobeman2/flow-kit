@@ -295,42 +295,31 @@ export default function TourStudioPage() {
           <Link
             href="/tours"
             className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-sm transition-colors"
+            title="Back to Tours"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={tour.title}
-                onChange={(e) => {
-                  setTour({ ...tour, title: e.target.value });
-                  setHasUnsavedChanges(true);
-                }}
-                className="font-bold text-slate-900 text-base border-b border-transparent hover:border-slate-300 focus:border-slate-800 focus:outline-none transition-colors"
-              />
-              <span
-                className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm ${
-                  tour.status === 'PUBLISHED'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border border-amber-200'
-                }`}
-              >
-                {tour.status}
+          <div className="flex items-center space-x-2.5">
+            <input
+              type="text"
+              value={tour.title}
+              onChange={(e) => {
+                setTour({ ...tour, title: e.target.value });
+                setHasUnsavedChanges(true);
+              }}
+              placeholder="Tour Title"
+              className="font-bold text-slate-900 text-lg border-b border-transparent hover:border-slate-300 focus:border-slate-800 focus:outline-none transition-colors px-1 py-0.5 rounded-xs"
+            />
+            {tour.status === 'PUBLISHED' ? (
+              <span className="inline-flex items-center text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
+                Live
               </span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-0.5 font-mono">
-              Slug: <span className="text-slate-700">{tour.slug}</span> • URL Pattern:{' '}
-              <input
-                type="text"
-                value={tour.targetUrlPattern}
-                onChange={(e) => {
-                  setTour({ ...tour, targetUrlPattern: e.target.value });
-                  setHasUnsavedChanges(true);
-                }}
-                className="text-[11px] text-slate-800 bg-slate-50 px-1.5 py-0.5 rounded-sm font-mono border border-slate-200 focus:outline-none"
-              />
-            </p>
+            ) : (
+              <span className="inline-flex items-center text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                Draft
+              </span>
+            )}
           </div>
         </div>
 
@@ -1252,6 +1241,51 @@ export default function TourStudioPage() {
           </div>
 
           <div className="space-y-4 pt-3 border-t border-slate-100">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-800 mb-1">
+                  Tour Identifier Slug
+                </label>
+                <input
+                  type="text"
+                  value={tour.slug || ''}
+                  onChange={(e) => {
+                    setTour({ ...tour, slug: e.target.value });
+                    setHasUnsavedChanges(true);
+                  }}
+                  placeholder="e.g. welcome-tour"
+                  className="w-full px-3 py-1.5 text-xs font-mono border border-slate-200 rounded-sm focus:outline-none focus:border-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-800 mb-1">
+                  Publication Status
+                </label>
+                <div className="flex items-center space-x-2 pt-0.5">
+                  <span
+                    className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-sm ${
+                      tour.status === 'PUBLISHED'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${tour.status === 'PUBLISHED' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                    {tour.status}
+                  </span>
+                  {tour.status !== 'PUBLISHED' && (
+                    <button
+                      type="button"
+                      onClick={handlePublish}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline cursor-pointer"
+                    >
+                      Publish Live
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-slate-800 mb-1">
                 Target URL Match Pattern
