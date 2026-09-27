@@ -50,7 +50,6 @@ export default function LandingPage() {
   const [apiLatency, setApiLatency] = useState<number | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://flow-kit.onrender.com';
-  const liveDemoUrl = 'http://murn.196.190.216.193.nip.io';
 
   const snippetContent = {
     cdn: `<!-- 1-Line Drop-In: Paste into any HTML, WordPress, or Web App -->
@@ -240,16 +239,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Action Hub */}
           <div className="flex items-center space-x-3">
-            <a
-              href={liveDemoUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden sm:inline-flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-column-navy transition-colors px-2 py-1"
-              title="Open real-world inspection app using Flow-Kit"
-            >
-              <span>Live App Demo</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-            </a>
 
             <Show when="signed-out">
               <SignInButton mode="modal">
@@ -332,13 +321,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </a>
 
               <a
-                href={liveDemoUrl}
-                target="_blank"
-                rel="noreferrer"
+                href="#api-sandbox"
                 className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                <span>Explore Live Demo</span>
+                <Terminal className="w-3.5 h-3.5 text-slate-500" />
+                <span>Test Live API Sandbox</span>
               </a>
             </div>
           </div>
@@ -1353,14 +1340,6 @@ export default function RootLayout({ children }) {
               <Link href="/keys" className="hover:text-column-navy transition-colors">
                 API Keys
               </Link>
-              <a
-                href={liveDemoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-column-navy transition-colors"
-              >
-                Live Demo
-              </a>
               <Link href="/login" className="hover:text-column-navy transition-colors">
                 Sign In
               </Link>
