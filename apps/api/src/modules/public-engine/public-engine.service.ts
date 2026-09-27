@@ -120,6 +120,47 @@ export class PublicEngineService {
     });
   }
 
+  async createTourFromBuilder(
+    projectId: string,
+    data: {
+      title: string;
+      targetUrlPattern: string;
+      description?: string;
+    },
+  ) {
+    const cleanPattern = data.targetUrlPattern || '/';
+    const baseSlug = (data.title || 'tour')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    const slug = `${baseSlug || 'page'}-${randomSuffix}`;
+
+    const newTour = await this.prisma.client.tour.create({
+      data: {
+        projectId,
+        title: data.title || 'New Tour',
+        slug,
+        targetUrlPattern: cleanPattern,
+        status: TourStatus.PUBLISHED,
+        triggerType: 'AUTO_FIRST_VISIT',
+        defaultLocale: 'en',
+        isDismissable: true,
+        allowBackdropClick: false,
+        themeConfig: {
+          borderRadius: '12px',
+          primaryColor: '#0f172a',
+          cardStyle: 'clean',
+        },
+      },
+      include: {
+        steps: true,
+      },
+    });
+
+    return newTour;
+  }
+
   async addStepFromBuilder(
     projectId: string,
     tourId: string,

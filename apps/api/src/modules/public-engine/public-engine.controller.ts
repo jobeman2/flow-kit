@@ -30,6 +30,20 @@ export class PublicEngineController {
     return await this.engineService.getAllTours(projectId);
   }
 
+  @Post('builder/create-tour')
+  async createBuilderTour(
+    @Req() req: any,
+    @Body()
+    body: {
+      title: string;
+      targetUrlPattern: string;
+      description?: string;
+    },
+  ) {
+    const projectId = req.project.id;
+    return await this.engineService.createTourFromBuilder(projectId, body);
+  }
+
   @Post('builder/add-step')
   async addBuilderStep(
     @Req() req: any,

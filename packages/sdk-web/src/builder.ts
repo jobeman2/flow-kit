@@ -103,6 +103,135 @@ export class LiveBuilder {
     }
   }
 
+  private matchUrlPattern(pattern: string, urlPath: string): boolean {
+    if (!pattern || pattern === '*' || pattern === '/*') return true;
+    const cleanPattern = pattern.trim();
+    const regexPattern = cleanPattern
+      .replace(/\*/g, '.*')
+      .replace(/\/:([a-zA-Z0-9_]+)/g, '/[^/]+');
+    try {
+      const regex = new RegExp(`^${regexPattern}$`, 'i');
+      return regex.test(urlPath);
+    } catch {
+      return urlPath.startsWith(pattern.replace('*', ''));
+    }
+  }
+
+  private selectBestTourForCurrentPage() {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+
+    // 1. Look for a specific tour explicitly matching this page (not generic '/')
+    if (currentPath !== '/') {
+      const pageTour = this.tours.find(
+        (t) =>
+          t.targetUrlPattern &&
+          t.targetUrlPattern !== '/' &&
+          t.targetUrlPattern !== '*' &&
+          this.matchUrlPattern(t.targetUrlPattern, currentPath),
+      );
+      if (pageTour) {
+        this.selectedTourId = pageTour.id;
+        return;
+      }
+    }
+
+    // 2. Look for any matching tour (including '/')
+    const matching = this.tours.find((t) => this.matchUrlPattern(t.targetUrlPattern, currentPath));
+    if (matching) {
+      this.selectedTourId = matching.id;
+      return;
+    }
+
+    // 3. Fallback to existing selected or first tour
+    if (!this.selectedTourId && this.tours.length > 0) {
+      this.selectedTourId = this.tours[0].id;
+    }
+  }
+
+  public getSuggestedTourTitleForCurrentPage(): string {
+    const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+    if (path === '/' || path === '') return 'Welcome Tour';
+
+    // Try reading page heading h1
+    const h1 = document.querySelector('h1')?.textContent?.trim();
+    if (h1 && h1.length > 2 && h1.length < 35 && !h1.toLowerCase().includes('welcome back')) {
+      return `${h1} Tour`;
+    }
+
+    // Fallback to capitalizing last path segment: e.g. /properties -> Properties Tour
+    const segments = path.split('/').filter(Boolean);
+    const last = segments[segments.length - 1] || 'Page';
+    const capitalized = last.charAt(0).toUpperCase() + last.slice(1);
+    return `${capitalized} Tour`;
+  }
+
+  public async createTourForCurrentPage(customTitle?: string) {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+    const title = customTitle || this.getSuggestedTourTitleForCurrentPage();
+
+    try {
+      const res = await fetch(`${this.config.apiUrl}/v1/public/builder/create-tour`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this.config.apiKey,
+        },
+        body: JSON.stringify({
+          title,
+          targetUrlPattern: currentPath,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to create tour for page');
+
+      const newTour = await res.json();
+      this.tours.unshift(newTour);
+      this.selectedTourId = newTour.id;
+
+      if ((window as any).flowKitInstance) {
+        (window as any).flowKitInstance.registerTour(newTour);
+      }
+
+      this.renderFullDock();
+      return newTour;
+    } catch (err: any) {
+      console.error('[FlowKit] Failed to create tour for page:', err);
+      alert(err.message || 'Error creating tour for this page');
+      return null;
+    }
+  }
+
+  private async ensureTourForCurrentPage(): Promise<any> {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+    const currentTour = this.tours.find((t) => t.id === this.selectedTourId);
+
+    // If current tour already matches this exact page or wildcard, we're good
+    if (currentTour && (currentTour.targetUrlPattern === currentPath || currentTour.targetUrlPattern === '*')) {
+      return currentTour;
+    }
+
+    // Check if an existing tour already matches this page
+    if (currentPath !== '/') {
+      const existingPageTour = this.tours.find(
+        (t) =>
+          t.targetUrlPattern &&
+          t.targetUrlPattern !== '/' &&
+          this.matchUrlPattern(t.targetUrlPattern, currentPath),
+      );
+      if (existingPageTour) {
+        this.selectedTourId = existingPageTour.id;
+        this.renderFullDock();
+        return existingPageTour;
+      }
+
+      // No tour exists for this page yet: automatically create it!
+      const createdTour = await this.createTourForCurrentPage();
+      return createdTour;
+    }
+
+    return currentTour || this.tours[0];
+  }
+
   private async loadTours() {
     try {
       const res = await fetch(`${this.config.apiUrl}/v1/public/builder/tours`, {
@@ -110,9 +239,7 @@ export class LiveBuilder {
       });
       if (res.ok) {
         this.tours = await res.json();
-        if (!this.selectedTourId && this.tours.length > 0) {
-          this.selectedTourId = this.tours[0].id;
-        }
+        this.selectBestTourForCurrentPage();
       }
     } catch (e) {
       console.warn('[Flow-Kit Builder] Failed to load tours:', e);
@@ -226,14 +353,40 @@ export class LiveBuilder {
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 12px;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
-        min-width: 240px;
-        max-height: 260px;
+        min-width: 260px;
+        max-height: 300px;
         overflow-y: auto;
         padding: 6px;
         display: flex;
         flex-direction: column;
         gap: 2px;
         z-index: 2147483648;
+      }
+      .fk-tour-menu-header {
+        padding: 6px 10px 4px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #94a3b8;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .fk-tour-create-btn {
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.1s ease;
+        margin-bottom: 4px;
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+      }
+      .fk-tour-create-btn:hover {
+        background: rgba(255, 255, 255, 0.16);
       }
       .fk-tour-item {
         padding: 8px 10px;
@@ -319,7 +472,7 @@ export class LiveBuilder {
         background: rgba(255, 255, 255, 0.1);
       }
 
-      /* Step Popup Modal (Design matched to Murn) */
+      /* Step Popup Modal */
       .fk-step-popup {
         position: fixed;
         z-index: 2147483645;
@@ -448,7 +601,7 @@ export class LiveBuilder {
         color: #0f172a;
       }
 
-      /* Auto-Scan Review Modal (Design matched to Murn) */
+      /* Auto-Scan Review Modal */
       .fk-modal-backdrop {
         position: fixed;
         inset: 0;
@@ -588,7 +741,7 @@ export class LiveBuilder {
     });
     dock.appendChild(trigger);
 
-    // Auto-Scan Page Button (Crisp primary action)
+    // Auto-Scan Page Button
     const autoScanBtn = document.createElement('button');
     autoScanBtn.className = 'fk-dock-btn primary';
     autoScanBtn.title = 'Scan page landmarks and auto-generate tour steps in 1 click';
@@ -688,11 +841,48 @@ export class LiveBuilder {
     if (!this.rootEl) return;
     this.isDropdownOpen = true;
 
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+    const suggestedTitle = this.getSuggestedTourTitleForCurrentPage();
     const menu = document.createElement('div');
     menu.className = 'fk-tour-menu';
 
+    // 1. Context-Aware Quick Create Button
+    const hasExactTourForPage = this.tours.some(
+      (t) => t.targetUrlPattern === currentPath && currentPath !== '/',
+    );
+
+    if (!hasExactTourForPage && currentPath !== '/') {
+      const createBtn = document.createElement('div');
+      createBtn.className = 'fk-tour-create-btn';
+      createBtn.innerHTML = `
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <div style="display:flex;flex-direction:column;line-height:1.2;">
+          <span>New Tour for this page</span>
+          <span style="font-size:10px;color:#94a3b8;font-weight:normal;">Create "${suggestedTitle}" (${currentPath})</span>
+        </div>
+      `;
+      createBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        menu.remove();
+        this.isDropdownOpen = false;
+        await this.createTourForCurrentPage();
+      });
+      menu.appendChild(createBtn);
+    }
+
+    // 2. Header
+    const header = document.createElement('div');
+    header.className = 'fk-tour-menu-header';
+    header.textContent = `All Tours (${this.tours.length})`;
+    menu.appendChild(header);
+
+    // 3. Tours List
     this.tours.forEach((tour) => {
       const isSelected = tour.id === this.selectedTourId;
+      const isMatchingPage = this.matchUrlPattern(tour.targetUrlPattern, currentPath);
       const item = document.createElement('div');
       item.className = `fk-tour-item ${isSelected ? 'selected' : ''}`;
       item.innerHTML = `
@@ -704,7 +894,10 @@ export class LiveBuilder {
           ` : `
             <span style="width:13px;"></span>
           `}
-          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">${tour.title}</span>
+          <div style="display:flex;flex-direction:column;overflow:hidden;">
+            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">${tour.title}</span>
+            <span style="font-size:10px;color:${isMatchingPage ? '#38bdf8' : '#64748b'};">${tour.targetUrlPattern || '/'}</span>
+          </div>
         </div>
         <span class="fk-tour-count">${tour.steps?.length || 0} steps</span>
       `;
@@ -749,6 +942,16 @@ export class LiveBuilder {
   }
 
   private togglePickMode(enable: boolean) {
+    if (enable) {
+      this.ensureTourForCurrentPage().then(() => {
+        this.setPickMode(true);
+      });
+    } else {
+      this.setPickMode(false);
+    }
+  }
+
+  private setPickMode(enable: boolean) {
     this.isPicking = enable;
     const pickBtn = document.getElementById('fk-pick-btn');
     if (pickBtn) {
@@ -782,6 +985,30 @@ export class LiveBuilder {
   private attachEventListeners() {
     document.addEventListener('mousemove', this.onMouseMove, true);
     document.addEventListener('click', this.onClick, true);
+
+    // Listen for SPA navigation so builder dock automatically switches tour for the current page
+    if (typeof window !== 'undefined' && !(window as any).__fk_builder_nav_attached) {
+      (window as any).__fk_builder_nav_attached = true;
+      const onRouteTransition = () => {
+        if (!this.isActive) return;
+        setTimeout(() => {
+          this.selectBestTourForCurrentPage();
+          this.renderFullDock();
+        }, 100);
+      };
+
+      const origPush = history.pushState;
+      history.pushState = function (...args) {
+        origPush.apply(this, args);
+        onRouteTransition();
+      };
+      const origReplace = history.replaceState;
+      history.replaceState = function (...args) {
+        origReplace.apply(this, args);
+        onRouteTransition();
+      };
+      window.addEventListener('popstate', onRouteTransition);
+    }
   }
 
   private isBuilderElement(el: HTMLElement): boolean {
@@ -900,16 +1127,19 @@ export class LiveBuilder {
     const target = this.resolvePickingTarget(raw);
     this.currentSelectedEl = target;
     this.currentSelector = this.getOptimalSelector(target);
-    this.togglePickMode(false);
+    this.setPickMode(false);
     this.showStepCreationPopup(target);
   };
 
   /**
    * 1-Click Page Auto-Scan
    */
-  public autoScanPage() {
+  public async autoScanPage() {
+    // Automatically ensure/create a tour targeted for the current page
+    await this.ensureTourForCurrentPage();
+
     if (!this.selectedTourId) {
-      alert('Please select a tour first.');
+      alert('Please select or create a tour first.');
       return;
     }
 
@@ -982,7 +1212,7 @@ export class LiveBuilder {
       );
     }
 
-    // 4. Main Stats / Cards / Data Grid
+    // 4. Main Stats / Cards / Data Grid / Table
     const gridItem = (document.querySelector('.grid > div') ||
       document.querySelector('table') ||
       document.querySelector('[data-tour="metrics"]') ||
@@ -990,8 +1220,8 @@ export class LiveBuilder {
     if (gridItem) {
       addCandidate(
         gridItem,
-        'Key Metrics & Activity',
-        'Monitor performance, outstanding tasks, and live status updates directly from these interactive cards.',
+        'Records & Activity Overview',
+        'Monitor performance, browse records, and take immediate action directly from this table or summary grid.',
         'TOP',
       );
     }
@@ -1007,6 +1237,7 @@ export class LiveBuilder {
   private showAutoScanModal(scanned: ScannedStep[]) {
     if (this.autoScanModalEl) this.autoScanModalEl.remove();
 
+    const currentTour = this.tours.find((t) => t.id === this.selectedTourId);
     const backdrop = document.createElement('div');
     backdrop.className = 'fk-modal-backdrop';
 
@@ -1016,8 +1247,8 @@ export class LiveBuilder {
     card.innerHTML = `
       <div class="fk-modal-header">
         <div>
-          <h3 style="margin:0;font-size:16px;font-weight:700;color:#0f172a;">Page Auto-Scan</h3>
-          <p style="margin:2px 0 0;font-size:13px;color:#64748b;">Detected ${scanned.length} key landmarks on this page. Review and add to tour.</p>
+          <h3 style="margin:0;font-size:16px;font-weight:700;color:#0f172a;">Auto-Scan: ${currentTour ? currentTour.title : 'Page Tour'}</h3>
+          <p style="margin:2px 0 0;font-size:13px;color:#64748b;">Detected ${scanned.length} landmarks for ${currentTour ? currentTour.targetUrlPattern : 'this page'}. Review and save in 1 click.</p>
         </div>
         <button id="fk-modal-close" class="fk-icon-btn" style="color:#64748b;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1156,6 +1387,7 @@ export class LiveBuilder {
   private showStepCreationPopup(target: HTMLElement) {
     if (this.popupEl) this.popupEl.remove();
 
+    const currentTour = this.tours.find((t) => t.id === this.selectedTourId);
     const r = target.getBoundingClientRect();
     this.popupEl = document.createElement('div');
     this.popupEl.className = 'fk-step-popup';
@@ -1175,7 +1407,10 @@ export class LiveBuilder {
 
     this.popupEl.innerHTML = `
       <div class="fk-popup-header">
-        <h4 class="fk-popup-title">Add Step</h4>
+        <div>
+          <h4 class="fk-popup-title">Add Step</h4>
+          <span style="font-size:11px;color:#64748b;">Tour: <b>${currentTour ? currentTour.title : 'Active Tour'}</b></span>
+        </div>
         <button id="fk-close-popup" class="fk-icon-btn" style="color:#64748b;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"/>
