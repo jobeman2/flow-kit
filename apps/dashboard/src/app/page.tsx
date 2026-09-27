@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { SignInButton, SignUpButton, UserButton, Show } from '@clerk/nextjs';
 import {
+  Compass,
   ArrowRight,
   Check,
   Copy,
@@ -30,12 +31,6 @@ import {
   MousePointerClick,
   Sliders,
   HelpCircle,
-  Eye,
-  Crosshair,
-  Compass,
-  Monitor,
-  Flame,
-  CheckCircle,
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -43,7 +38,7 @@ export default function LandingPage() {
   const [activeSnippetTab, setActiveSnippetTab] = useState<'cdn' | 'npm' | 'react'>('cdn');
   const [activeDocTab, setActiveDocTab] = useState<'quickstart' | 'builder' | 'sdk' | 'i18n'>('quickstart');
 
-  // Interactive Live Product Simulator State
+  // Interactive Simulator State
   const [simStep, setSimStep] = useState<number>(1);
   const [simLang, setSimLang] = useState<'en' | 'am' | 'om'>('en');
 
@@ -58,17 +53,17 @@ export default function LandingPage() {
   const liveDemoUrl = 'http://murn.196.190.216.193.nip.io';
 
   const snippetContent = {
-    cdn: `<!-- 1-Line Drop-In: Any HTML, WordPress, PHP, or Web App -->
+    cdn: `<!-- 1-Line Drop-In: Paste into any HTML, WordPress, or Web App -->
 <script
   src="${apiUrl}/flow-kit.js"
-  data-api-key="pk_live_your_project_key"
+  data-api-key="pk_live_sample_customer_key"
   data-locale="en"
 ></script>`,
     npm: `// Install: npm install @flow-kit/web
 import { FlowKit } from '@flow-kit/web';
 
 const flow = FlowKit.init({
-  apiKey: 'pk_live_your_project_key',
+  apiKey: 'pk_live_sample_customer_key',
   locale: 'en', // 'en', 'am' (Amharic), 'om' (Oromo)
 });`,
     react: `// Next.js (App Router) / React
@@ -82,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script
           src="${apiUrl}/flow-kit.js"
           strategy="afterInteractive"
-          data-api-key="pk_live_your_project_key"
+          data-api-key="pk_live_sample_customer_key"
         />
       </body>
     </html>
@@ -96,42 +91,42 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     setTimeout(() => setCopiedSnippet(false), 2000);
   };
 
-  // Interactive Simulator Content across 3 languages
-  const simData: Record<string, { title: string; desc: string; targetName: string; placement: string; btnNext: string; btnBack: string }> = {
+  // Interactive Simulator Content across 3 languages (Zero emojis)
+  const simData: Record<string, { title: string; desc: string; target: string; placement: string; btnNext: string; btnBack: string }> = {
     en: {
-      title: simStep === 1 ? 'Instant Property Search' : simStep === 2 ? 'Multilingual Hot-Swap' : 'One-Click Actions & Reports',
+      title: simStep === 1 ? 'Global Smart Search' : simStep === 2 ? 'Multilingual Engine' : 'Instant Cloud Services',
       desc: simStep === 1 
-        ? 'Search across all inspection units, tenant records, and property compliance reports in real time.'
+        ? 'Find records, inspection reports, licenses, and filings in milliseconds.'
         : simStep === 2
-        ? 'Switch your portal language instantly between English, Amharic, and Afaan Oromoo with zero page reloads.'
-        : 'Generate inspection reports, export compliance PDFs, or trigger follow-up tasks in 1 click.',
-      targetName: simStep === 1 ? 'Search Input' : simStep === 2 ? 'Language Switcher' : 'Action Button',
+        ? 'Seamlessly switch between English, Amharic, and Afaan Oromoo with zero page reload.'
+        : 'Access verified records and digital workflows with a single click.',
+      target: simStep === 1 ? '#search-bar' : simStep === 2 ? '#lang-switch' : '#quick-actions',
       placement: 'Bottom Center',
-      btnNext: simStep === 3 ? 'Restart Tour' : 'Next Step →',
+      btnNext: simStep === 3 ? 'Finish Walkthrough' : 'Next Step →',
       btnBack: 'Back',
     },
     am: {
-      title: simStep === 1 ? 'ፈጣን የንብረት ፍለጋ' : simStep === 2 ? 'ቋንቋዎችን በቀላሉ ይቀይሩ' : 'የሪፖርት ማመንጫ እና እርምጃዎች',
+      title: simStep === 1 ? 'የማዘጋጃ ቤት አገልግሎት ፍለጋ' : simStep === 2 ? 'ቋንቋዎን ይምረጡ' : 'ፈጣን የኢንተርኔት አገልግሎቶች',
       desc: simStep === 1 
-        ? 'ሁሉንም የፍተሻ ክፍሎች፣ የተከራይ መዝገቦች እና የሕግ ተገዢነት ሪፖርቶችን ወዲያውኑ ይፈልጉ።'
+        ? 'የከተማ አገልግሎቶችን፣ የታክስ መዝገቦችን፣ የልደት ምስክር ወረቀቶችን እና የንግድ ፈቃዶችን በፍጥነት ያግኙ።'
         : simStep === 2
-        ? 'ገጹን ዳግም መጫን ሳያስፈልግ የፖርታሉን ቋንቋ በእንግሊዝኛ፣ በአማርኛ እና በአፋን ኦሮሞ መካከል ይቀይሩ።'
-        : 'የፍተሻ ሪፖርቶችን ያመንጩ፣ ፒዲኤፍ ሰነዶችን ያውርዱ፣ ወይም ቀጣይ ሥራዎችን በአንድ ጠቅታ ይጀምሩ።',
-      targetName: simStep === 1 ? 'የፍለጋ ሳጥን' : simStep === 2 ? 'የቋንቋ መምረጫ' : 'የእርምጃ አዝራር',
+        ? 'መላው ፖርታል እና የጉዞ መመሪያዎች በእንግሊዝኛ፣ በአማርኛ እና በአፋን ኦሮሞ በተሟላ ሁኔታ ይገኛሉ።'
+        : 'የተረጋገጡ ዲጂታል ሰነዶችን፣ የመስመር ላይ የታክስ ክፍያዎችን እና የቀጠሮ መያዣን በአንድ ጠቅታ ያግኙ።',
+      target: simStep === 1 ? '#search-bar' : simStep === 2 ? '#lang-switch' : '#quick-actions',
       placement: 'Bottom Center',
-      btnNext: simStep === 3 ? 'ጉብኝቱን እንደገና ጀምር' : 'ቀጣይ →',
+      btnNext: simStep === 3 ? 'ጉብኝቱን ጨርስ' : 'ቀጣይ →',
       btnBack: 'ተመለስ',
     },
     om: {
-      title: simStep === 1 ? 'Barbaada Qabeenyaa Ariifataa' : simStep === 2 ? 'Afaan Battalatti Jijjiiraa' : 'Gabaasaalee fi Tarkaanfiiwwan',
+      title: simStep === 1 ? 'Barbaada Tajaajila Waloo' : simStep === 2 ? 'Afaan Keessan Filadhaa' : 'Tajaajiloota Dijitaalaa Ariifataa',
       desc: simStep === 1 
-        ? 'Kutaalee sakatta\'aa hunda, galmeewwan kireeffattootaa fi gabaasa seera qabeessummaa daqiiqaa muraasa keessatti barbaadaa.'
+        ? 'Tajaajiloota magaalaa, galmee gibiraa, waraqaa ragaa dhalootaa fi heeyyama daldalaa sekondii muraasa keessatti barbaadaa.'
         : simStep === 2
-        ? 'Fuula haaromsuu osoo hin barbaachisin afaan poortaalii keessanii Ingiliffa, Oromiffaa fi Amaaraa gidduutti jijjiiraa.'
-        : 'Gabaasa sakatta\'aa maddisiisaa, PDF buufadhaa, yookiin hojiiwwan itti aanan cuqaasa tokkoon jalqabaa.',
-      targetName: simStep === 1 ? 'Sanduuqa Barbaadaa' : simStep === 2 ? 'Filannoo Afaanii' : 'Qabduu Tarkaanfii',
+        ? 'Marsariitiin guutuun fi qajeelfamoonni hundi Afaan Ingilizii, Afaan Oromoo fi Amaaraatiin ni argamu.'
+        : 'Waraqaalee ragaa mirkanaa\'an, kaffaltii gibiraa toora interneetii fi beellama qabachuu cuqaasa tokkoon argadhaa.',
+      target: simStep === 1 ? '#search-bar' : simStep === 2 ? '#lang-switch' : '#quick-actions',
       placement: 'Bottom Center',
-      btnNext: simStep === 3 ? 'Irra Deebi\'i' : 'Itti Aana →',
+      btnNext: simStep === 3 ? 'Xumuri' : 'Itti Aana →',
       btnBack: 'Duubatti',
     },
   };
@@ -183,7 +178,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         const duration = Math.round(performance.now() - startTime);
         setApiStatusCode(res.status);
         setApiLatency(duration);
-        setApiResponse(`// Flow-Kit Standalone Universal Client (${text.length} bytes, HTTP 200 OK)\n` + text.slice(0, 480) + '\n\n// ... [minified high-performance DOM runtime] ...');
+        setApiResponse(`// Flow-Kit CDN Bundle (${text.length} bytes, HTTP 200 OK)\n` + text.slice(0, 450) + '\n\n// ... [remaining minified SDK runtime bundle] ...');
       }
     } catch (err: any) {
       const duration = Math.round(performance.now() - startTime);
@@ -196,84 +191,76 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-white text-column-navy font-sans antialiased selection:bg-column-cyan/20 selection:text-column-navy">
       
-      {/* Ambient background glow effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-indigo-500/15 via-purple-500/10 to-transparent blur-3xl opacity-80" />
-        <div className="absolute top-[600px] -left-40 w-[600px] h-[600px] bg-cyan-500/10 blur-3xl rounded-full" />
-        <div className="absolute top-[800px] -right-40 w-[600px] h-[600px] bg-indigo-600/10 blur-3xl rounded-full" />
-      </div>
-
       {/* =========================================================
-          TOP NAVIGATION BAR
+          TOP ARCHITECTURAL NAVIGATION
       ========================================================= */}
-      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           
           {/* Brand Mark */}
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
-                  <Compass className="w-5 h-5 text-cyan-400" />
-                </div>
+          <div className="flex items-center space-x-6">
+            <Link href="/" className="flex items-center space-x-2.5 group">
+              <div className="w-7 h-7 bg-column-navy flex items-center justify-center text-white font-mono text-xs font-bold rounded-sm group-hover:bg-column-cyan group-hover:text-column-navy transition-colors">
+                FK
               </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5">
+              <div className="flex items-baseline space-x-1.5">
+                <span className="font-bold text-sm tracking-tight text-column-navy">
                   Flow-Kit
-                  <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">2.0</span>
                 </span>
-                <span className="text-[11px] text-slate-400 font-medium">In-App Walkthroughs</span>
+                <span className="text-[10px] font-mono text-slate-400">
+                  Walkthroughs
+                </span>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-7 text-xs font-semibold text-slate-300">
-              <a href="#how-it-works" className="hover:text-white transition-colors">
+            <nav className="hidden md:flex items-center space-x-6 text-xs font-medium text-slate-600">
+              <a href="#how-it-works" className="hover:text-column-navy transition-colors">
                 How It Works
               </a>
-              <a href="#demo" className="hover:text-white transition-colors">
-                Interactive Demo
-              </a>
-              <a href="#features" className="hover:text-white transition-colors">
-                Features
-              </a>
-              <a href="#docs" className="hover:text-white transition-colors">
+              <a href="#docs" className="hover:text-column-navy transition-colors">
                 Documentation
               </a>
-              <a href="#api-sandbox" className="hover:text-white transition-colors">
+              <a href="#architecture" className="hover:text-column-navy transition-colors">
+                Architecture
+              </a>
+              <a href="#comparison" className="hover:text-column-navy transition-colors">
+                Direct vs Legacy
+              </a>
+              <a href="#api-sandbox" className="hover:text-column-navy transition-colors">
                 API Sandbox
               </a>
-              <a href="#pricing" className="hover:text-white transition-colors">
-                Access &amp; Pricing
+              <a href="#pricing" className="hover:text-column-navy transition-colors">
+                Pricing
               </a>
             </nav>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Hub */}
           <div className="flex items-center space-x-3">
             <a
               href={liveDemoUrl}
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-1.5 rounded-lg transition-all"
+              className="hidden sm:inline-flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-column-navy transition-colors px-2 py-1"
+              title="Open real-world inspection app using Flow-Kit"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Live Murn App</span>
+              <span>Live App Demo</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
             </a>
 
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 transition-colors cursor-pointer">
+                <button className="text-xs font-semibold text-slate-700 hover:text-column-navy px-3 py-1.5 transition-colors cursor-pointer">
                   Sign In
                 </button>
               </SignInButton>
 
               <SignUpButton mode="modal">
-                <button className="inline-flex items-center space-x-1.5 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 transition-all cursor-pointer">
-                  <span>Get Started Free</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <button className="inline-flex items-center text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-3.5 py-1.5 rounded-sm transition-all shadow-xs cursor-pointer">
+                  Get Started Free
                 </button>
               </SignUpButton>
             </Show>
@@ -281,9 +268,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Show when="signed-in">
               <Link
                 href="/console"
-                className="inline-flex items-center text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-1.5 rounded-lg transition-colors shadow-sm"
+                className="text-xs font-semibold text-column-navy hover:text-slate-900 px-3 py-1.5 transition-colors"
               >
-                Go to Console
+                Workspace Console
               </Link>
               <UserButton />
             </Show>
@@ -292,332 +279,263 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </header>
 
       {/* =========================================================
-          HERO SECTION: PRODUCT SPOTLIGHT SHOWCASE
+          HERO SECTION: COLUMN.COM BLUEPRINT SPLIT
       ========================================================= */}
-      <section className="relative pt-20 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10">
+      <section className="relative border-b border-slate-200 overflow-hidden bg-grid-hairline">
         
-        {/* Top Badge */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-indigo-500/30 text-xs font-medium text-slate-200 shadow-xl shadow-indigo-950/40 backdrop-blur-md">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
-            <span>Point &amp; Click In-App Builder 2.0</span>
-            <span className="text-slate-600">•</span>
-            <span className="text-indigo-400">Zero iframes</span>
+        {/* Top Architectural Spec Bar */}
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          <div className="h-9 px-4 sm:px-6 lg:px-8 border-b border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500 bg-white/60">
+            <div className="flex items-center space-x-3">
+              <span className="inline-block w-2 h-2 rounded-full bg-column-cyan" />
+              <span>PRODUCTION-READY SDK V1.0</span>
+              <span className="hidden sm:inline text-slate-300">|</span>
+              <span className="hidden sm:inline">DIRECT DOM INJECTION ENGINE</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span>LATENCY: &lt;12MS</span>
+              <span className="text-slate-300">|</span>
+              <span>BUNDLE: 16.2KB</span>
+            </div>
           </div>
-        </div>
 
-        {/* Hero Headings */}
-        <div className="text-center max-w-4xl mx-auto mb-10">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6">
-            Interactive product tours <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-              built directly on your live website.
-            </span>
-          </h1>
-
-          <p className="text-base sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto font-normal">
-            Guide users through your software with beautiful spotlight tours. Create and edit steps by clicking real elements on your page — no code deploys, no bloated iframes, and sub-16KB footprint.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
-          <Link
-            href="/register"
-            className="inline-flex items-center space-x-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all"
-          >
-            <span>Start Building for Free</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-
-          <a
-            href="#demo"
-            className="inline-flex items-center space-x-2 text-sm font-semibold text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 px-6 py-3 rounded-xl transition-all"
-          >
-            <Play className="w-4 h-4 text-cyan-400 fill-cyan-400" />
-            <span>Try Interactive Demo</span>
-          </a>
-
-          <a
-            href={liveDemoUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center space-x-2 text-sm font-semibold text-slate-300 hover:text-white bg-slate-900/40 hover:bg-slate-800/80 border border-slate-800 px-5 py-3 rounded-xl transition-all"
-          >
-            <ExternalLink className="w-4 h-4 text-slate-400" />
-            <span>Open Real App (Murn)</span>
-          </a>
-        </div>
-
-        {/* Key Feature Stats Pills */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-center mb-16">
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm">
-            <span className="block text-xl font-bold text-white">&lt; 16.2 KB</span>
-            <span className="text-[11px] text-slate-400 font-medium">Ultra-Lightweight</span>
-          </div>
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm">
-            <span className="block text-xl font-bold text-emerald-400">Zero Iframes</span>
-            <span className="text-[11px] text-slate-400 font-medium">Native SVG Cutout</span>
-          </div>
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm">
-            <span className="block text-xl font-bold text-cyan-400">Amharic &amp; EN</span>
-            <span className="text-[11px] text-slate-400 font-medium">Native Multilingual</span>
-          </div>
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm">
-            <span className="block text-xl font-bold text-purple-400">Live Analytics</span>
-            <span className="text-[11px] text-slate-400 font-medium">Step-by-Step Funnels</span>
-          </div>
-        </div>
-
-        {/* =========================================================
-            HERO PRODUCT SHOWCASE: INTERACTIVE TOUR SIMULATOR
-        ========================================================= */}
-        <div id="demo" className="rounded-2xl border border-slate-800 bg-slate-900/90 shadow-2xl shadow-indigo-950/60 overflow-hidden backdrop-blur-xl">
-          
-          {/* Mock Browser Title Bar */}
-          <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
-              <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
-              <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
-              <span className="ml-3 text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1 rounded-md border border-slate-800">
-                https://your-app.com/dashboard <span className="text-cyan-400">?flowkit_builder=true</span>
-              </span>
+          {/* Main Hero Header Area */}
+          <div className="pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-4xl">
+            <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-sm bg-slate-100 border border-slate-200 text-[11px] font-mono text-slate-700 mb-6">
+              <span className="font-semibold text-column-navy">INTERACTIVE WALKTHROUGH PLATFORM</span>
             </div>
 
-            {/* Language Switcher */}
-            <div className="flex items-center space-x-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800 text-xs">
-              <Globe2 className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[11px] text-slate-400 mr-1 font-medium">Language:</span>
-              {(['en', 'am', 'om'] as const).map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => setSimLang(lang)}
-                  className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all cursor-pointer ${
-                    simLang === lang
-                      ? 'bg-indigo-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white'
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-column-navy tracking-tight leading-[1.08] mb-6">
+              The product walkthrough infrastructure built for modern web apps.
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mb-8">
+              Create interactive onboarding tours in minutes with a live point-and-click builder or 2 lines of code. Sub-16KB footprint, native multi-language support, and zero iframes.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href="/register"
+                className="inline-flex items-center space-x-2 text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-5 py-2.5 rounded-sm transition-all"
+              >
+                <span>Get Started Free</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+
+              <a
+                href="#docs"
+                className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                <span>Documentation</span>
+              </a>
+
+              <a
+                href={liveDemoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                <span>Explore Live Demo</span>
+              </a>
+            </div>
+          </div>
+
+          {/* =====================================================
+              SIGNATURE COLUMN SPLIT PLAYGROUND (CODE VS LIVE DOM)
+          ===================================================== */}
+          <div className="border-t border-slate-200 grid grid-cols-1 lg:grid-cols-12 bg-white">
+            
+            {/* LEFT SPLIT PANE: INTEGRATION ENGINE & CODE (5 cols) */}
+            <div className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-200 p-6 flex flex-col justify-between bg-slate-50/50">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-mono text-slate-400">// INTEGRATION</span>
+                    <span className="text-xs font-bold text-column-navy uppercase tracking-wider">2 Lines of Code</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-sm">
+                    ZERO IFRAME
+                  </span>
+                </div>
+
+                {/* Tab switcher */}
+                <div className="flex items-center space-x-1 bg-white border border-slate-200 p-1 rounded-sm mb-3">
+                  {(['cdn', 'npm', 'react'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveSnippetTab(tab)}
+                      className={`flex-1 text-[11px] font-mono py-1 rounded-xs transition-colors cursor-pointer ${
+                        activeSnippetTab === tab
+                          ? 'bg-column-navy text-white font-bold'
+                          : 'text-slate-600 hover:text-column-navy'
+                      }`}
+                    >
+                      {tab.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Code container */}
+                <div className="relative rounded-sm bg-column-dark border border-slate-800 p-4 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto shadow-inner">
+                  <button
+                    onClick={() => copyCode(snippetContent[activeSnippetTab])}
+                    className="absolute top-3 right-3 p-1.5 rounded-sm bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
+                    title="Copy code"
+                  >
+                    {copiedSnippet ? <Check className="w-3.5 h-3.5 text-column-cyan" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                  <pre className="text-[11px] text-slate-200">
+                    <code>{snippetContent[activeSnippetTab]}</code>
+                  </pre>
+                </div>
+              </div>
+
+              {/* Technical Specifications */}
+              <div className="mt-6 pt-4 border-t border-slate-200/80 grid grid-cols-3 gap-2 text-[11px] font-mono">
+                <div>
+                  <span className="block text-slate-400 text-[10px]">WEIGHT</span>
+                  <span className="font-bold text-column-navy">16.2 KB</span>
+                </div>
+                <div>
+                  <span className="block text-slate-400 text-[10px]">PARSER</span>
+                  <span className="font-bold text-column-navy">NATIVE DOM</span>
+                </div>
+                <div>
+                  <span className="block text-slate-400 text-[10px]">ISOLATION</span>
+                  <span className="font-bold text-column-navy">SVG MASK</span>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT SPLIT PANE: LIVE SPOTLIGHT SIMULATOR (7 cols) */}
+            <div className="lg:col-span-7 p-6 flex flex-col justify-between bg-white relative">
+              
+              {/* Simulator Header & Language Controls */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 rounded-full bg-column-cyan" />
+                  <span className="text-xs font-bold text-column-navy uppercase tracking-wider">
+                    Interactive DOM Runtime Sandbox
+                  </span>
+                </div>
+
+                {/* Multilingual Switcher */}
+                <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-sm border border-slate-200 text-[11px] font-mono">
+                  <span className="text-slate-400 px-1 text-[10px]">LANG:</span>
+                  {(['en', 'am', 'om'] as const).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => setSimLang(lang)}
+                      className={`px-2 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                        simLang === lang
+                          ? 'bg-column-navy text-white font-bold'
+                          : 'text-slate-600 hover:text-column-navy'
+                      }`}
+                    >
+                      {lang === 'en' ? 'EN' : lang === 'am' ? 'አማ' : 'OM'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Simulated Host Page with SVG Spotlight */}
+              <div className="my-6 p-4 rounded-sm border border-slate-200 bg-slate-50 relative overflow-hidden min-h-[300px]">
+                
+                {/* Simulated App Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 text-xs font-mono text-slate-500">
+                  <span className="font-bold text-column-navy">WORKSPACE DASHBOARD</span>
+                  <span>ACTIVE DEMO</span>
+                </div>
+
+                {/* Target Element 1: Search */}
+                <div
+                  id="search-bar"
+                  className={`p-2.5 rounded-sm border mb-3 transition-all ${
+                    simStep === 1
+                      ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
+                      : 'border-slate-200 bg-white/70 text-slate-400'
                   }`}
                 >
-                  {lang === 'en' ? 'English' : lang === 'am' ? 'አማርኛ' : 'Oromoo'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Interactive Simulation Area */}
-          <div className="p-6 sm:p-10 relative bg-slate-950/60 min-h-[460px] flex flex-col justify-between">
-            
-            {/* Simulated App Workspace Top Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center font-bold text-indigo-400 text-xs">
-                  MP
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white">Murn Properties &amp; Inspections</h3>
-                  <p className="text-xs text-slate-400">Enterprise Asset Workspace</p>
-                </div>
-              </div>
-
-              {/* Target Element 1: Search Bar */}
-              <div
-                id="demo-search"
-                className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl transition-all duration-300 w-full sm:w-72 ${
-                  simStep === 1
-                    ? 'bg-indigo-950/80 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20 ring-4 ring-cyan-500/20'
-                    : 'bg-slate-900 border border-slate-800 text-slate-500'
-                }`}
-              >
-                <Search className={`w-4 h-4 ${simStep === 1 ? 'text-cyan-400' : 'text-slate-500'}`} />
-                <span className={`text-xs ${simStep === 1 ? 'text-white font-medium' : 'text-slate-500'}`}>
-                  Search inspection records...
-                </span>
-              </div>
-            </div>
-
-            {/* Simulated App Middle Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
-              
-              {/* Target Element 2: Language Card */}
-              <div
-                id="demo-i18n"
-                className={`p-4 rounded-xl transition-all duration-300 ${
-                  simStep === 2
-                    ? 'bg-indigo-950/80 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20 ring-4 ring-cyan-500/20'
-                    : 'bg-slate-900/60 border border-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center space-x-2 mb-2">
-                  <Globe2 className={`w-4 h-4 ${simStep === 2 ? 'text-cyan-400' : 'text-indigo-400'}`} />
-                  <span className="text-xs font-bold text-white">Multilingual Switcher</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Hot-swaps step titles between English, Amharic, and Afaan Oromoo live.
-                </p>
-              </div>
-
-              {/* Card B */}
-              <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-300">
-                <div className="flex items-center space-x-2 mb-2">
-                  <BarChart3 className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-bold text-white">Active Inspections</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  12 properties scheduled for unit review this week.
-                </p>
-              </div>
-
-              {/* Target Element 3: Action Trigger */}
-              <div
-                id="demo-action"
-                className={`p-4 rounded-xl transition-all duration-300 flex flex-col justify-between ${
-                  simStep === 3
-                    ? 'bg-indigo-950/80 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20 ring-4 ring-cyan-500/20'
-                    : 'bg-slate-900/60 border border-slate-800 text-slate-300'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Zap className={`w-4 h-4 ${simStep === 3 ? 'text-cyan-400' : 'text-amber-400'}`} />
-                    <span className="text-xs font-bold text-white">One-Click Actions</span>
+                  <div className="flex items-center space-x-2 text-xs">
+                    <Search className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Search records, inspections, and project workflows...</span>
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Trigger custom actions, exports, or next steps directly.
+                </div>
+
+                {/* Target Element 2: Language & Settings */}
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div
+                    id="lang-switch"
+                    className={`p-2.5 rounded-sm border transition-all ${
+                      simStep === 2
+                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
+                        : 'border-slate-200 bg-white/70 text-slate-400'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2 text-xs">
+                      <Globe2 className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Multilingual i18n Switcher</span>
+                    </div>
+                  </div>
+
+                  <div
+                    id="quick-actions"
+                    className={`p-2.5 rounded-sm border transition-all ${
+                      simStep === 3
+                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
+                        : 'border-slate-200 bg-white/70 text-slate-400'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2 text-xs">
+                      <Zap className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Action Triggers & Telemetry</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Simulated Tour Tooltip Overlay */}
+                <div className="bg-white border border-slate-300 rounded-sm shadow-xl p-4 max-w-sm mt-3 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded-xs font-bold">
+                      STEP {simStep} OF 3
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">{currentSim.placement}</span>
+                  </div>
+
+                  <h4 className="font-bold text-xs text-column-navy mb-1.5">
+                    {currentSim.title}
+                  </h4>
+
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                    {currentSim.desc}
                   </p>
-                </div>
-                <button className="mt-3 w-full py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors">
-                  Generate Report
-                </button>
-              </div>
 
-            </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                    <button
+                      onClick={() => setSimStep((s) => Math.max(1, s - 1))}
+                      disabled={simStep === 1}
+                      className="text-xs font-medium text-slate-500 hover:text-column-navy disabled:opacity-30 transition-colors cursor-pointer"
+                    >
+                      {currentSim.btnBack}
+                    </button>
 
-            {/* REALISTIC FLOATING WALKTHROUGH CARD */}
-            <div className="max-w-md mx-auto w-full bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-5 relative animate-in fade-in slide-in-from-bottom-3">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    Step {simStep} of 3
-                  </span>
-                  <div className="flex items-center space-x-1">
-                    {[1, 2, 3].map((i) => (
-                      <span
-                        key={i}
-                        className={`w-1.5 h-1.5 rounded-full transition-all ${
-                          simStep === i ? 'w-4 bg-cyan-400' : 'bg-slate-700'
-                        }`}
-                      />
-                    ))}
+                    <button
+                      onClick={() => setSimStep((s) => (s >= 3 ? 1 : s + 1))}
+                      className="text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-3.5 py-1.5 rounded-sm transition-colors shadow-xs cursor-pointer"
+                    >
+                      {currentSim.btnNext}
+                    </button>
                   </div>
                 </div>
-                <span className="text-[11px] text-slate-400 font-mono">Target: {currentSim.targetName}</span>
               </div>
 
-              <h4 className="text-base font-bold text-white mb-2">
-                {currentSim.title}
-              </h4>
-
-              <p className="text-xs text-slate-300 leading-relaxed mb-5">
-                {currentSim.desc}
-              </p>
-
-              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-                <button
-                  onClick={() => setSimStep((s) => Math.max(1, s - 1))}
-                  disabled={simStep === 1}
-                  className="text-xs font-semibold text-slate-400 hover:text-white disabled:opacity-30 transition-colors cursor-pointer px-2 py-1"
-                >
-                  {currentSim.btnBack}
-                </button>
-
-                <button
-                  onClick={() => setSimStep((s) => (s >= 3 ? 1 : s + 1))}
-                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
-                >
-                  <span>{currentSim.btnNext}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Bottom In-App Floating Dock Simulation */}
-            <div className="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-center">
-              <div className="inline-flex items-center space-x-3 px-4 py-2 rounded-full bg-slate-900 border border-slate-700 shadow-xl text-xs font-medium text-slate-300">
-                <Compass className="w-4 h-4 text-cyan-400" />
-                <span className="text-white font-semibold">Flow-Kit Admin Dock</span>
-                <span className="text-slate-600">|</span>
-                <span className="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-slate-300">Press Alt + B to inspect</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </section>
-
-      {/* =========================================================
-          SECTION: HOW FLOW-KIT WORKS (3 CLEAR STEPS)
-      ========================================================= */}
-      <section id="how-it-works" className="py-24 border-t border-slate-800/80 bg-slate-950/80 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2 block">
-              Easy 3-Step Workflow
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
-              How Flow-Kit Works
-            </h2>
-            <p className="text-base text-slate-400">
-              Launch interactive product walkthroughs without writing complex tour code or redeploying your frontend.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            {/* Step 1 Card */}
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/60 border border-slate-800 hover:border-indigo-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-lg mb-6 group-hover:scale-110 transition-transform">
-                01
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Embed 1 Line of Code</h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                Paste the lightweight script into your HTML, Next.js, React, or WordPress site. Flow-Kit connects instantly with your project API key.
-              </p>
-              <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] text-cyan-300">
-                &lt;script src=&quot;{apiUrl}/flow-kit.js&quot;&gt;
-              </div>
-            </div>
-
-            {/* Step 2 Card */}
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/60 border border-slate-800 hover:border-cyan-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-lg mb-6 group-hover:scale-110 transition-transform">
-                02
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Point &amp; Click Visual Builder</h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                Open your site as an admin or press <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-xs text-white border border-slate-700">Alt + B</kbd>. Click any button, navigation menu, or table to attach onboarding steps live.
-              </p>
-              <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] text-emerald-400">
-                ✓ 1-Click Page Auto-Scan &amp; Selector Picker
-              </div>
-            </div>
-
-            {/* Step 3 Card */}
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/60 border border-slate-800 hover:border-emerald-500/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg mb-6 group-hover:scale-110 transition-transform">
-                03
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Track Funnels &amp; Retention</h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                Publish with 1 click. Watch real-time visitor sessions, step drop-off funnels, and completion rates in your console to optimize user engagement.
-              </p>
-              <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] text-indigo-400">
-                ✓ Real-Time Telemetry &amp; Funnel Metrics
+              {/* Simulator Action Footnote */}
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-2">
+                <span>CUTOUT: SVG 0.3s cubic-bezier</span>
+                <span>STATUS: RUNTIME ACTIVE</span>
               </div>
             </div>
 
@@ -626,100 +544,114 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </section>
 
       {/* =========================================================
-          SECTION: FEATURES & CORE CAPABILITIES
+          SECTION: HOW IT WORKS (SIMPLE & CLEAR USER JOURNEY)
       ========================================================= */}
-      <section id="features" className="py-24 border-t border-slate-800/80 bg-slate-950 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="how-it-works" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
           
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2 block">
-              Architectural Superiority
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
-              Built for Modern Web Engineering
-            </h2>
-            <p className="text-base text-slate-400">
-              Why fast-moving engineering teams choose Flow-Kit over clunky legacy software.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all">
-              <div className="w-10 h-10 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4">
-                <MousePointerClick className="w-5 h-5" />
-              </div>
-              <h4 className="text-base font-bold text-white mb-2">Zero-Iframe Cutout</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Uses a mathematical SVG spotlight mask directly over your parent DOM. Never breaks mobile responsive layouts or dropdown z-indexes.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all">
-              <div className="w-10 h-10 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4">
-                <Globe2 className="w-5 h-5" />
-              </div>
-              <h4 className="text-base font-bold text-white mb-2">Native Multilingual (i18n)</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                First-class support for non-Latin typography including Amharic, Afaan Oromoo, and Arabic with zero-reload dynamic copy swapping.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all">
-              <div className="w-10 h-10 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-4">
-                <BarChart3 className="w-5 h-5" />
-              </div>
-              <h4 className="text-base font-bold text-white mb-2">Drop-Off Funnel Pipeline</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Async telemetry beacons record exact drop-off points, step completions, and friction areas in real time (&lt;8ms latency).
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="text-base font-bold text-white mb-2">Air-Gapped &amp; Self-Hostable</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Keep user data private. Deploy Flow-Kit on your own Docker containers, private clouds, or PostgreSQL databases.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================
-          SECTION: COMPLETE DOCUMENTATION HUB
-      ========================================================= */}
-      <section id="docs" className="py-24 border-t border-slate-800/80 bg-slate-950/60 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2 block">
-                Quick Integration
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                Developer Documentation
+              <div className="text-[11px] font-mono text-slate-500 mb-1">
+                // 01 WORKFLOW
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+                How Flow-Kit Works
               </h2>
             </div>
+            <p className="text-xs text-slate-500 max-w-sm">
+              From zero to interactive live product walkthroughs in under 3 minutes.
+            </p>
+          </div>
 
-            {/* Documentation Tabs */}
-            <div className="flex items-center space-x-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+            
+            {/* Step 1 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
+              <div>
+                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                  01
+                </div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Embed 1 Line of Code
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Add our ultra-lightweight script to your HTML, React, Next.js, or Vue website. No complex build pipelines or backend configuration required.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+                <code>&lt;script src=&quot;flow-kit.js&quot;&gt;</code>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
+              <div>
+                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                  02
+                </div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Point & Click Visual Builder
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Log into your website and use the floating dock or press <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px]">Alt + B</kbd>. Click any button or card on your page to attach tour steps instantly.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+                1-CLICK AUTO-SCAN & SELECTOR PICKER
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
+              <div>
+                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                  03
+                </div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Track Funnels & Retention
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Publish with 1 click. Watch real-time visitor sessions, step-by-step drop-offs, and completion rates on your analytics dashboard to optimize user onboarding.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+                STEP-BY-STEP RETENTION ANALYTICS
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION: DOCUMENTATION & USER GUIDES
+      ========================================================= */}
+      <section id="docs" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-[11px] font-mono text-slate-500 mb-1">
+                // 02 DOCUMENTATION
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+                Developer & Creator Guide
+              </h2>
+            </div>
+            <div className="flex items-center space-x-1 bg-white border border-slate-200 p-1 rounded-sm text-xs font-medium">
               {[
                 { id: 'quickstart', label: 'Quickstart' },
-                { id: 'builder', label: 'In-App Builder' },
+                { id: 'builder', label: 'Live Builder' },
                 { id: 'sdk', label: 'JavaScript SDK' },
                 { id: 'i18n', label: 'Multi-Language' },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveDocTab(tab.id as any)}
-                  className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  className={`px-3 py-1 rounded-xs transition-colors cursor-pointer ${
                     activeDocTab === tab.id
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-column-navy text-white font-semibold'
+                      : 'text-slate-600 hover:text-column-navy'
                   }`}
                 >
                   {tab.label}
@@ -728,48 +660,51 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
 
-          <div className="p-8 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-2xl backdrop-blur-xl">
+          <div className="p-6 sm:p-10 bg-white">
             
             {/* Quickstart Tab */}
             {activeDocTab === 'quickstart' && (
-              <div className="space-y-8 max-w-4xl">
+              <div className="space-y-6 max-w-4xl">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">Installing Flow-Kit</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    Flow-Kit works out of the box with any modern frontend framework. Add the script and you are ready to build tours.
+                  <h3 className="text-lg font-bold text-column-navy mb-1">Installing Flow-Kit</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Flow-Kit works everywhere — in static HTML sites, Next.js, React, Vue, WordPress, and enterprise web portals.
                   </p>
                 </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2">
-                      Method 1: HTML Script Tag (Universal)
-                    </h4>
-                    <p className="text-xs text-slate-400 mb-3">
-                      Add to the <code>&lt;head&gt;</code> or bottom of the <code>&lt;body&gt;</code> of your website:
-                    </p>
-                    <div className="relative p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 overflow-x-auto">
-                      <button
-                        onClick={() => copyCode(snippetContent.cdn)}
-                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
-                        title="Copy snippet"
-                      >
-                        {copiedSnippet ? <Check className="w-3.5 h-3.5 text-cyan-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                      <pre><code>{snippetContent.cdn}</code></pre>
-                    </div>
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm">
+                    <span className="text-xs font-bold text-column-navy block mb-2">Option A: HTML Script Tag (Universal)</span>
+                    <p className="text-xs text-slate-600 mb-2">Add this script to the <code>&lt;head&gt;</code> or bottom of the <code>&lt;body&gt;</code> of your application:</p>
+                    <pre className="p-3 bg-column-dark text-slate-200 rounded-sm text-xs font-mono overflow-x-auto">
+                      {`<script
+  src="${apiUrl}/flow-kit.js"
+  data-api-key="YOUR_API_KEY"
+></script>`}
+                    </pre>
                   </div>
 
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2">
-                      Method 2: Next.js (App Router)
-                    </h4>
-                    <p className="text-xs text-slate-400 mb-3">
-                      Include in your root <code>src/app/layout.tsx</code> using Next.js Script:
-                    </p>
-                    <div className="relative p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 overflow-x-auto">
-                      <pre><code>{snippetContent.react}</code></pre>
-                    </div>
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm">
+                    <span className="text-xs font-bold text-column-navy block mb-2">Option B: Next.js (App Router)</span>
+                    <p className="text-xs text-slate-600 mb-2">Include in your root <code>app/layout.tsx</code> using Next.js Script:</p>
+                    <pre className="p-3 bg-column-dark text-slate-200 rounded-sm text-xs font-mono overflow-x-auto">
+                      {`import Script from 'next/script';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="${apiUrl}/flow-kit.js"
+          strategy="afterInteractive"
+          data-api-key="YOUR_API_KEY"
+        />
+      </body>
+    </html>
+  );
+}`}
+                    </pre>
                   </div>
                 </div>
               </div>
@@ -777,72 +712,72 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             {/* Live Builder Tab */}
             {activeDocTab === 'builder' && (
-              <div className="space-y-8 max-w-4xl">
+              <div className="space-y-6 max-w-4xl">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">In-App Live Visual Builder</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    Build and edit walkthroughs without leaving your application. The builder attaches directly to your live DOM.
+                  <h3 className="text-lg font-bold text-column-navy mb-1">Using the In-App Visual Builder</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    The visual builder runs directly inside your website so you can build walkthroughs by clicking on real page elements.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-600/30 text-indigo-400 text-xs font-bold flex items-center justify-center">1</div>
-                    <h4 className="text-sm font-bold text-white">Trigger Builder Mode</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Visit any page with <code>?flowkit_builder=true</code> or press <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-[11px] text-white">Alt + B</kbd>.
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                    <div className="w-6 h-6 rounded bg-column-navy text-white text-xs font-bold flex items-center justify-center">1</div>
+                    <h4 className="text-xs font-bold text-column-navy">Open Builder</h4>
+                    <p className="text-xs text-slate-600">
+                      Visit your site with <code>?flowkit_builder=true</code> or press <kbd className="px-1 bg-white border border-slate-200 rounded font-mono text-[10px]">Alt + B</kbd>.
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-600/30 text-cyan-400 text-xs font-bold flex items-center justify-center">2</div>
-                    <h4 className="text-sm font-bold text-white">Auto-Scan or Pick</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Click <strong>&quot;Auto-Scan&quot;</strong> for instant 1-click step generation, or click <strong>&quot;Pick Element&quot;</strong> to target any button or menu.
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                    <div className="w-6 h-6 rounded bg-column-navy text-white text-xs font-bold flex items-center justify-center">2</div>
+                    <h4 className="text-xs font-bold text-column-navy">Pick or Auto-Scan</h4>
+                    <p className="text-xs text-slate-600">
+                      Click <strong>&quot;Auto-Scan&quot;</strong> to generate landmarks automatically, or click <strong>&quot;Pick Element&quot;</strong> to target any button or input.
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600/30 text-emerald-400 text-xs font-bold flex items-center justify-center">3</div>
-                    <h4 className="text-sm font-bold text-white">Save &amp; Go Live</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Customize titles, descriptions, and card placements. Click <strong>Save Step</strong> and your users see updates instantly.
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                    <div className="w-6 h-6 rounded bg-column-navy text-white text-xs font-bold flex items-center justify-center">3</div>
+                    <h4 className="text-xs font-bold text-column-navy">Save & Deploy</h4>
+                    <p className="text-xs text-slate-600">
+                      Configure title, description, and card placement. Click <strong>Save Step</strong> and your visitors will see the update immediately.
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* JavaScript SDK Tab */}
+            {/* SDK Reference Tab */}
             {activeDocTab === 'sdk' && (
               <div className="space-y-6 max-w-4xl">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">JavaScript Client API</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    Trigger walkthroughs from any button, modal, or custom user event programmatically.
+                  <h3 className="text-lg font-bold text-column-navy mb-1">JavaScript SDK Methods</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Trigger walkthroughs from buttons, react to user actions, or programmatically control step navigation.
                   </p>
                 </div>
 
-                <div className="divide-y divide-slate-800 border border-slate-800 rounded-xl overflow-hidden bg-slate-950 text-xs">
-                  <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <span className="font-mono text-cyan-300 font-bold">window.flowKitInstance.startTour(&apos;slug&apos;)</span>
-                    <span className="text-slate-400">Launch a tour programmatically by its unique slug</span>
+                <div className="divide-y divide-slate-200 border border-slate-200 rounded-sm overflow-hidden text-xs">
+                  <div className="p-3 bg-slate-50 font-mono font-bold text-column-navy flex items-center justify-between">
+                    <span>window.flowKitInstance.startTour(&apos;welcome-tour&apos;)</span>
+                    <span className="text-[10px] text-slate-500 font-normal">Launch walkthrough by slug</span>
                   </div>
-                  <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <span className="font-mono text-cyan-300 font-bold">window.flowKitInstance.nextStep()</span>
-                    <span className="text-slate-400">Advance visitor to the next tour step</span>
+                  <div className="p-3 bg-white font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.nextStep()</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Advance to next step</span>
                   </div>
-                  <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <span className="font-mono text-cyan-300 font-bold">window.flowKitInstance.prevStep()</span>
-                    <span className="text-slate-400">Return visitor to previous step</span>
+                  <div className="p-3 bg-slate-50 font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.prevStep()</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Return to previous step</span>
                   </div>
-                  <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <span className="font-mono text-cyan-300 font-bold">window.flowKitInstance.endTour()</span>
-                    <span className="text-slate-400">Dismiss the active walkthrough modal</span>
+                  <div className="p-3 bg-white font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.endTour()</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Dismiss active tour</span>
                   </div>
-                  <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <span className="font-mono text-cyan-300 font-bold">window.flowKitInstance.setLocale(&apos;am&apos;)</span>
-                    <span className="text-slate-400">Hot-swap walkthrough language on the fly (en, am, om)</span>
+                  <div className="p-3 bg-slate-50 font-mono text-slate-700 flex items-center justify-between">
+                    <span>window.flowKitInstance.setLocale(&apos;am&apos;)</span>
+                    <span className="text-[10px] text-slate-500 font-sans">Switch language on the fly</span>
                   </div>
                 </div>
               </div>
@@ -852,27 +787,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {activeDocTab === 'i18n' && (
               <div className="space-y-6 max-w-4xl">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">Multilingual Copy Management</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    Flow-Kit stores translations per step so your product guides natively adapt to your user&apos;s preferred language.
+                  <h3 className="text-lg font-bold text-column-navy mb-1">Native Multilingual Support</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Flow-Kit includes built-in multilingual copy management for English, Amharic (አማርኛ), Afaan Oromoo, and custom locales.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-                  <h4 className="text-sm font-bold text-white">Supported Locales</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold">
-                      English (en)
-                    </span>
-                    <span className="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold">
-                      Amharic / አማርኛ (am)
-                    </span>
-                    <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
-                      Afaan Oromoo (om)
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    When you translate steps in the Studio, Flow-Kit stores each localized string. When your application language changes, simply call <code>window.flowKitInstance.setLocale(&apos;am&apos;)</code> and all tooltips update smoothly without reloading.
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-3">
+                  <span className="text-xs font-bold text-column-navy block">How Language Switching Works</span>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    When you translate a step in the Studio, Flow-Kit stores translations per step. When a user switches their application language, call <code>window.flowKitInstance.setLocale(&apos;am&apos;)</code> to hot-swap all walkthrough step titles and descriptions without reloading the page.
                   </p>
                 </div>
               </div>
@@ -883,58 +807,254 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </section>
 
       {/* =========================================================
-          SECTION: RUNNABLE LIVE API SANDBOX
+          SECTION 03: FOUR ARCHITECTURAL PILLARS (HAIRLINE GRID)
       ========================================================= */}
-      <section id="api-sandbox" className="py-24 border-t border-slate-800/80 bg-slate-950 relative z-10">
+      <section id="architecture" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          
+          {/* Section Header */}
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-[11px] font-mono text-slate-500 mb-1">
+                // 03 ARCHITECTURE
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+                Designed for speed, data privacy, and universal DOM execution.
+              </h2>
+            </div>
+            <span className="text-xs font-mono text-slate-400 shrink-0">
+              SPECIFICATION // V1.0
+            </span>
+          </div>
+
+          {/* 4-Column Blueprint Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+            
+            {/* Box 1 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/60 transition-colors">
+              <div>
+                <div className="text-xs font-mono text-slate-400 mb-4">[ 01 ]</div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Zero-Iframe Cutout Mask
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Traditional onboarding wraps tooltips in heavy, opaque iframes that break responsive layouts. Flow-Kit uses a pure mathematical SVG spotlight mask directly over the parent DOM.
+                </p>
+              </div>
+              <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                <span>MASK OVERHEAD</span>
+                <span className="font-bold text-column-navy">&lt; 16.2KB</span>
+              </div>
+            </div>
+
+            {/* Box 2 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/60 transition-colors">
+              <div>
+                <div className="text-xs font-mono text-slate-400 mb-4">[ 02 ]</div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Native Multilingual Runtime
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Built from the ground up with Ethiopic and non-Latin typography. Dynamic language switching hot-swaps copy across Amharic, Afaan Oromoo, and English without reload.
+                </p>
+              </div>
+              <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                <span>LOCALES</span>
+                <span className="font-bold text-column-navy">NATIVE I18N</span>
+              </div>
+            </div>
+
+            {/* Box 3 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/60 transition-colors">
+              <div>
+                <div className="text-xs font-mono text-slate-400 mb-4">[ 03 ]</div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Drop-Off Funnel Pipeline
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Non-blocking telemetry beacons record user drop-off points, step completions, and friction areas in real time to guarantee maximum user onboarding retention.
+                </p>
+              </div>
+              <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                <span>BEACON LATENCY</span>
+                <span className="font-bold text-column-navy">ASYNC &lt; 8MS</span>
+              </div>
+            </div>
+
+            {/* Box 4 */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/60 transition-colors">
+              <div>
+                <div className="text-xs font-mono text-slate-400 mb-4">[ 04 ]</div>
+                <h3 className="text-base font-bold text-column-navy mb-2">
+                  Data Privacy & Self-Hosting
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Enterprise banking, government portals, and internal apps cannot stream customer data to foreign providers. Flow-Kit can run 100% self-hosted on your own PostgreSQL cluster.
+                </p>
+              </div>
+              <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                <span>DEPLOYMENT</span>
+                <span className="font-bold text-column-navy">CLOUD OR SELF-HOST</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 04: DIRECT VS LEGACY COMPARISON (COLUMN STYLE)
+      ========================================================= */}
+      <section id="comparison" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40">
+            <div className="text-[11px] font-mono text-slate-500 mb-1">
+              // 04 COMPARISON
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+              Why leading developers choose Flow-Kit over legacy SaaS.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
+            
+            {/* The Legacy SaaS Way */}
+            <div className="p-6 sm:p-8 bg-slate-50/60">
+              <div className="flex items-center space-x-2 text-xs font-mono text-rose-600 font-bold mb-6">
+                <span>[ LEGACY STACK ]</span>
+                <span>APPCUES / WALKME / PENDO</span>
+              </div>
+
+              <ul className="space-y-4 text-xs text-slate-600">
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-rose-500 font-bold mt-0.5">01</span>
+                  <div>
+                    <span className="font-bold text-slate-800 block">Heavy Bloat (150KB - 300KB)</span>
+                    Massive bundled iframe runtimes that delay First Contentful Paint and destroy web performance scores.
+                  </div>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-rose-500 font-bold mt-0.5">02</span>
+                  <div>
+                    <span className="font-bold text-slate-800 block">Expensive Subscription Lock-in</span>
+                    Heavy annual contracts with strict gates on Monthly Active Users and custom domains.
+                  </div>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-rose-500 font-bold mt-0.5">03</span>
+                  <div>
+                    <span className="font-bold text-slate-800 block">Zero Data Sovereignty</span>
+                    Every click, user ID, and customer interaction is sent to external US-based cloud databases.
+                  </div>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-rose-500 font-bold mt-0.5">04</span>
+                  <div>
+                    <span className="font-bold text-slate-800 block">Broken Ethiopic & Non-Latin Scripts</span>
+                    Requires awkward hacks for Amharic or Afaan Oromoo fonts with constant layout overflow bugs.
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* The Flow-Kit Platform Infrastructure Way */}
+            <div className="p-6 sm:p-8 bg-white">
+              <div className="flex items-center space-x-2 text-xs font-mono text-emerald-600 font-bold mb-6">
+                <span>[ DIRECT PLATFORM ]</span>
+                <span>FLOW-KIT PLATFORM</span>
+              </div>
+
+              <ul className="space-y-4 text-xs text-slate-700">
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-emerald-600 font-bold mt-0.5">01</span>
+                  <div>
+                    <span className="font-bold text-column-navy block">Sub-16.2KB Zero-Dependency Runtime</span>
+                    Lightweight standalone CDN script with instant execution, zero iframe penalty, and perfect Lighthouse scores.
+                  </div>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-emerald-600 font-bold mt-0.5">02</span>
+                  <div>
+                    <span className="font-bold text-column-navy block">Affordable & Developer-First</span>
+                    Free tier for startups and open access for growing teams. No predatory MAU billing penalties.
+                  </div>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-emerald-600 font-bold mt-0.5">03</span>
+                  <div>
+                    <span className="font-bold text-column-navy block">Air-Gapped Self-Hosting Available</span>
+                    Deploy to your own local infrastructure or private data centers with PostgreSQL and Redis.
+                  </div>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <span className="font-mono text-emerald-600 font-bold mt-0.5">04</span>
+                  <div>
+                    <span className="font-bold text-column-navy block">Native Multilingual Studio</span>
+                    First-class support for Amharic, Afaan Oromoo, Tigrinya, Arabic, and English with instant hot-swapping.
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 05: LIVE RUNNABLE API TERMINAL (COLUMN DARK PANE)
+      ========================================================= */}
+      <section id="api-sandbox" className="bg-column-navy text-white py-16 border-b border-slate-900 bg-grid-hairline-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2 block">
-                Live Developer Console
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                REST API Sandbox
+              <div className="text-[11px] font-mono text-column-cyan mb-1">
+                // 05 RUNNABLE REST API SANDBOX
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Live Developer Engine & Telemetry Pipeline
               </h2>
             </div>
             <div className="text-xs font-mono text-slate-400">
-              API Status: <span className="text-emerald-400 font-bold">Online &amp; Ready</span>
+              CONNECTED TO LIVE ENGINE: <span className="text-column-cyan">FLOW-KIT CLOUD</span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/90 overflow-hidden shadow-2xl">
+          {/* Terminal Console Box */}
+          <div className="rounded-sm border border-slate-700 bg-column-dark overflow-hidden shadow-2xl">
             
             {/* Terminal Header with Endpoint Tabs */}
-            <div className="px-5 py-3.5 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div className="px-4 py-3 bg-column-surface border-b border-slate-700 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block" />
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-600 inline-block" />
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-800 inline-block" />
-                <span className="text-xs font-mono text-slate-400 ml-2">REST Pipeline Tester</span>
+                <span className="text-xs font-mono text-slate-400 ml-2">REST Console // Live API</span>
               </div>
 
               {/* Endpoint Selector Tabs */}
-              <div className="flex items-center space-x-1.5 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs font-mono">
+              <div className="flex items-center space-x-1 bg-column-dark p-1 rounded-sm border border-slate-700 text-xs font-mono">
                 <button
                   onClick={() => setApiEndpoint('tours')}
-                  className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                    apiEndpoint === 'tours' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-300 hover:text-white'
+                  className={`px-3 py-1 rounded-xs transition-colors cursor-pointer ${
+                    apiEndpoint === 'tours' ? 'bg-column-cyan text-column-navy font-bold' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   GET /v1/public/tours
                 </button>
                 <button
                   onClick={() => setApiEndpoint('events')}
-                  className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                    apiEndpoint === 'events' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-300 hover:text-white'
+                  className={`px-3 py-1 rounded-xs transition-colors cursor-pointer ${
+                    apiEndpoint === 'events' ? 'bg-column-cyan text-column-navy font-bold' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   POST /v1/public/events
                 </button>
                 <button
                   onClick={() => setApiEndpoint('sdk')}
-                  className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                    apiEndpoint === 'sdk' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-300 hover:text-white'
+                  className={`px-3 py-1 rounded-xs transition-colors cursor-pointer ${
+                    apiEndpoint === 'sdk' ? 'bg-column-cyan text-column-navy font-bold' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   GET /flow-kit.js
@@ -943,15 +1063,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             {/* Terminal Body */}
-            <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Request Details */}
-              <div className="lg:col-span-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 pr-0 lg:pr-8">
+              <div className="lg:col-span-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pr-0 lg:pr-6">
                 <div>
-                  <span className="text-xs font-bold text-slate-300 block mb-3 uppercase tracking-wider">Request Endpoint</span>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-2">REQUEST TARGET</span>
                   
-                  <div className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 space-y-1.5 mb-5">
-                    <p className="text-cyan-400 font-bold">
+                  <div className="p-3 bg-column-deep border border-slate-800 rounded-sm font-mono text-xs text-slate-300 space-y-1.5 mb-4">
+                    <p className="text-column-cyan font-bold">
                       {apiEndpoint === 'events' ? 'POST' : 'GET'} {apiUrl}/{apiEndpoint === 'sdk' ? 'flow-kit.js' : `v1/public/${apiEndpoint}`}
                     </p>
                     {apiEndpoint !== 'sdk' && (
@@ -966,27 +1086,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                   <p className="text-xs text-slate-400 leading-relaxed mb-6">
                     {apiEndpoint === 'tours'
-                      ? 'Fetches active walkthrough steps and translations matching the authenticated project.'
+                      ? 'Queries all published walkthroughs and multilingual copy for the authorized project key.'
                       : apiEndpoint === 'events'
-                      ? 'Dispatches step completion beacons directly to the analytics retention pipeline.'
-                      : 'Delivers the compiled, standalone universal client SDK (<16.2KB minified).'}
+                      ? 'Streams real-time step telemetry directly into the analytics aggregation engine.'
+                      : 'Delivers the compiled, standalone universal client SDK (16.2KB minified).'}
                   </p>
                 </div>
 
                 <button
                   onClick={runApiCall}
                   disabled={apiLoading}
-                  className="w-full inline-flex items-center justify-center space-x-2 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 px-5 py-3 rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-cyan-400/20"
+                  className="w-full inline-flex items-center justify-center space-x-2 text-xs font-mono font-bold text-column-navy bg-column-cyan hover:bg-emerald-300 px-4 py-2.5 rounded-sm transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {apiLoading ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>Executing Request...</span>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>EXECUTING REQUEST...</span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-4 h-4 fill-current" />
-                      <span>Execute Live Request</span>
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>EXECUTE LIVE REQUEST</span>
                     </>
                   )}
                 </button>
@@ -995,11 +1115,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* Response Viewer */}
               <div className="lg:col-span-7 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Live Response</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono text-slate-400">LIVE SERVER RESPONSE</span>
                     {apiStatusCode && (
-                      <div className="flex items-center space-x-2 text-xs font-mono">
-                        <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">
+                      <div className="flex items-center space-x-2 text-[10px] font-mono">
+                        <span className="px-2 py-0.5 rounded-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
                           HTTP {apiStatusCode} OK
                         </span>
                         <span className="text-slate-400">
@@ -1009,7 +1129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     )}
                   </div>
 
-                  <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl font-mono text-xs text-slate-200 h-[220px] overflow-y-auto">
+                  <div className="p-4 bg-column-deep border border-slate-800 rounded-sm font-mono text-[11px] text-slate-200 h-[220px] overflow-y-auto">
                     {apiResponse ? (
                       <pre className="text-slate-300 whitespace-pre-wrap">
                         <code>{apiResponse}</code>
@@ -1017,15 +1137,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center text-slate-500 text-center">
                         <Terminal className="w-8 h-8 mb-2 stroke-1 text-slate-600" />
-                        <span>Click &quot;Execute Live Request&quot; to test the live Flow-Kit API engine.</span>
+                        <span>Click &quot;EXECUTE LIVE REQUEST&quot; to test the live Flow-Kit API engine.</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-3">
-                  <span>TLS 1.3 / API KEY AUTH</span>
-                  <span>CACHE: LRU + REDIS</span>
+                <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-3">
+                  <span>SECURITY: TLS 1.3 / API KEY AUTH</span>
+                  <span>CACHE: LRU IN-MEMORY + REDIS</span>
                 </div>
               </div>
 
@@ -1035,52 +1155,54 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </section>
 
       {/* =========================================================
-          SECTION: PRICING (ZERO DOLLAR SIGNS)
+          SECTION 06: PRICING SPECIFICATION (NO DOLLAR SIGNS)
       ========================================================= */}
-      <section id="pricing" className="py-24 border-t border-slate-800/80 bg-slate-950/80 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="pricing" className="border-b border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
           
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2 block">
-              Transparent Access
+          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <div className="text-[11px] font-mono text-slate-500 mb-1">
+                // 06 PRICING SPECIFICATION
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+                Simple, developer-first access. No surprise penalties.
+              </h2>
+            </div>
+            <span className="text-xs font-mono text-slate-400 shrink-0">
+              FREE FOREVER &amp; EXPANDABLE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
-              Simple, Developer-First Access
-            </h2>
-            <p className="text-base text-slate-400">
-              No hidden fees, no predatory user limits, and open-source friendly.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
             
-            {/* Starter Community Tier */}
-            <div className="p-8 rounded-2xl bg-slate-900/70 border border-slate-800 flex flex-col justify-between hover:border-slate-700 transition-all">
+            {/* Developer Tier */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Community</span>
-                <h3 className="text-2xl font-bold text-white mt-1 mb-2">Starter Free</h3>
-                <p className="text-xs text-slate-400 mb-6">For indie developers, side projects, and early MVPs.</p>
+                <div className="text-xs font-mono text-slate-400 mb-2">[ COMMUNITY TIER ]</div>
+                <h3 className="text-lg font-bold text-column-navy mb-1">Starter Community</h3>
+                <p className="text-xs text-slate-500 mb-6">For indie hackers, early startups, and personal projects.</p>
 
-                <div className="mb-6 pb-6 border-b border-slate-800">
-                  <span className="text-3xl font-extrabold text-white">Free Forever</span>
+                <div className="mb-6">
+                  <span className="text-3xl font-extrabold text-column-navy">Free Forever</span>
                   <p className="text-xs text-slate-400 mt-1">No credit card required</p>
                 </div>
 
-                <ul className="space-y-3.5 text-xs text-slate-300 mb-8 font-medium">
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                <ul className="space-y-3 text-xs text-slate-600 mb-8 font-mono">
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Up to 5,000 Monthly Active Users</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>5 Active Walkthrough Tours</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Universal CDN SDK Script</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Point &amp; Click In-App Builder</span>
                   </li>
                 </ul>
@@ -1088,97 +1210,97 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
               <Link
                 href="/register"
-                className="w-full text-center text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 py-3 rounded-xl transition-colors"
+                className="w-full text-center text-xs font-semibold text-column-navy bg-slate-100 hover:bg-slate-200 border border-slate-200 py-2.5 rounded-sm transition-colors"
               >
                 Get Started Free
               </Link>
             </div>
 
             {/* Growth Scale Tier (Featured) */}
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-indigo-950/60 to-slate-900 border-2 border-indigo-500/60 shadow-xl shadow-indigo-950/50 flex flex-col justify-between relative">
-              <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-indigo-500 to-cyan-400 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full shadow-md">
-                Most Popular
+            <div className="p-6 sm:p-8 flex flex-col justify-between bg-slate-50/70 relative">
+              <div className="absolute top-0 right-0 bg-column-navy text-white text-[10px] font-mono px-2 py-0.5">
+                POPULAR
               </div>
 
               <div>
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Growth</span>
-                <h3 className="text-2xl font-bold text-white mt-1 mb-2">Team &amp; Scale</h3>
-                <p className="text-xs text-slate-400 mb-6">For scaling SaaS applications, startups, and platforms.</p>
+                <div className="text-xs font-mono text-slate-400 mb-2">[ TEAM TIER ]</div>
+                <h3 className="text-lg font-bold text-column-navy mb-1">Growth &amp; Teams</h3>
+                <p className="text-xs text-slate-500 mb-6">For growing SaaS businesses, product teams, and platforms.</p>
 
-                <div className="mb-6 pb-6 border-b border-indigo-500/30">
-                  <span className="text-3xl font-extrabold text-white">Public Beta</span>
-                  <p className="text-xs text-cyan-400 mt-1">Full features unlocked during preview</p>
+                <div className="mb-6">
+                  <span className="text-3xl font-extrabold text-column-navy">Public Beta</span>
+                  <p className="text-xs text-slate-400 mt-1">Full features unlocked during preview</p>
                 </div>
 
-                <ul className="space-y-3.5 text-xs text-slate-200 mb-8 font-medium">
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                    <span className="font-bold text-white">Unlimited Monthly Active Users</span>
+                <ul className="space-y-3 text-xs text-slate-700 mb-8 font-mono">
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
+                    <span className="font-bold">Unlimited Monthly Active Users</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Unlimited Walkthrough Tours</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Multilingual Studio (Amharic, Oromo, EN)</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                    <span>Step-by-Step Retention Analytics</span>
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
+                    <span>Drop-Off Funnel Analytics</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                    <span>Custom Brand Themes &amp; Colors</span>
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
+                    <span>Custom Brand Styling &amp; Themes</span>
                   </li>
                 </ul>
               </div>
 
               <Link
                 href="/register"
-                className="w-full text-center text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition-all"
+                className="w-full text-center text-xs font-bold text-white bg-column-navy hover:bg-slate-800 py-2.5 rounded-sm transition-colors shadow-xs"
               >
-                Join Free Beta
+                Start Free with Team Features
               </Link>
             </div>
 
             {/* Enterprise Air-Gapped Tier */}
-            <div className="p-8 rounded-2xl bg-slate-900/70 border border-slate-800 flex flex-col justify-between hover:border-slate-700 transition-all">
+            <div className="p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Enterprise</span>
-                <h3 className="text-2xl font-bold text-white mt-1 mb-2">Self-Hosted</h3>
-                <p className="text-xs text-slate-400 mb-6">For government portals, defense, and privacy-sensitive apps.</p>
+                <div className="text-xs font-mono text-slate-400 mb-2">[ ENTERPRISE TIER ]</div>
+                <h3 className="text-lg font-bold text-column-navy mb-1">Self-Hosted Enterprise</h3>
+                <p className="text-xs text-slate-500 mb-6">For government portals, defense, and privacy-sensitive apps.</p>
 
-                <div className="mb-6 pb-6 border-b border-slate-800">
-                  <span className="text-3xl font-extrabold text-white">Self-Hosted</span>
+                <div className="mb-6">
+                  <span className="text-3xl font-extrabold text-column-navy">Self-Hosted</span>
                   <p className="text-xs text-slate-400 mt-1">Docker &amp; private data center</p>
                 </div>
 
-                <ul className="space-y-3.5 text-xs text-slate-300 mb-8 font-medium">
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                <ul className="space-y-3 text-xs text-slate-600 mb-8 font-mono">
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Unlimited Workspaces &amp; Domains</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>100% Air-Gapped Deployment</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
                     <span>Private PostgreSQL &amp; Redis Sovereignty</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                    <span>Dedicated SLA &amp; Support</span>
+                  <li className="flex items-center space-x-2">
+                    <Check className="w-3.5 h-3.5 text-column-cyan" />
+                    <span>Dedicated Engineering Support</span>
                   </li>
                 </ul>
               </div>
 
               <Link
                 href="/register"
-                className="w-full text-center text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 py-3 rounded-xl transition-colors"
+                className="w-full text-center text-xs font-semibold text-column-navy bg-slate-100 hover:bg-slate-200 border border-slate-200 py-2.5 rounded-sm transition-colors"
               >
-                Access Self-Hosted
+                Access Self-Hosted Stack
               </Link>
             </div>
 
@@ -1187,45 +1309,64 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </section>
 
       {/* =========================================================
-          FOOTER
+          ARCHITECTURAL FOOTER
       ========================================================= */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200">
+          
+          {/* Status ticker */}
+          <div className="px-4 sm:px-6 lg:px-8 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-500 bg-slate-50/60">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>SYSTEM STATUS: OPERATIONAL</span>
+              <span className="text-slate-300">|</span>
+              <span>API UPTIME: 99.99%</span>
+            </div>
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center">
-                <Compass className="w-4 h-4 text-cyan-400" />
+              <span>CLOUD ENGINE: ONLINE</span>
+              <span className="text-slate-300">|</span>
+              <span>LATENCY: &lt;12MS</span>
+            </div>
+          </div>
+
+          {/* Links and Copyright */}
+          <div className="p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-column-navy flex items-center justify-center text-white font-mono text-[10px] font-bold rounded-xs">
+                FK
               </div>
-              <span className="text-sm font-bold text-white">Flow-Kit Platform</span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs font-bold text-column-navy">
+                Flow-Kit Platform
+              </span>
+              <span className="text-xs text-slate-400">
                 © {new Date().getFullYear()} All rights reserved.
               </span>
             </div>
 
-            <div className="flex items-center space-x-6 text-xs text-slate-400 font-medium">
-              <Link href="/console" className="hover:text-white transition-colors">
+            <div className="flex items-center space-x-6 text-xs font-mono text-slate-500">
+              <Link href="/console" className="hover:text-column-navy transition-colors">
                 Console
               </Link>
-              <a href="#docs" className="hover:text-white transition-colors">
+              <a href="#docs" className="hover:text-column-navy transition-colors">
                 Documentation
               </a>
-              <Link href="/keys" className="hover:text-white transition-colors">
+              <Link href="/keys" className="hover:text-column-navy transition-colors">
                 API Keys
               </Link>
               <a
                 href={liveDemoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-white transition-colors"
+                className="hover:text-column-navy transition-colors"
               >
                 Live Demo
               </a>
-              <Link href="/login" className="hover:text-white transition-colors">
+              <Link href="/login" className="hover:text-column-navy transition-colors">
                 Sign In
               </Link>
             </div>
           </div>
+
         </div>
       </footer>
 
