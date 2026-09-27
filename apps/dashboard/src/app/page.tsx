@@ -32,11 +32,130 @@ import {
   Sliders,
   HelpCircle,
 } from 'lucide-react';
+import LiveDemoOverlay, { TourDemoStep } from '@/components/LiveDemoOverlay';
 
 export default function LandingPage() {
   const [copiedSnippet, setCopiedSnippet] = useState(false);
   const [activeSnippetTab, setActiveSnippetTab] = useState<'cdn' | 'npm' | 'react'>('cdn');
   const [activeDocTab, setActiveDocTab] = useState<'quickstart' | 'builder' | 'sdk' | 'i18n'>('quickstart');
+
+  // Driver.js style interactive live tour demo state
+  const [liveTourOpen, setLiveTourOpen] = useState(false);
+  const [liveTourSteps, setLiveTourSteps] = useState<TourDemoStep[]>([]);
+  const [liveTourTitle, setLiveTourTitle] = useState('Interactive Demo');
+
+  const triggerDemo = (type: 'product-tour' | 'spotlight' | 'multilingual' | 'beacon' | 'progress') => {
+    if (type === 'product-tour') {
+      setLiveTourTitle('Product Tour Demo');
+      setLiveTourSteps([
+        {
+          targetSelector: '#hero-title',
+          title: 'Welcome to Flow-Kit',
+          description: 'The developer-first product tour platform. Create step-by-step walkthroughs that look native to your UI.',
+          placement: 'bottom',
+          badge: 'Step 1 of 3',
+        },
+        {
+          targetSelector: '#code-integration-tabs',
+          title: '2-Line Integration',
+          description: 'Works with zero backend changes. Drop a script tag or install @flow-kit/web in Next.js, React, or Vue.',
+          placement: 'right',
+          badge: 'Step 2 of 3',
+        },
+        {
+          targetSelector: '#get-started-cta',
+          title: 'Zero-Friction Start',
+          description: 'Create your account for free, point-and-click to build tours on your site, and watch retention climb.',
+          placement: 'bottom',
+          badge: 'Step 3 of 3',
+        },
+      ]);
+    } else if (type === 'spotlight') {
+      setLiveTourTitle('Feature Spotlight Demo');
+      setLiveTourSteps([
+        {
+          targetSelector: '#code-integration-tabs',
+          title: 'Pure SVG Cutout Isolation',
+          description: 'Notice how the backdrop dims smoothly and cuts out the exact element. Zero iframes, zero z-index conflicts, and 100% interactive.',
+          placement: 'right',
+          badge: 'Feature Spotlight',
+        },
+      ]);
+    } else if (type === 'multilingual') {
+      setLiveTourTitle('Multilingual Tour Demo');
+      setLiveTourSteps([
+        {
+          targetSelector: '#hero-title',
+          title: 'እንኳን ወደ Flow-Kit በደህና መጡ!',
+          description: 'በድረ-ገጽዎ ላይ ሙሉ ለሙሉ በአማርኛ እና በእንግሊዝኛ የጉዞ መመሪያዎችን በደቂቃዎች ውስጥ ይፍጠሩ።',
+          placement: 'bottom',
+          badge: 'ደረጃ 1 ከ 3',
+          langTag: 'አማርኛ (Amharic)',
+        },
+        {
+          targetSelector: '#code-integration-tabs',
+          title: 'በ 2 መስመር ኮድ ብቻ',
+          description: 'ምንም ውስብስብ አሰራር ሳይኖር በ 1 ቀላል ስክሪፕት ወደ ድረ-ገጽዎ ያካትቱ። ሙሉ ለሙሉ በአማርኛ እና በእንግሊዝኛ ይሰራል።',
+          placement: 'right',
+          badge: 'ደረጃ 2 ከ 3',
+          langTag: 'አማርኛ (Amharic)',
+        },
+        {
+          targetSelector: '#get-started-cta',
+          title: 'አሁኑኑ በነጻ ይጀምሩ',
+          description: 'ምንም ክፍያ ወይም ክሬዲት ካርድ ሳይጠየቁ ወዲያውኑ የራስዎን የጉብኝት መመሪያዎች መፍጠር ይጀምሩ።',
+          placement: 'bottom',
+          badge: 'ደረጃ 3 ከ 3',
+          langTag: 'አማርኛ (Amharic)',
+        },
+      ]);
+    } else if (type === 'beacon') {
+      setLiveTourTitle('Contextual Hint Demo');
+      setLiveTourSteps([
+        {
+          targetSelector: '#docs-hero-btn',
+          title: 'Contextual Guide Beacon',
+          description: 'Non-blocking hints can draw user attention to new features, documentation, or settings without breaking their workflow.',
+          placement: 'bottom',
+          badge: 'Contextual Hint',
+        },
+      ]);
+    } else if (type === 'progress') {
+      setLiveTourTitle('Progress Walkthrough');
+      setLiveTourSteps([
+        {
+          targetSelector: '#hero-title',
+          title: '1. Instant Headline Targeting',
+          description: 'Target headings, cards, or hero elements with simple CSS selectors.',
+          placement: 'bottom',
+          badge: '1 of 4',
+        },
+        {
+          targetSelector: '#architecture-specs',
+          title: '2. Sub-16KB Runtime',
+          description: 'Ultra-fast direct DOM rendering with <12ms execution time.',
+          placement: 'bottom',
+          badge: '2 of 4',
+        },
+        {
+          targetSelector: '#code-integration-tabs',
+          title: '3. Drop-in Code Snippet',
+          description: 'Supports HTML, React, Next.js, and WordPress out of the box.',
+          placement: 'right',
+          badge: '3 of 4',
+        },
+        {
+          targetSelector: '#get-started-cta',
+          title: '4. Ready to Launch',
+          description: 'Click next to finish this interactive walkthrough!',
+          placement: 'bottom',
+          badge: '4 of 4',
+        },
+      ]);
+    }
+
+    setLiveTourOpen(true);
+  };
 
   // Interactive Simulator State
   const [simStep, setSimStep] = useState<number>(1);
@@ -200,7 +319,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           
           {/* Brand Mark */}
           <div className="flex items-center space-x-6">
-            <Link href="/" className="flex items-center space-x-2.5 group">
+            <Link id="brand-logo" href="/" className="flex items-center space-x-2.5 group">
               <div className="w-7 h-7 bg-column-navy flex items-center justify-center text-white font-mono text-xs font-bold rounded-sm group-hover:bg-column-cyan group-hover:text-column-navy transition-colors">
                 FK
               </div>
@@ -219,9 +338,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="#how-it-works" className="hover:text-column-navy transition-colors">
                 How It Works
               </a>
-              <a href="#docs" className="hover:text-column-navy transition-colors">
+              <Link id="docs-nav-link" href="/docs" className="hover:text-column-navy transition-colors">
                 Documentation
-              </a>
+              </Link>
               <a href="#architecture" className="hover:text-column-navy transition-colors">
                 Architecture
               </a>
@@ -274,7 +393,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         
         {/* Top Architectural Spec Bar */}
         <div className="max-w-7xl mx-auto border-x border-slate-200">
-          <div className="h-9 px-4 sm:px-6 lg:px-8 border-b border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500 bg-white/60">
+          <div id="architecture-specs" className="h-9 px-4 sm:px-6 lg:px-8 border-b border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500 bg-white/60">
             <div className="flex items-center space-x-3">
               <span className="inline-block w-2 h-2 rounded-full bg-column-cyan" />
               <span>PRODUCTION-READY SDK V1.0</span>
@@ -294,7 +413,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span className="font-semibold text-column-navy">INTERACTIVE WALKTHROUGH PLATFORM</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-column-navy tracking-tight leading-[1.08] mb-6">
+            <h1 id="hero-title" className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-column-navy tracking-tight leading-[1.08] mb-6">
               The product walkthrough infrastructure built for modern web apps.
             </h1>
 
@@ -305,6 +424,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3">
               <Link
+                id="get-started-cta"
                 href="/register"
                 className="inline-flex items-center space-x-2 text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-5 py-2.5 rounded-sm transition-all"
               >
@@ -312,13 +432,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
 
-              <a
-                href="#docs"
+              <Link
+                id="docs-hero-btn"
+                href="/docs"
                 className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
               >
                 <BookOpen className="w-3.5 h-3.5 text-slate-500" />
                 <span>Documentation</span>
-              </a>
+              </Link>
 
               <a
                 href="#api-sandbox"
@@ -328,6 +449,81 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span>Test Live API Sandbox</span>
               </a>
             </div>
+
+            {/* Driver.js Style Interactive Live Demo Chips */}
+            <div id="live-demo-chips" className="mt-8 pt-6 border-t border-slate-200">
+              <div className="flex items-center space-x-2 mb-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-column-navy">
+                  Interactive Live Demos
+                </span>
+                <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                  — Click to test Flow-Kit directly on this page:
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => triggerDemo('product-tour')}
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                >
+                  <span>🚀</span>
+                  <span>Animated Tour</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                    3 steps
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerDemo('spotlight')}
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                >
+                  <span>🎯</span>
+                  <span>Feature Spotlight</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                    SVG cutout
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerDemo('multilingual')}
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                >
+                  <span>🌍</span>
+                  <span>Multilingual</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    አማርኛ / EN
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerDemo('beacon')}
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                >
+                  <span>💡</span>
+                  <span>Contextual Hint</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                    guide beacon
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerDemo('progress')}
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                >
+                  <span>📊</span>
+                  <span>With Progress Dots</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                    4 steps
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* =====================================================
@@ -336,7 +532,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="border-t border-slate-200 grid grid-cols-1 lg:grid-cols-12 bg-white">
             
             {/* LEFT SPLIT PANE: INTEGRATION ENGINE & CODE (5 cols) */}
-            <div className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-200 p-6 flex flex-col justify-between bg-slate-50/50">
+            <div id="code-integration-tabs" className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-200 p-6 flex flex-col justify-between bg-slate-50/50">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
@@ -398,7 +594,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             {/* RIGHT SPLIT PANE: LIVE SPOTLIGHT SIMULATOR (7 cols) */}
-            <div className="lg:col-span-7 p-6 flex flex-col justify-between bg-white relative">
+            <div id="runtime-sandbox" className="lg:col-span-7 p-6 flex flex-col justify-between bg-white relative">
               
               {/* Simulator Header & Language Controls */}
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -1334,9 +1530,9 @@ export default function RootLayout({ children }) {
               <Link href="/console" className="hover:text-column-navy transition-colors">
                 Console
               </Link>
-              <a href="#docs" className="hover:text-column-navy transition-colors">
+              <Link href="/docs" className="hover:text-column-navy transition-colors">
                 Documentation
-              </a>
+              </Link>
               <Link href="/keys" className="hover:text-column-navy transition-colors">
                 API Keys
               </Link>
@@ -1348,6 +1544,14 @@ export default function RootLayout({ children }) {
 
         </div>
       </footer>
+
+      {/* Driver.js Style Interactive Live Tour Overlay */}
+      <LiveDemoOverlay
+        isOpen={liveTourOpen}
+        steps={liveTourSteps}
+        tourTitle={liveTourTitle}
+        onClose={() => setLiveTourOpen(false)}
+      />
 
     </div>
   );
