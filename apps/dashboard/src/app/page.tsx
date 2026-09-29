@@ -31,6 +31,11 @@ import {
   MousePointerClick,
   Sliders,
   HelpCircle,
+  LayoutDashboard,
+  Box,
+  Users,
+  Settings,
+  Bell,
 } from 'lucide-react';
 import LiveDemoOverlay, { TourDemoStep } from '@/components/LiveDemoOverlay';
 import OnboardingChecklist, { ChecklistItem } from '@/components/OnboardingChecklist';
@@ -346,163 +351,345 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* =========================================================
           TOP ARCHITECTURAL NAVIGATION
       ========================================================= */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      {/* =========================================================
+          TOP NAVIGATION (MATCHING SPEC)
+      ========================================================= */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
-          {/* Brand Mark */}
-          <div className="flex items-center space-x-6">
+          {/* Brand Mark & Desktop Links */}
+          <div className="flex items-center space-x-8">
             <Link id="brand-logo" href="/" className="flex items-center space-x-2.5 group">
-              <div className="w-7 h-7 bg-column-navy flex items-center justify-center text-white font-mono text-xs font-bold rounded-sm group-hover:bg-column-cyan group-hover:text-column-navy transition-colors">
+              <div className="w-8 h-8 bg-slate-900 flex items-center justify-center text-white font-bold text-xs rounded-md shadow-xs transition-colors">
                 FK
               </div>
-              <div className="flex items-baseline space-x-1.5">
-                <span className="font-bold text-sm tracking-tight text-column-navy">
-                  Flow-Kit
-                </span>
-                <span className="text-[10px] font-mono text-slate-400">
-                  Walkthroughs
-                </span>
-              </div>
+              <span className="font-bold text-base tracking-tight text-slate-900">
+                Flow-Kit
+              </span>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-6 text-xs font-medium text-slate-600">
-              <a href="#how-it-works" className="hover:text-column-navy transition-colors">
+            <nav className="hidden lg:flex items-center space-x-6 text-xs font-medium text-slate-600">
+              <a href="#hero" className="text-blue-600 font-semibold relative py-1 border-b-2 border-blue-600">
+                Walkthroughs
+              </a>
+              <a href="#how-it-works" className="hover:text-slate-900 transition-colors py-1">
                 How It Works
               </a>
-              <Link id="docs-nav-link" href="/docs" className="hover:text-column-navy transition-colors">
+              <Link id="docs-nav-link" href="/docs" className="hover:text-slate-900 transition-colors py-1">
                 Documentation
               </Link>
-              <a href="#architecture" className="hover:text-column-navy transition-colors">
+              <a href="#architecture" className="hover:text-slate-900 transition-colors py-1">
                 Architecture
               </a>
-              <a href="#comparison" className="hover:text-column-navy transition-colors">
+              <a href="#comparison" className="hover:text-slate-900 transition-colors py-1">
                 Direct vs Legacy
               </a>
-              <a href="#api-sandbox" className="hover:text-column-navy transition-colors">
+              <a href="#api-sandbox" className="hover:text-slate-900 transition-colors py-1">
                 API Sandbox
               </a>
-              <a href="#pricing" className="hover:text-column-navy transition-colors">
+              <a href="#pricing" className="hover:text-slate-900 transition-colors py-1">
                 Pricing
               </a>
             </nav>
           </div>
 
           {/* Action Hub */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/console"
+              className="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+            >
+              Workspace Console
+            </Link>
+
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
 
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="text-xs font-semibold text-slate-700 hover:text-column-navy px-3 py-1.5 transition-colors cursor-pointer">
-                  Sign In
-                </button>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all shadow-xs" title="Sign In">
+                  U
+                </div>
               </SignInButton>
-
-              <SignUpButton mode="modal">
-                <button className="inline-flex items-center text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-3.5 py-1.5 rounded-sm transition-all shadow-xs cursor-pointer">
-                  Get Started Free
-                </button>
-              </SignUpButton>
-            </Show>
-
-            <Show when="signed-in">
-              <Link
-                href="/console"
-                className="text-xs font-semibold text-column-navy hover:text-slate-900 px-3 py-1.5 transition-colors"
-              >
-                Workspace Console
-              </Link>
-              <UserButton />
             </Show>
           </div>
         </div>
       </header>
 
       {/* =========================================================
-          HERO SECTION: COLUMN.COM BLUEPRINT SPLIT
+          HERO SECTION: 2-COLUMN WITH LIVE MOCKUP & DEMO CHIPS
       ========================================================= */}
-      <section className="relative border-b border-slate-200 overflow-hidden bg-white">
-        
-        {/* Top Architectural Spec Bar */}
-        <div className="max-w-7xl mx-auto border-x border-slate-200">
-          <div id="architecture-specs" className="h-9 px-4 sm:px-6 lg:px-8 border-b border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500 bg-white/60">
-            <div className="flex items-center space-x-3">
-              <span className="inline-block w-2 h-2 rounded-full bg-column-cyan" />
-              <span>PRODUCTION-READY SDK V1.0</span>
-              <span className="hidden sm:inline text-slate-300">|</span>
-              <span className="hidden sm:inline">DIRECT DOM INJECTION ENGINE</span>
+      <section id="hero" className="relative border-b border-slate-200/80 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* LEFT COLUMN: HEADLINE, COPY & ACTIONS */}
+            <div className="lg:col-span-6 space-y-6">
+              {/* Capsule Badge */}
+              <div className="inline-flex items-center px-3 py-1 rounded-md bg-[#EDF3FB] border border-blue-100 text-[11px] font-semibold text-blue-900 tracking-wider uppercase">
+                INTERACTIVE WALKTHROUGH PLATFORM
+              </div>
+
+              {/* Main Headline */}
+              <h1 id="hero-title" className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-slate-900 tracking-tight leading-[1.12]">
+                The product walkthrough infrastructure built for modern web apps.
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
+                Create interactive onboarding tours in minutes with a live point-and-click builder or 2 lines of code. Sub-16KB footprint, native multi-language support, and zero iframes.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <Link
+                  id="get-started-cta"
+                  href="/register"
+                  className="inline-flex items-center space-x-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 px-5 py-3 rounded-md transition-all shadow-xs"
+                >
+                  <span>Get Started Free</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+
+                <Link
+                  id="docs-hero-btn"
+                  href="/docs"
+                  className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 rounded-md transition-colors shadow-2xs"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Documentation</span>
+                </Link>
+
+                <a
+                  href="#api-sandbox"
+                  className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 rounded-md transition-colors shadow-2xs"
+                >
+                  <Terminal className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Test Live API Sandbox</span>
+                </a>
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <span>LATENCY: &lt;12MS</span>
-              <span className="text-slate-300">|</span>
-              <span>BUNDLE: 16.2KB</span>
+
+            {/* RIGHT COLUMN: INTERACTIVE VISUAL MOCKUP WINDOW */}
+            <div className="lg:col-span-6 relative mt-6 lg:mt-0">
+              {/* Soft rounded backdrop glow */}
+              <div className="absolute -inset-4 bg-gradient-to-tr from-blue-100/60 via-slate-100/70 to-indigo-50/50 rounded-3xl transform rotate-1 scale-102 filter blur-xs -z-10" />
+
+              {/* Window Card Frame */}
+              <div id="demo-mockup-window" className="relative rounded-2xl bg-white border border-slate-200/90 shadow-2xl overflow-hidden">
+                {/* Window Titlebar */}
+                <div className="h-8 px-4 bg-slate-100/70 border-b border-slate-200/80 flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-medium">
+                    flowkit.app/demo
+                  </div>
+                  <div className="w-10" />
+                </div>
+
+                {/* Window Workspace Layout */}
+                <div className="flex min-h-[350px] relative">
+                  {/* Left Dark Sidebar */}
+                  <div className="w-36 sm:w-44 bg-[#0F172A] p-3 flex flex-col justify-between shrink-0 relative">
+                    <div>
+                      {/* Sidebar Brand */}
+                      <div className="flex items-center space-x-2 px-2 py-1.5 mb-3">
+                        <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
+                          FK
+                        </div>
+                        <span className="text-white text-xs font-bold tracking-tight">Flow-Kit</span>
+                      </div>
+
+                      {/* Nav Items */}
+                      <nav className="space-y-1">
+                        {/* Active Item with attached Tooltip */}
+                        <div className="relative">
+                          <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md bg-blue-600/25 text-white text-xs font-semibold border border-blue-500/40">
+                            <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
+                            <span>Dashboard</span>
+                          </div>
+
+                          {/* Floating Tour Step Tooltip anchored to Dashboard */}
+                          <div className="absolute -left-28 sm:-left-36 top-1/2 -translate-y-1/2 z-30 w-44 sm:w-52 bg-white rounded-xl shadow-2xl border border-blue-200/90 p-3 animate-in fade-in zoom-in-95 duration-200">
+                            <div className="flex items-center space-x-1.5 mb-1">
+                              <span className="w-2 h-2 rounded-full bg-blue-600" />
+                              <span className="text-[11px] font-bold text-blue-600">1. Open your dashboard</span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 leading-snug">
+                              Get an overview of your workspace and recent activity.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
+                          <Box className="w-3.5 h-3.5" />
+                          <span>Products</span>
+                        </div>
+                        <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
+                          <Users className="w-3.5 h-3.5" />
+                          <span>Users</span>
+                        </div>
+                        <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
+                          <BarChart3 className="w-3.5 h-3.5" />
+                          <span>Analytics</span>
+                        </div>
+                        <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
+                          <Settings className="w-3.5 h-3.5" />
+                          <span>Settings</span>
+                        </div>
+                      </nav>
+                    </div>
+                  </div>
+
+                  {/* Main Dashboard Canvas */}
+                  <div className="flex-1 bg-slate-50/60 p-4 sm:p-5 flex flex-col justify-between">
+                    {/* Top Search & Actions */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="relative w-36 sm:w-44">
+                        <Search className="w-3 h-3 text-slate-400 absolute left-2.5 top-2" />
+                        <input
+                          type="text"
+                          readOnly
+                          placeholder="Search..."
+                          className="w-full pl-7 pr-2 py-1 text-[11px] rounded-md border border-slate-200 bg-white text-slate-600 placeholder-slate-400 focus:outline-none"
+                        />
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                          <Bell className="w-2.5 h-2.5" />
+                        </div>
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 text-white flex items-center justify-center text-[9px] font-bold">
+                          J
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section Title */}
+                    <div className="mb-2.5">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900">Dashboard</h4>
+                    </div>
+
+                    {/* 3 Metric Cards */}
+                    <div className="grid grid-cols-3 gap-2 mb-2.5">
+                      <div className="p-2 rounded-lg bg-white border border-slate-200/80 shadow-2xs">
+                        <div className="text-[9px] sm:text-[10px] text-slate-400 font-medium">Total Users</div>
+                        <div className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5">2,458</div>
+                        <div className="text-[9px] text-emerald-600 font-semibold flex items-center mt-0.5">
+                          <span>↑ 12%</span>
+                        </div>
+                      </div>
+
+                      <div className="p-2 rounded-lg bg-white border border-slate-200/80 shadow-2xs">
+                        <div className="text-[9px] sm:text-[10px] text-slate-400 font-medium">Active Projects</div>
+                        <div className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5">86</div>
+                        <div className="text-[9px] text-emerald-600 font-semibold flex items-center mt-0.5">
+                          <span>↑ 8%</span>
+                        </div>
+                      </div>
+
+                      <div className="p-2 rounded-lg bg-white border border-slate-200/80 shadow-2xs">
+                        <div className="text-[9px] sm:text-[10px] text-slate-400 font-medium">Conversion Rate</div>
+                        <div className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5">4.2%</div>
+                        <div className="text-[9px] text-emerald-600 font-semibold flex items-center mt-0.5">
+                          <span>↑ 3%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Split: Recent Activity & Line Chart */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {/* Recent Activity */}
+                      <div className="p-2 rounded-lg bg-white border border-slate-200/80 shadow-2xs">
+                        <div className="text-[10px] font-bold text-slate-800 mb-1.5">Recent Activity</div>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-[9px]">
+                            <div className="flex items-center space-x-1.5">
+                              <div className="w-3.5 h-3.5 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                <Users className="w-2 h-2" />
+                              </div>
+                              <span className="text-slate-700 font-medium truncate max-w-[85px]">New user registered</span>
+                            </div>
+                            <span className="text-slate-400 text-[8px]">2m ago</span>
+                          </div>
+                          <div className="flex items-center justify-between text-[9px]">
+                            <div className="flex items-center space-x-1.5">
+                              <div className="w-3.5 h-3.5 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                                <Layers className="w-2 h-2" />
+                              </div>
+                              <span className="text-slate-700 font-medium truncate max-w-[85px]">Project updated</span>
+                            </div>
+                            <span className="text-slate-400 text-[8px]">12m ago</span>
+                          </div>
+                          <div className="flex items-center justify-between text-[9px]">
+                            <div className="flex items-center space-x-1.5">
+                              <div className="w-3.5 h-3.5 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                <Sparkles className="w-2 h-2" />
+                              </div>
+                              <span className="text-slate-700 font-medium truncate max-w-[85px]">Payment received</span>
+                            </div>
+                            <span className="text-slate-400 text-[8px]">1h ago</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Smooth Blue Curved Line Chart */}
+                      <div className="p-2 rounded-lg bg-white border border-slate-200/80 shadow-2xs flex items-center justify-center">
+                        <svg className="w-full h-16" viewBox="0 0 200 80" fill="none">
+                          <defs>
+                            <linearGradient id="heroChartGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
+                              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+                            </linearGradient>
+                          </defs>
+                          <path
+                            d="M 5 60 C 25 58, 40 40, 65 42 C 90 44, 110 20, 135 22 C 160 24, 175 10, 195 12 L 195 80 L 5 80 Z"
+                            fill="url(#heroChartGrad)"
+                          />
+                          <path
+                            d="M 5 60 C 25 58, 40 40, 65 42 C 90 44, 110 20, 135 22 C 160 24, 175 10, 195 12"
+                            stroke="#3B82F6"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+
           </div>
+        </div>
 
-          {/* Main Hero Header Area */}
-          <div className="pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-4xl">
-            <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-sm bg-slate-100 border border-slate-200 text-[11px] font-mono text-slate-700 mb-6">
-              <span className="font-semibold text-column-navy">INTERACTIVE WALKTHROUGH PLATFORM</span>
-            </div>
-
-            <h1 id="hero-title" className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-column-navy tracking-tight leading-[1.08] mb-6">
-              The product walkthrough infrastructure built for modern web apps.
-            </h1>
-
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mb-8">
-              Create interactive onboarding tours in minutes with a live point-and-click builder or 2 lines of code. Sub-16KB footprint, native multi-language support, and zero iframes.
-            </p>
-
-            {/* CTAs */}
+        {/* BOTTOM LIVE DEMOS BAR & FLOATING WIDGET */}
+        <div id="live-demo-chips" className="border-t border-slate-200/80 bg-white py-4 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                id="get-started-cta"
-                href="/register"
-                className="inline-flex items-center space-x-2 text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-5 py-2.5 rounded-sm transition-all"
-              >
-                <span>Get Started Free</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-
-              <Link
-                id="docs-hero-btn"
-                href="/docs"
-                className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                <span>Documentation</span>
-              </Link>
-
-              <a
-                href="#api-sandbox"
-                className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-sm transition-colors"
-              >
-                <Terminal className="w-3.5 h-3.5 text-slate-500" />
-                <span>Test Live API Sandbox</span>
-              </a>
-            </div>
-
-            {/* Driver.js Style Interactive Live Demo Chips */}
-            <div id="live-demo-chips" className="mt-8 pt-6 border-t border-slate-200">
-              <div className="flex items-center space-x-2 mb-3">
+              <div className="flex items-center space-x-2 mr-1">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-column-navy">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
                   Interactive Live Demos
                 </span>
-                <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                <span className="text-xs text-slate-400 hidden sm:inline">
                   — Click to test Flow-Kit directly on this page:
                 </span>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => triggerDemo('product-tour')}
-                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <Play className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
+                  <Play className="w-3.5 h-3.5 text-slate-700" />
                   <span>Animated Tour</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
                     3 steps
                   </span>
                 </button>
@@ -510,11 +697,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <button
                   type="button"
                   onClick={() => triggerDemo('spotlight')}
-                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
+                  <Sparkles className="w-3.5 h-3.5 text-slate-700" />
                   <span>Feature Spotlight</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
                     SVG cutout
                   </span>
                 </button>
@@ -522,23 +709,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <button
                   type="button"
                   onClick={() => triggerDemo('multilingual')}
-                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <Globe2 className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
+                  <Globe2 className="w-3.5 h-3.5 text-slate-700" />
                   <span>Multilingual</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    አማርኛ / EN
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                    AM / EN
                   </span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => triggerDemo('beacon')}
-                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <Zap className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
+                  <Zap className="w-3.5 h-3.5 text-slate-700" />
                   <span>Contextual Hint</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
                     guide beacon
                   </span>
                 </button>
@@ -546,238 +733,47 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <button
                   type="button"
                   onClick={() => triggerDemo('progress')}
-                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:border-column-navy hover:bg-slate-50 text-xs font-semibold text-slate-800 shadow-2xs transition-all cursor-pointer group"
+                  className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer group"
                 >
-                  <BarChart3 className="w-3.5 h-3.5 text-column-navy group-hover:text-column-cyan transition-colors" />
+                  <BarChart3 className="w-3.5 h-3.5 text-slate-700" />
                   <span>With Progress Dots</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
                     4 steps
                   </span>
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* =====================================================
-              SIGNATURE COLUMN SPLIT PLAYGROUND (CODE VS LIVE DOM)
-          ===================================================== */}
-          <div className="border-t border-slate-200 grid grid-cols-1 lg:grid-cols-12 bg-white">
-            
-            {/* LEFT SPLIT PANE: INTEGRATION ENGINE & CODE (5 cols) */}
-            <div id="code-integration-tabs" className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-200 p-6 flex flex-col justify-between bg-slate-50/50">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-[10px] font-mono text-slate-400">// INTEGRATION</span>
-                    <span className="text-xs font-bold text-column-navy uppercase tracking-wider">2 Lines of Code</span>
-                    <ContextualBeacon
-                      badge="Zero Iframes"
-                      title="Direct DOM Injection"
-                      description="Flow-Kit interacts directly with your DOM elements using mathematical SVG masking instead of slow, heavy iframes."
-                      actionLabel="Inspect Spotlight"
-                      onAction={() => triggerDemo('spotlight')}
-                      placement="bottom"
-                    />
-                  </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-sm">
-                    ZERO IFRAME
-                  </span>
-                </div>
-
-                {/* Tab switcher */}
-                <div className="flex items-center space-x-1 bg-white border border-slate-200 p-1 rounded-sm mb-3">
-                  {(['cdn', 'npm', 'react'] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveSnippetTab(tab)}
-                      className={`flex-1 text-[11px] font-mono py-1 rounded-xs transition-colors cursor-pointer ${
-                        activeSnippetTab === tab
-                          ? 'bg-column-navy text-white font-bold'
-                          : 'text-slate-600 hover:text-column-navy'
-                      }`}
-                    >
-                      {tab.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Code container */}
-                <div className="relative rounded-sm bg-column-dark border border-slate-800 p-4 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto shadow-inner">
-                  <button
-                    onClick={() => copyCode(snippetContent[activeSnippetTab])}
-                    className="absolute top-3 right-3 p-1.5 rounded-sm bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
-                    title="Copy code"
-                  >
-                    {copiedSnippet ? <Check className="w-3.5 h-3.5 text-column-cyan" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                  <pre className="text-[11px] text-slate-200">
-                    <code>{snippetContent[activeSnippetTab]}</code>
-                  </pre>
-                </div>
-              </div>
-
-              {/* Technical Specifications */}
-              <div className="mt-6 pt-4 border-t border-slate-200/80 grid grid-cols-3 gap-2 text-[11px] font-mono">
-                <div>
-                  <span className="block text-slate-400 text-[10px]">WEIGHT</span>
-                  <span className="font-bold text-column-navy">16.2 KB</span>
-                </div>
-                <div>
-                  <span className="block text-slate-400 text-[10px]">PARSER</span>
-                  <span className="font-bold text-column-navy">NATIVE DOM</span>
-                </div>
-                <div>
-                  <span className="block text-slate-400 text-[10px]">ISOLATION</span>
-                  <span className="font-bold text-column-navy">SVG MASK</span>
-                </div>
-              </div>
+            {/* Floating Tour Step Pill in Hero Bottom Right */}
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => triggerDemo('product-tour')}
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-lg hover:shadow-xl transition-all cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Get Started</span>
+                <span className="text-slate-400 text-[11px]">(3/4)</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1 text-slate-300" />
+              </button>
             </div>
-
-            {/* RIGHT SPLIT PANE: LIVE SPOTLIGHT SIMULATOR (7 cols) */}
-            <div id="runtime-sandbox" className="lg:col-span-7 p-6 flex flex-col justify-between bg-white relative">
-              
-              {/* Simulator Header & Language Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 rounded-full bg-column-cyan" />
-                  <span className="text-xs font-bold text-column-navy uppercase tracking-wider">
-                    Interactive DOM Runtime Sandbox
-                  </span>
-                </div>
-
-                {/* Multilingual Switcher */}
-                <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-sm border border-slate-200 text-[11px] font-mono">
-                  <span className="text-slate-400 px-1 text-[10px]">LANG:</span>
-                  {(['en', 'am', 'om'] as const).map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => setSimLang(lang)}
-                      className={`px-2 py-0.5 rounded-xs transition-colors cursor-pointer ${
-                        simLang === lang
-                          ? 'bg-column-navy text-white font-bold'
-                          : 'text-slate-600 hover:text-column-navy'
-                      }`}
-                    >
-                      {lang === 'en' ? 'EN' : lang === 'am' ? 'አማ' : 'OM'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Simulated Host Page with SVG Spotlight */}
-              <div className="my-6 p-4 rounded-sm border border-slate-200 bg-slate-50 relative overflow-hidden min-h-[300px]">
-                
-                {/* Simulated App Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 text-xs font-mono text-slate-500">
-                  <span className="font-bold text-column-navy">WORKSPACE DASHBOARD</span>
-                  <span>ACTIVE DEMO</span>
-                </div>
-
-                {/* Target Element 1: Search */}
-                <div
-                  id="search-bar"
-                  className={`p-2.5 rounded-sm border mb-3 transition-all ${
-                    simStep === 1
-                      ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
-                      : 'border-slate-200 bg-white/70 text-slate-400'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2 text-xs">
-                    <Search className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Search records, inspections, and project workflows...</span>
-                  </div>
-                </div>
-
-                {/* Target Element 2: Language & Settings */}
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div
-                    id="lang-switch"
-                    className={`p-2.5 rounded-sm border transition-all ${
-                      simStep === 2
-                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
-                        : 'border-slate-200 bg-white/70 text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2 text-xs">
-                      <Globe2 className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Multilingual i18n Switcher</span>
-                    </div>
-                  </div>
-
-                  <div
-                    id="quick-actions"
-                    className={`p-2.5 rounded-sm border transition-all ${
-                      simStep === 3
-                        ? 'border-column-cyan bg-white shadow-xs ring-2 ring-column-cyan/20 font-semibold'
-                        : 'border-slate-200 bg-white/70 text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2 text-xs">
-                      <Zap className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Action Triggers & Telemetry</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Simulated Tour Tooltip Overlay */}
-                <div className="bg-white border border-slate-300 rounded-sm shadow-xl p-4 max-w-sm mt-3 animate-in fade-in slide-in-from-bottom-2">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded-xs font-bold">
-                      STEP {simStep} OF 3
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">{currentSim.placement}</span>
-                  </div>
-
-                  <h4 className="font-bold text-xs text-column-navy mb-1.5">
-                    {currentSim.title}
-                  </h4>
-
-                  <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                    {currentSim.desc}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                    <button
-                      onClick={() => setSimStep((s) => Math.max(1, s - 1))}
-                      disabled={simStep === 1}
-                      className="text-xs font-medium text-slate-500 hover:text-column-navy disabled:opacity-30 transition-colors cursor-pointer"
-                    >
-                      {currentSim.btnBack}
-                    </button>
-
-                    <button
-                      onClick={() => setSimStep((s) => (s >= 3 ? 1 : s + 1))}
-                      className="text-xs font-semibold text-white bg-column-navy hover:bg-slate-800 px-3.5 py-1.5 rounded-sm transition-colors shadow-xs cursor-pointer"
-                    >
-                      {currentSim.btnNext}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Simulator Action Footnote */}
-              <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-2">
-                <span>CUTOUT: SVG 0.3s cubic-bezier</span>
-                <span>STATUS: RUNTIME ACTIVE</span>
-              </div>
-            </div>
-
           </div>
         </div>
       </section>
 
+
       {/* =========================================================
           SECTION: HOW IT WORKS (SIMPLE & CLEAR USER JOURNEY)
       ========================================================= */}
-      <section id="how-it-works" className="border-b border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto border-x border-slate-200">
+      <section id="how-it-works" className="border-b border-slate-200/80 bg-white">
+        <div className="max-w-7xl mx-auto border-x border-slate-200/80">
           
-          <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="p-6 sm:p-8 border-b border-slate-200/80 bg-slate-50/40 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-[11px] font-mono text-slate-500 mb-1">
+              <div className="text-[11px] font-semibold text-blue-600 uppercase tracking-wider mb-1">
                 // 01 WORKFLOW
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-column-navy tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 How Flow-Kit Works
               </h2>
             </div>
@@ -786,40 +782,42 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200/80">
             
             {/* Step 1 */}
             <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
               <div>
-                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                <div className="w-9 h-9 rounded-lg bg-slate-900 text-white text-xs font-bold flex items-center justify-center mb-4 shadow-xs">
                   01
                 </div>
-                <h3 className="text-base font-bold text-column-navy mb-2">
+                <h3 className="text-base font-bold text-slate-900 mb-2">
                   Embed 1 Line of Code
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
                   Add our ultra-lightweight script to your HTML, React, Next.js, or Vue website. No complex build pipelines or backend configuration required.
                 </p>
               </div>
-              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
-                <code>&lt;script src=&quot;flow-kit.js&quot;&gt;</code>
+              <div className="pt-4 border-t border-slate-100">
+                <code className="text-[11px] font-mono text-blue-600 bg-blue-50/80 px-2 py-1 rounded border border-blue-100">
+                  &lt;script src=&quot;{apiUrl}/flow-kit.js&quot;&gt;
+                </code>
               </div>
             </div>
 
             {/* Step 2 */}
             <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
               <div>
-                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                <div className="w-9 h-9 rounded-lg bg-slate-900 text-white text-xs font-bold flex items-center justify-center mb-4 shadow-xs">
                   02
                 </div>
-                <h3 className="text-base font-bold text-column-navy mb-2">
+                <h3 className="text-base font-bold text-slate-900 mb-2">
                   Point & Click Visual Builder
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Log into your website and use the floating dock or press <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px]">Alt + B</kbd>. Click any button or card on your page to attach tour steps instantly.
+                  Log into your website and use the floating dock or press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[11px] font-sans font-medium text-slate-700">Alt + B</kbd>. Click any button or card on your page to attach tour steps instantly.
                 </p>
               </div>
-              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+              <div className="pt-4 border-t border-slate-100 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                 1-CLICK AUTO-SCAN & SELECTOR PICKER
               </div>
             </div>
@@ -827,17 +825,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Step 3 */}
             <div className="p-6 sm:p-8 flex flex-col justify-between hover:bg-slate-50/50 transition-colors">
               <div>
-                <div className="w-8 h-8 rounded-sm bg-column-navy text-white font-mono text-xs font-bold flex items-center justify-center mb-4">
+                <div className="w-9 h-9 rounded-lg bg-slate-900 text-white text-xs font-bold flex items-center justify-center mb-4 shadow-xs">
                   03
                 </div>
-                <h3 className="text-base font-bold text-column-navy mb-2">
+                <h3 className="text-base font-bold text-slate-900 mb-2">
                   Track Funnels & Retention
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4">
                   Publish with 1 click. Watch real-time visitor sessions, step-by-step drop-offs, and completion rates on your analytics dashboard to optimize user onboarding.
                 </p>
               </div>
-              <div className="pt-4 border-t border-slate-100 font-mono text-[11px] text-slate-500">
+              <div className="pt-4 border-t border-slate-100 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                 STEP-BY-STEP RETENTION ANALYTICS
               </div>
             </div>
@@ -845,6 +843,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </div>
       </section>
+
 
       {/* =========================================================
           SECTION: DOCUMENTATION & USER GUIDES

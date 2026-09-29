@@ -7,21 +7,21 @@
   --font-dm-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-*, *::before, *::after {
-  font-family: inherit;
+html, body, button, input, select, textarea, div, p, span, h1, h2, h3, h4, h5, h6, a {
+  font-family: 'DM Sans', var(--font-dm-sans), sans-serif;
 }
 
 body {
-  color: #131C18;
-  background-color: #F8FAF9;
+  color: #0f172a;
+  background-color: #ffffff;
   font-family: 'DM Sans', var(--font-dm-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background-color: #CCFBF1;
-  color: #0F766E;
+  background-color: #dbeafe;
+  color: #1e3a8a;
 }
 
 /* Custom subtle scrollbar */
