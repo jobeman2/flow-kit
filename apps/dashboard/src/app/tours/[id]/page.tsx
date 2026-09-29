@@ -1418,7 +1418,7 @@ export default function TourStudioPage() {
               <div className="font-semibold text-slate-800">How to use:</div>
               <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-500">
                 <li>Copy the snippet above.</li>
-                <li>Open your target web app (e.g. <code className="text-slate-700">http://localhost:5173</code>).</li>
+                <li>Open your target web app (e.g. <code className="text-slate-700">https://your-app.com</code>).</li>
                 <li>Open Browser DevTools Console (<kbd className="font-mono bg-white px-1 border border-slate-200 rounded">F12</kbd>) and paste it.</li>
                 <li>Click any element on the page to copy its selector, then paste it here into <strong>DOM Query Selector</strong>.</li>
               </ol>

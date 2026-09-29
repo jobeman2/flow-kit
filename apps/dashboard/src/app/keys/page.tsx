@@ -131,6 +131,8 @@ export default function ApiKeysPage() {
     keys.find((k) => k.type === 'PUBLIC_CLIENT' && k.status === 'ACTIVE')?.key ||
     'pk_live_demo_79a2f1b4c6e8';
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://flow-kit.onrender.com';
+
   const snippets: Record<PlatformTab, { title: string; code: string; note: string }> = {
     cdn: {
       title: 'Universal HTML / CDN (2 Lines)',
@@ -138,7 +140,7 @@ export default function ApiKeysPage() {
       code: `<!-- Flow-Kit Universal Walkthrough SDK -->
 <!-- Place immediately before the closing </body> tag -->
 <script
-  src="http://localhost:4000/sdk.js"
+  src="${apiUrl}/flow-kit.js"
   data-api-key="${activeClientKey}"
   data-locale="en"
   defer
@@ -164,7 +166,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <FlowKitProvider
       apiKey="${activeClientKey}"
-      apiUrl="http://localhost:4000"
+      apiUrl="${apiUrl}"
       locale="en" // dynamically set to 'am' (Amharic), 'om' (Oromo), 'en'
     >
       <Navbar />
@@ -207,7 +209,7 @@ function flowkit_register_walkthrough_sdk() {
     // Enqueue SDK in page footer
     wp_enqueue_script(
         'flowkit-sdk',
-        'http://localhost:4000/sdk.js',
+        '${apiUrl}/flow-kit.js',
         array(),
         '1.0.0',
         array('strategy' => 'defer', 'in_footer' => true)
@@ -248,7 +250,7 @@ add_shortcode('flowkit_tour', 'flowkit_tour_shortcode');
 {{-- ========================================== --}}
 {{-- Place immediately before the closing </body> tag: --}}
 <script
-    src="{{ config('services.flowkit.url', 'http://localhost:4000') }}/sdk.js"
+    src="{{ config('services.flowkit.url', '${apiUrl}') }}/flow-kit.js"
     data-api-key="{{ config('services.flowkit.key', '${activeClientKey}') }}"
     data-locale="{{ app()->getLocale() }}"
     defer>
@@ -257,7 +259,7 @@ add_shortcode('flowkit_tour', 'flowkit_tour_shortcode');
 {{-- In config/services.php --}}
 'flowkit' => [
     'key' => env('FLOWKIT_PUBLIC_KEY', '${activeClientKey}'),
-    'url' => env('FLOWKIT_API_URL', 'http://localhost:4000'),
+    'url' => env('FLOWKIT_API_URL', '${apiUrl}'),
 ],
 
 <?php
@@ -267,7 +269,7 @@ add_shortcode('flowkit_tour', 'flowkit_tour_shortcode');
 function render_flowkit_sdk($apiKey = '${activeClientKey}', $locale = 'en') {
     $safeKey = htmlspecialchars($apiKey, ENT_QUOTES, 'UTF-8');
     $safeLocale = htmlspecialchars($locale, ENT_QUOTES, 'UTF-8');
-    echo "<script src=\"http://localhost:4000/sdk.js\" data-api-key=\"{$safeKey}\" data-locale=\"{$safeLocale}\" defer></script>";
+    echo "<script src=\"${apiUrl}/flow-kit.js\" data-api-key=\"{$safeKey}\" data-locale=\"{$safeLocale}\" defer></script>";
 }
 ?>`,
     },
@@ -295,7 +297,7 @@ webView.loadUrl("https://your-domain.com?flowkitKey=${activeClientKey}")
 // OPTION B: Native Jetpack Compose / Kotlin (REST Bootstrap)
 // ==============================================================
 // 1. Fetch tour metadata and step targets via Flow-Kit REST endpoint:
-// GET http://localhost:4000/v1/sdk/bootstrap?apiKey=${activeClientKey}&url=/home
+// GET ${apiUrl}/v1/sdk/bootstrap?apiKey=${activeClientKey}&url=/home
 
 data class FlowKitStep(
     val stepIndex: Int,
@@ -306,7 +308,7 @@ data class FlowKitStep(
 )
 
 // 2. Track funnel events back to the dashboard:
-// POST http://localhost:4000/v1/events
+// POST ${apiUrl}/v1/events
 // Body:
 // {
 //   "apiKey": "${activeClientKey}",

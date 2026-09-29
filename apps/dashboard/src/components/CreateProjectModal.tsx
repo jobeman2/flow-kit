@@ -189,7 +189,7 @@ export default function CreateProjectModal({
                   type="text"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
-                  placeholder="e.g. myapp.com, localhost:3000"
+                  placeholder="e.g. myapp.com, app.yourdomain.com"
                   className="w-full pl-8 pr-3 py-2 text-xs font-mono border border-slate-200 rounded-sm focus:outline-none focus:border-slate-800"
                 />
                 <Globe2 className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />

@@ -78,7 +78,7 @@ export default function ConsoleOverview() {
     return () => window.removeEventListener('projectChanged', handleProjectChanged);
   }, []);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://flow-kit.onrender.com';
   const clientKey =
     project?.apiKeys?.find((k: any) => k.type === 'PUBLIC_CLIENT' && k.status === 'ACTIVE')?.key ||
     'pk_live_' + (project?.id ? project.id.substring(0, 16) : 'default');
